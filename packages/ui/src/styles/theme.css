@@ -1,0 +1,6 @@
+/*
+ * Theme overrides. Loaded after shadcn.css, so any variable redefined here wins.
+ * Example:
+ *   :root { --primary: oklch(0.55 0.2 260); --radius: 0.5rem; }
+ *   .dark { --primary: oklch(0.7 0.15 260); }
+ */

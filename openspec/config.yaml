@@ -1,0 +1,49 @@
+schema: spec-driven
+
+context: |
+  Monorepo of shared frontend resources published to public npm under @aureus-core.
+  Stack: pnpm workspaces (apps/*, packages/*, tooling/*), Turborepo, Biome (single root config),
+  React 19, TypeScript (strict, shared configs in tooling/typescript), Tailwind CSS v4,
+  shadcn/ui (radix-nova style, Radix primitives), tsdown (unbundled ESM + d.ts), Vitest + Testing Library,
+  Storybook (react-vite, apps/storybook), Changesets + GitHub Actions with npm trusted publishing.
+  Consumers: Vite + React SPAs.
+  Conventions:
+  - packages/ui/src/shadcn/** and src/styles/shadcn.css are owned by the shadcn CLI: never edit them by hand.
+  - Customise shadcn in this order: tokens in src/styles/theme.css -> wrap in src/components/ -> fork into src/components/ under a new name.
+  - src/shadcn never imports from src/components.
+  - Pure kebab-case file names; role suffixes use "-": <name>-types.ts, <name>-tests.tsx, <name>-stories.tsx.
+  - One folder per custom component with an index.ts barrel; no root barrel.
+  - Public imports: @aureus-core/ui/shadcn/<name>, /components/<name>, /hooks/<name>, /lib/utils, /styles.css.
+  - Stories live in apps/storybook/src/stories/{shadcn,components}/.
+  - Every change to a published package needs a changeset.
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

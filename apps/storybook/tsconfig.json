@@ -1,0 +1,4 @@
+{
+  "extends": "@aureus-core/tsconfig/vite-app.json",
+  "include": ["src", ".storybook", "vite.config.ts"]
+}

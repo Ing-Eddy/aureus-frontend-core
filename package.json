@@ -1,0 +1,24 @@
+{
+  "name": "aureus-frontend-core",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "changeset": "changeset",
+    "release": "turbo run build --filter=./packages/* && changeset publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.6",
+    "@changesets/cli": "^3.0.3",
+    "turbo": "^2.11.10"
+  }
+}

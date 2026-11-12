@@ -1,0 +1,7 @@
+{
+  "extends": "@aureus-core/tsconfig/react-library.json",
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["src", "*.config.ts", "scripts"]
+}
