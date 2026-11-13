@@ -1,0 +1,71 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Foundations/Radius" />
+
+export const steps = ["sm", "md", "lg", "xl", "2xl", "3xl", "4xl"];
+
+<En>
+
+# Radius
+
+One token, `--radius` (default `0.625rem`), drives a whole scale. Change it once and every rounded corner follows.
+
+</En>
+<Es>
+
+# Radio
+
+Un solo token, `--radius` (por defecto `0.625rem`), define toda la escala. Cámbialo una vez y todas las esquinas redondeadas lo siguen.
+
+</Es>
+
+<div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", margin: "1.5rem 0" }}>
+  {steps.map((step) => (
+    <figure key={step} style={{ margin: 0, display: "grid", gap: "0.5rem", justifyItems: "center" }}>
+      <div
+        style={{
+          width: 72,
+          height: 72,
+          borderRadius: `var(--radius-${step})`,
+          background: "var(--muted)",
+          border: "1px solid var(--border)",
+        }}
+      />
+      <figcaption style={{ fontSize: 12 }}>
+        <code>rounded-{step}</code>
+      </figcaption>
+    </figure>
+  ))}
+</div>
+
+<En>
+
+| Utility        | Token          | Value                     |
+| -------------- | -------------- | ------------------------- |
+| `rounded-sm`   | `--radius-sm`  | `--radius × 0.6`          |
+| `rounded-md`   | `--radius-md`  | `--radius × 0.8`          |
+| `rounded-lg`   | `--radius-lg`  | `--radius`                |
+| `rounded-xl`   | `--radius-xl`  | `--radius × 1.4`          |
+| `rounded-2xl`  | `--radius-2xl` | `--radius × 1.8`          |
+| `rounded-3xl`  | `--radius-3xl` | `--radius × 2.2`          |
+| `rounded-4xl`  | `--radius-4xl` | `--radius × 2.6`          |
+
+Set `--radius: 0` for a sharp look, or `0.75rem` and up for a softer one.
+
+</En>
+<Es>
+
+| Utilidad       | Token          | Valor                     |
+| -------------- | -------------- | ------------------------- |
+| `rounded-sm`   | `--radius-sm`  | `--radius × 0.6`          |
+| `rounded-md`   | `--radius-md`  | `--radius × 0.8`          |
+| `rounded-lg`   | `--radius-lg`  | `--radius`                |
+| `rounded-xl`   | `--radius-xl`  | `--radius × 1.4`          |
+| `rounded-2xl`  | `--radius-2xl` | `--radius × 1.8`          |
+| `rounded-3xl`  | `--radius-3xl` | `--radius × 2.2`          |
+| `rounded-4xl`  | `--radius-4xl` | `--radius × 2.6`          |
+
+Pon `--radius: 0` para un aspecto anguloso, o `0.75rem` o más para uno más suave.
+
+</Es>

@@ -1,0 +1,69 @@
+import { ColorItem, ColorPalette, Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Foundations/Colors" />
+
+export const pair = (name) => ({ [name]: `var(--${name})`, [`${name}-foreground`]: `var(--${name}-foreground)` });
+
+<En>
+
+# Colors
+
+Semantic tokens: components ask for a *role* (`--primary`, `--muted`), never a raw color. The swatches read the live CSS variables, so switching the **theme** toolbar shows the dark values. Each surface token has a `-foreground` pair for the text on top of it; keep 4.5:1 between them.
+
+</En>
+<Es>
+
+# Colores
+
+Tokens semánticos: los componentes piden un *rol* (`--primary`, `--muted`), nunca un color concreto. Las muestras leen las variables CSS en vivo, así que al cambiar la barra de **tema** se ven los valores oscuros. Cada token de superficie tiene una pareja `-foreground` para el texto que va encima; mantén 4.5:1 entre ellas.
+
+</Es>
+
+<ColorPalette>
+  <ColorItem title="Base" subtitle="--background / --foreground" colors={{ background: "var(--background)", foreground: "var(--foreground)" }} />
+  <ColorItem title="Primary" subtitle="--primary" colors={pair("primary")} />
+  <ColorItem title="Secondary" subtitle="--secondary" colors={pair("secondary")} />
+  <ColorItem title="Muted" subtitle="--muted" colors={pair("muted")} />
+  <ColorItem title="Accent" subtitle="--accent" colors={pair("accent")} />
+  <ColorItem title="Card" subtitle="--card" colors={pair("card")} />
+  <ColorItem title="Popover" subtitle="--popover" colors={pair("popover")} />
+  <ColorItem title="Destructive" subtitle="--destructive" colors={{ destructive: "var(--destructive)" }} />
+  <ColorItem title="Lines" subtitle="--border / --input / --ring" colors={{ border: "var(--border)", input: "var(--input)", ring: "var(--ring)" }} />
+  <ColorItem
+    title="Charts"
+    subtitle="--chart-1 … --chart-5"
+    colors={Object.fromEntries([1, 2, 3, 4, 5].map((n) => [`chart-${n}`, `var(--chart-${n})`]))}
+  />
+  <ColorItem
+    title="Sidebar"
+    subtitle="--sidebar-*"
+    colors={{
+      sidebar: "var(--sidebar)",
+      "sidebar-foreground": "var(--sidebar-foreground)",
+      "sidebar-primary": "var(--sidebar-primary)",
+      "sidebar-accent": "var(--sidebar-accent)",
+      "sidebar-border": "var(--sidebar-border)",
+      "sidebar-ring": "var(--sidebar-ring)",
+    }}
+  />
+</ColorPalette>
+
+<En>
+
+## Using them
+
+- In Tailwind classes: `bg-primary text-primary-foreground`, `border-border`, `text-muted-foreground`.
+- In CSS: `color: var(--muted-foreground)`.
+- To change them for your product, see [Theming](?path=/docs/guides-theming--docs).
+
+</En>
+<Es>
+
+## Cómo usarlos
+
+- En clases de Tailwind: `bg-primary text-primary-foreground`, `border-border`, `text-muted-foreground`.
+- En CSS: `color: var(--muted-foreground)`.
+- Para cambiarlos en tu producto, mira [Temas](?path=/docs/guides-theming--docs).
+
+</Es>

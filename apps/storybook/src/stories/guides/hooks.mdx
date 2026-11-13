@@ -1,0 +1,99 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Guides/Hooks & utilities" />
+
+<En>
+
+# Hooks & utilities
+
+## `useIsMobile`
+
+```tsx
+import { useIsMobile } from "@aureus-core/ui/hooks/use-mobile";
+
+const isMobile = useIsMobile(); // true below 768px
+```
+
+Returns `true` when the viewport is narrower than 768px and updates on resize. Sidebar uses it to switch to a Sheet. It is `false` on the first render (before the effect runs), so do not use it for content that must match server-rendered HTML.
+
+## `useHighlightedCode`
+
+```tsx
+import { useHighlightedCode } from "@aureus-core/ui/hooks/use-highlighted-code";
+import { CodeBlock, CodeBlockContent, CodeBlockLine } from "@aureus-core/ui/shadcn/code-block";
+
+function Snippet({ code }: { code: string }) {
+  const lines = useHighlightedCode(code, "tsx");
+  return (
+    <CodeBlock>
+      <CodeBlockContent>
+        {lines.map((line, index) => (
+          <CodeBlockLine key={index}>{line}</CodeBlockLine>
+        ))}
+      </CodeBlockContent>
+    </CodeBlock>
+  );
+}
+```
+
+Highlights code with Shiki (GitHub light/dark themes). Grammars are loaded on demand for bash, css, diff, html, javascript, json, jsx, markdown, python, sql, tsx, typescript and yaml (plus aliases such as `ts`, `py`, `sh`). Until a grammar loads, or for unknown languages, it returns plain lines, so the code is readable immediately. While code streams in, only new lines are tokenized.
+
+## `cn`
+
+```tsx
+import { cn } from "@aureus-core/ui/lib/utils";
+
+<div className={cn("rounded-md p-4", isActive && "bg-muted", className)} />;
+```
+
+Joins class names (falsy values are skipped) and resolves Tailwind conflicts: the last class wins (`cn("p-2", "p-4")` → `"p-4"`). Every component uses it to merge your `className`.
+
+</En>
+<Es>
+
+# Hooks y utilidades
+
+## `useIsMobile`
+
+```tsx
+import { useIsMobile } from "@aureus-core/ui/hooks/use-mobile";
+
+const isMobile = useIsMobile(); // true por debajo de 768px
+```
+
+Devuelve `true` cuando el viewport mide menos de 768px y se actualiza al redimensionar. Sidebar lo usa para cambiar a un Sheet. Es `false` en el primer render (antes de que se ejecute el efecto), así que no lo uses para contenido que deba coincidir con HTML renderizado en el servidor.
+
+## `useHighlightedCode`
+
+```tsx
+import { useHighlightedCode } from "@aureus-core/ui/hooks/use-highlighted-code";
+import { CodeBlock, CodeBlockContent, CodeBlockLine } from "@aureus-core/ui/shadcn/code-block";
+
+function Snippet({ code }: { code: string }) {
+  const lines = useHighlightedCode(code, "tsx");
+  return (
+    <CodeBlock>
+      <CodeBlockContent>
+        {lines.map((line, index) => (
+          <CodeBlockLine key={index}>{line}</CodeBlockLine>
+        ))}
+      </CodeBlockContent>
+    </CodeBlock>
+  );
+}
+```
+
+Resalta código con Shiki (temas GitHub claro y oscuro). Las gramáticas se cargan bajo demanda para bash, css, diff, html, javascript, json, jsx, markdown, python, sql, tsx, typescript y yaml (y alias como `ts`, `py`, `sh`). Hasta que carga una gramática, o con lenguajes desconocidos, devuelve líneas planas, así que el código se lee al instante. Mientras el código llega en streaming, solo se tokenizan las líneas nuevas.
+
+## `cn`
+
+```tsx
+import { cn } from "@aureus-core/ui/lib/utils";
+
+<div className={cn("rounded-md p-4", isActive && "bg-muted", className)} />;
+```
+
+Une nombres de clase (se saltan los valores falsos) y resuelve conflictos de Tailwind: gana la última clase (`cn("p-2", "p-4")` → `"p-4"`). Todos los componentes lo usan para combinar tu `className`.
+
+</Es>

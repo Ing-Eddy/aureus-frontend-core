@@ -1,0 +1,101 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Guides/Theming" />
+
+<En>
+
+# Theming
+
+Every color, radius and font in the components comes from CSS custom properties (tokens). Change the tokens and every component follows; you never have to edit component code.
+
+## Override tokens in your app
+
+Add your values **after** the package import. Light values go on `:root`, dark values on `.dark`:
+
+```css
+@import "@aureus-core/ui/styles.css";
+
+:root {
+  --primary: oklch(0.55 0.2 260);
+  --primary-foreground: oklch(0.98 0 0);
+  --radius: 0.5rem;
+}
+
+.dark {
+  --primary: oklch(0.72 0.15 260);
+  --primary-foreground: oklch(0.15 0 0);
+}
+```
+
+The tokens are listed, with live swatches, under [Foundations › Colors](?path=/docs/foundations-colors--docs). Check contrast when you change a pair (`--primary` / `--primary-foreground`, `--muted` / `--muted-foreground`…): text needs 4.5:1 for WCAG AA.
+
+## The customization ladder
+
+When a token is not enough, go one step further, and only as far as you need:
+
+1. **Tokens.** Change the CSS variables (above). Affects every component at once.
+2. **`className`.** Every component merges your classes last (through `cn`), so `className="h-10 rounded-full"` wins over the defaults for one instance.
+3. **Data attributes.** Components expose `data-slot`, `data-variant`, `data-size` and `data-state`; target them from CSS for a consistent change, e.g. `[data-slot="button"][data-variant="outline"] { … }`.
+4. **Wrap.** Build your own component on top (`<SaveButton>` that renders `<Button>` with fixed props). In this repo those live in `packages/ui/src/components/`.
+5. **Fork.** Copy the shadcn component into `src/components/` under a new name and change it. The files in `src/shadcn/` are owned by the shadcn CLI and must never be edited by hand.
+
+## What this package already changed
+
+Three tokens were adjusted to pass WCAG AA contrast; override them to restore the stock shadcn look:
+
+| Token                | Stock shadcn               | Aureus                   | Why                                              |
+| -------------------- | -------------------------- | ------------------------ | ------------------------------------------------ |
+| `--destructive`      | `oklch(0.577 0.245 27.325)`| `oklch(0.51 0.2 27.325)` | 3.99:1 on its own tint; now 5.36:1               |
+| `--muted-foreground` | `oklch(0.556 0 0)`         | `oklch(0.53 0 0)`        | 4.34:1 on `--muted`; now 4.84:1                  |
+| `--destructive` (dark) | `oklch(0.704 0.191 22.216)` | `oklch(0.74 0.191 22.216)` | 4.37:1 at 80% on cards; now 4.66:1          |
+
+</En>
+<Es>
+
+# Temas
+
+Todos los colores, radios y fuentes de los componentes vienen de propiedades personalizadas de CSS (tokens). Cambia los tokens y todos los componentes los siguen; nunca tienes que editar el código de un componente.
+
+## Sustituye tokens en tu app
+
+Añade tus valores **después** del import del paquete. Los valores claros van en `:root` y los oscuros en `.dark`:
+
+```css
+@import "@aureus-core/ui/styles.css";
+
+:root {
+  --primary: oklch(0.55 0.2 260);
+  --primary-foreground: oklch(0.98 0 0);
+  --radius: 0.5rem;
+}
+
+.dark {
+  --primary: oklch(0.72 0.15 260);
+  --primary-foreground: oklch(0.15 0 0);
+}
+```
+
+Los tokens están listados, con muestras en vivo, en [Fundamentos › Colores](?path=/docs/foundations-colors--docs). Revisa el contraste cuando cambies una pareja (`--primary` / `--primary-foreground`, `--muted` / `--muted-foreground`…): el texto necesita 4.5:1 para WCAG AA.
+
+## La escalera de personalización
+
+Cuando un token no basta, sube un peldaño, y solo hasta donde lo necesites:
+
+1. **Tokens.** Cambia las variables CSS (arriba). Afecta a todos los componentes a la vez.
+2. **`className`.** Todos los componentes aplican tus clases al final (con `cn`), así que `className="h-10 rounded-full"` gana a los valores por defecto en una instancia.
+3. **Atributos data.** Los componentes exponen `data-slot`, `data-variant`, `data-size` y `data-state`; apúntalos desde CSS para un cambio coherente, p. ej. `[data-slot="button"][data-variant="outline"] { … }`.
+4. **Envolver.** Construye tu propio componente encima (`<SaveButton>` que renderiza `<Button>` con props fijas). En este repo viven en `packages/ui/src/components/`.
+5. **Bifurcar.** Copia el componente de shadcn a `src/components/` con otro nombre y cámbialo. Los archivos de `src/shadcn/` son del CLI de shadcn y nunca se editan a mano.
+
+## Lo que este paquete ya cambió
+
+Se ajustaron tres tokens para cumplir el contraste WCAG AA; sustitúyelos para recuperar el aspecto original de shadcn:
+
+| Token                | shadcn original            | Aureus                   | Motivo                                           |
+| -------------------- | -------------------------- | ------------------------ | ------------------------------------------------ |
+| `--destructive`      | `oklch(0.577 0.245 27.325)`| `oklch(0.51 0.2 27.325)` | 3.99:1 sobre su propio tinte; ahora 5.36:1       |
+| `--muted-foreground` | `oklch(0.556 0 0)`         | `oklch(0.53 0 0)`        | 4.34:1 sobre `--muted`; ahora 4.84:1             |
+| `--destructive` (oscuro) | `oklch(0.704 0.191 22.216)` | `oklch(0.74 0.191 22.216)` | 4.37:1 al 80% sobre tarjetas; ahora 4.66:1 |
+
+</Es>

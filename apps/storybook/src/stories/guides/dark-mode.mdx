@@ -1,0 +1,73 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Guides/Dark mode" />
+
+<En>
+
+# Dark mode
+
+Dark mode is a class: when `<html>` has `class="dark"`, every token switches to its dark value. No component needs a prop.
+
+## Toggle it
+
+```tsx
+function setTheme(theme: "light" | "dark") {
+  document.documentElement.classList.toggle("dark", theme === "dark");
+  localStorage.setItem("theme", theme);
+}
+```
+
+## Follow the system and avoid a flash
+
+Run this in `<head>`, before the app renders, so the first paint already has the right theme:
+
+```html
+<script>
+  const stored = localStorage.getItem("theme");
+  const dark = stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.classList.toggle("dark", dark);
+</script>
+```
+
+## Tips
+
+- Use the theme toolbar in this Storybook to review any component in dark mode; it toggles the same `.dark` class. The Storybook interface and these docs pages switch to dark too, so each component is shown on the dark `--background`.
+- Define dark values for every token you override (see Theming), or the light value will be used in dark mode.
+- Charts can take per-theme colors: `theme: { light, dark }` in the ChartConfig (see Chart › Theme colors).
+
+</En>
+<Es>
+
+# Modo oscuro
+
+El modo oscuro es una clase: cuando `<html>` tiene `class="dark"`, todos los tokens cambian a su valor oscuro. Ningún componente necesita una prop.
+
+## Actívalo
+
+```tsx
+function setTheme(theme: "light" | "dark") {
+  document.documentElement.classList.toggle("dark", theme === "dark");
+  localStorage.setItem("theme", theme);
+}
+```
+
+## Sigue al sistema y evita el destello
+
+Ejecuta esto en `<head>`, antes de que se renderice la app, para que el primer pintado ya tenga el tema correcto:
+
+```html
+<script>
+  const stored = localStorage.getItem("theme");
+  const dark = stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.classList.toggle("dark", dark);
+</script>
+```
+
+## Consejos
+
+- Usa la barra de tema de este Storybook para revisar cualquier componente en modo oscuro; activa la misma clase `.dark`. La interfaz de Storybook y estas páginas de docs también pasan a oscuro, así que cada componente se ve sobre el `--background` oscuro.
+- Define valores oscuros para cada token que sustituyas (mira Temas), o en modo oscuro se usará el valor claro.
+- Los gráficos admiten colores por tema: `theme: { light, dark }` en el ChartConfig (mira Chart › Theme colors).
+
+</Es>

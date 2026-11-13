@@ -3,4 +3,34 @@
  * Example:
  *   :root { --primary: oklch(0.55 0.2 260); --radius: 0.5rem; }
  *   .dark { --primary: oklch(0.7 0.15 260); }
+ *
+ * A light-only override must use `:root:not(.dark)`: a plain `:root` rule here would also beat
+ * shadcn's `.dark` block (same specificity, later in the cascade) and leak into dark mode.
  */
+
+:root:not(.dark) {
+  /*
+   * Accessibility: stock shadcn `--destructive` (oklch(0.577 0.245 27.325)) reaches only 3.99:1 as
+   * text on its own 10% tint (destructive Button/Badge), below WCAG AA's 4.5:1, and components also
+   * use it at 80% opacity for secondary text (Attachment errors). This darker red keeps the hue and
+   * gives 5.36:1 on the tint, 4.78:1 at 80% on white and 6.38:1 on white. The dark value is set in
+   * the `.dark` block below.
+   */
+  --destructive: oklch(0.51 0.2 27.325);
+
+  /*
+   * Accessibility: stock `--muted-foreground` (oklch(0.556 0 0)) gives 4.34:1 on `--muted`/`--accent`
+   * (Kbd, hovered menu descriptions) and 4.27:1 on primary-tinted choice cards. oklch(0.53 0 0) gives
+   * 4.8:1 on `--muted` and 5.3:1 on white. Dark mode keeps shadcn's own `--muted-foreground`.
+   */
+  --muted-foreground: oklch(0.53 0 0);
+}
+
+.dark {
+  /*
+   * Accessibility: stock dark `--destructive` (oklch(0.704 0.191 22.216)) passes as solid text, but
+   * at 80% opacity (Attachment error text) it gives 4.37:1 on `--card`. This lighter red keeps the
+   * hue and gives 4.66:1 there, 6.65:1 as solid text on the card and 5.59:1 on its 20% tint.
+   */
+  --destructive: oklch(0.74 0.191 22.216);
+}

@@ -1,0 +1,71 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Guides/Right-to-left" />
+
+<En>
+
+# Right-to-left
+
+Arabic, Hebrew, Persian and Urdu read right to left. Two things make the components work in those languages:
+
+1. **`dir="rtl"` on `<html>`** (with the right `lang`): the browser mirrors the layout, and the components use logical utilities (`ms-*`, `ps-*`, `start-*`) so spacing and icons follow.
+2. **`DirectionProvider`**: Radix-based components (menus, tabs, sliders, carousels…) read it to mirror their keyboard behaviour and placement.
+
+```tsx
+import { DirectionProvider } from "@aureus-core/ui/shadcn/direction";
+
+document.documentElement.dir = "rtl";
+document.documentElement.lang = "ar";
+
+root.render(
+  <DirectionProvider dir="rtl">
+    <App />
+  </DirectionProvider>,
+);
+```
+
+Pass `dir`: the TypeScript types require it, even though shadcn also accepts `direction`.
+
+## Check it
+
+Switch the ⇄ toolbar to RTL: this Storybook sets `dir` on `<html>` and wraps every story in `DirectionProvider`, exactly as above. In RTL, ← moves to the *next* tab or menu item.
+
+## Known limitation
+
+The shadcn Tabs keeps `orientation` for its styling and does not forward it to Radix, so vertical tabs still use ← / → (see Tabs › Vertical).
+
+</En>
+<Es>
+
+# Derecha a izquierda
+
+El árabe, el hebreo, el persa y el urdu se leen de derecha a izquierda. Dos cosas hacen que los componentes funcionen en esos idiomas:
+
+1. **`dir="rtl"` en `<html>`** (con el `lang` correcto): el navegador refleja la disposición, y los componentes usan utilidades lógicas (`ms-*`, `ps-*`, `start-*`) para que el espaciado y los iconos la sigan.
+2. **`DirectionProvider`**: los componentes basados en Radix (menús, pestañas, sliders, carruseles…) lo leen para reflejar su comportamiento de teclado y su posición.
+
+```tsx
+import { DirectionProvider } from "@aureus-core/ui/shadcn/direction";
+
+document.documentElement.dir = "rtl";
+document.documentElement.lang = "ar";
+
+root.render(
+  <DirectionProvider dir="rtl">
+    <App />
+  </DirectionProvider>,
+);
+```
+
+Pasa `dir`: los tipos de TypeScript lo exigen, aunque shadcn también acepta `direction`.
+
+## Compruébalo
+
+Cambia la barra ⇄ a RTL: este Storybook pone `dir` en `<html>` y envuelve cada historia en `DirectionProvider`, exactamente como arriba. En RTL, ← va a la pestaña o al elemento de menú *siguiente*.
+
+## Limitación conocida
+
+El Tabs de shadcn se queda con `orientation` para sus estilos y no se lo pasa a Radix, así que las pestañas verticales siguen usando ← / → (mira Tabs › Vertical).
+
+</Es>

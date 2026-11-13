@@ -1,0 +1,49 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Guides/Introduction" />
+
+<En>
+
+# Aureus UI
+
+**Aureus UI** (`@aureus-core/ui`) is the shared React component library of Aureus: the full [shadcn/ui](https://ui.shadcn.com/) catalogue (62 components, radix-nova style) compiled, typed and verified, plus room for our own components. It targets React 19 and Tailwind CSS v4.
+
+## How this site works
+
+- **Toolbar 🌐**: switch the documentation between English and Spanish. Component demos stay in English.
+- **Toolbar theme**: light and dark, using the same `.dark` class your app uses.
+- **Toolbar ⇄**: left-to-right or right-to-left, with `dir` on `<html>` and the `DirectionProvider`.
+- **Every component page** has the import line, when to use it, its anatomy, a Playground with controls, the API of each part, examples, keyboard and ARIA notes, and the theme tokens it uses.
+- **Every story is a test**: it renders in Chromium, runs its interaction script and passes an axe accessibility check in CI.
+
+## Where to go next
+
+1. [Getting started](?path=/docs/guides-getting-started--docs): install the package and import the styles.
+2. [Theming](?path=/docs/guides-theming--docs) and [Dark mode](?path=/docs/guides-dark-mode--docs): adapt the look to your product.
+3. [Right-to-left](?path=/docs/guides-right-to-left--docs) and [Hooks & utilities](?path=/docs/guides-hooks-utilities--docs).
+4. [Foundations](?path=/docs/foundations-colors--docs): the color, radius and typography tokens.
+
+</En>
+<Es>
+
+# Aureus UI
+
+**Aureus UI** (`@aureus-core/ui`) es la librería de componentes React compartida de Aureus: todo el catálogo de [shadcn/ui](https://ui.shadcn.com/) (62 componentes, estilo radix-nova) compilado, tipado y verificado, con espacio para nuestros propios componentes. Funciona con React 19 y Tailwind CSS v4.
+
+## Cómo funciona este sitio
+
+- **Barra 🌐**: cambia la documentación entre inglés y español. Las demos de los componentes siguen en inglés.
+- **Barra de tema**: claro y oscuro, con la misma clase `.dark` que usa tu app.
+- **Barra ⇄**: de izquierda a derecha o de derecha a izquierda, con `dir` en `<html>` y el `DirectionProvider`.
+- **Cada página de componente** incluye la línea de import, cuándo usarlo, su anatomía, un Playground con controles, la API de cada parte, ejemplos, notas de teclado y ARIA, y los tokens del tema que usa.
+- **Cada historia es un test**: se renderiza en Chromium, ejecuta su guion de interacción y pasa una revisión de accesibilidad con axe en CI.
+
+## Por dónde seguir
+
+1. [Primeros pasos](?path=/docs/guides-getting-started--docs): instala el paquete e importa los estilos.
+2. [Temas](?path=/docs/guides-theming--docs) y [Modo oscuro](?path=/docs/guides-dark-mode--docs): adapta el aspecto a tu producto.
+3. [Derecha a izquierda](?path=/docs/guides-right-to-left--docs) y [Hooks y utilidades](?path=/docs/guides-hooks-utilities--docs).
+4. [Fundamentos](?path=/docs/foundations-colors--docs): los tokens de color, radio y tipografía.
+
+</Es>

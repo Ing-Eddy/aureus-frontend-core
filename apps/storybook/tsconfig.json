@@ -1,4 +1,12 @@
 {
   "extends": "@aureus-core/tsconfig/vite-app.json",
-  "include": ["src", ".storybook", "vite.config.ts"]
+  "include": ["src", ".storybook", "vite.config.ts", "vitest.config.ts"],
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@sb/*": ["./.storybook/*"],
+      "@fixtures/*": ["./src/fixtures/*"]
+    }
+  }
 }

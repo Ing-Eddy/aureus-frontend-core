@@ -1,0 +1,69 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { TypeScale } from "@sb/docs/type-scale";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Foundations/Typography" />
+
+<En>
+
+# Typography
+
+The package ships **Geist** (variable font, bundled through `@fontsource-variable/geist`) as `--font-sans`, and headings use `--font-heading`, which defaults to the same family. Sizes are Tailwind's scale; components use `text-sm` for most UI text and `text-xs` for secondary text.
+
+</En>
+<Es>
+
+# Tipografía
+
+El paquete incluye **Geist** (fuente variable, empaquetada con `@fontsource-variable/geist`) como `--font-sans`, y los títulos usan `--font-heading`, que por defecto es la misma familia. Los tamaños son la escala de Tailwind; los componentes usan `text-sm` para casi todo el texto de interfaz y `text-xs` para el secundario.
+
+</Es>
+
+<TypeScale sample="The quick brown fox jumps over the lazy dog" />
+
+<En>
+
+| Utility     | Size      | Typical use                         |
+| ----------- | --------- | ----------------------------------- |
+| `text-xs`   | 0.75rem   | Descriptions, badges, shortcuts     |
+| `text-sm`   | 0.875rem  | Buttons, inputs, menus, body of UI  |
+| `text-base` | 1rem      | Long-form text                      |
+| `text-lg`+  | 1.125rem+ | Headings                            |
+
+## Change the font
+
+```css
+@import "@aureus-core/ui/styles.css";
+
+@theme inline {
+  --font-sans: "Inter Variable", sans-serif;
+  --font-heading: "Fraunces Variable", serif;
+}
+```
+
+Load the font yourself (for example with `@fontsource-variable/inter`).
+
+</En>
+<Es>
+
+| Utilidad    | Tamaño    | Uso habitual                              |
+| ----------- | --------- | ----------------------------------------- |
+| `text-xs`   | 0.75rem   | Descripciones, badges, atajos             |
+| `text-sm`   | 0.875rem  | Botones, inputs, menús, texto de interfaz |
+| `text-base` | 1rem      | Texto largo                               |
+| `text-lg`+  | 1.125rem+ | Títulos                                   |
+
+## Cambia la fuente
+
+```css
+@import "@aureus-core/ui/styles.css";
+
+@theme inline {
+  --font-sans: "Inter Variable", sans-serif;
+  --font-heading: "Fraunces Variable", serif;
+}
+```
+
+Carga la fuente tú mismo (por ejemplo con `@fontsource-variable/inter`).
+
+</Es>

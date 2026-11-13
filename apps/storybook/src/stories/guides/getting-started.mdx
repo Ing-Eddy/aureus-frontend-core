@@ -1,0 +1,149 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Guides/Getting started" />
+
+<En>
+
+# Getting started
+
+## Requirements
+
+- React 19 and React DOM 19.
+- Tailwind CSS v4. With Vite, use `@tailwindcss/vite`.
+
+## 1. Install
+
+```sh
+pnpm add @aureus-core/ui
+pnpm add -D tailwindcss @tailwindcss/vite
+```
+
+`date-fns` and `@tanstack/react-table` are **not** dependencies of the package. Install them yourself if you build a DatePicker or a DataTable. To compose charts with `Chart`, install `recharts@3.8.0` (the version the package uses), so your app and the package share one copy.
+
+## 2. Import the styles
+
+In your main CSS file, **replace** `@import "tailwindcss";` with:
+
+```css
+@import "@aureus-core/ui/styles.css";
+```
+
+This one import brings Tailwind, the shadcn tokens, the Aureus theme overrides, and an `@source` rule so Tailwind generates the classes the package components use.
+
+## 3. Import components
+
+Every component has its own path, so you only ship what you import.
+
+| What                 | Import path                               | Example                                                        |
+| -------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| shadcn components    | `@aureus-core/ui/shadcn/<name>`           | `import { Button } from "@aureus-core/ui/shadcn/button"`       |
+| Aureus components    | `@aureus-core/ui/components/<name>`       | `import { X } from "@aureus-core/ui/components/x"`             |
+| Hooks                | `@aureus-core/ui/hooks/<name>`            | `import { useIsMobile } from "@aureus-core/ui/hooks/use-mobile"` |
+| Utilities            | `@aureus-core/ui/lib/utils`               | `import { cn } from "@aureus-core/ui/lib/utils"`               |
+| Styles               | `@aureus-core/ui/styles.css`              | `@import "@aureus-core/ui/styles.css";`                        |
+
+## 4. Mount the providers
+
+Mount them once, near the root of the app:
+
+```tsx
+import { DirectionProvider } from "@aureus-core/ui/shadcn/direction";
+import { TooltipProvider } from "@aureus-core/ui/shadcn/tooltip";
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <DirectionProvider dir="ltr">
+      <TooltipProvider>{children}</TooltipProvider>
+    </DirectionProvider>
+  );
+}
+```
+
+- `TooltipProvider` is required by Tooltip and by Sidebar (its collapsed items show tooltips).
+- `SidebarProvider` wraps the layout that contains a Sidebar (see the Sidebar page).
+- `DirectionProvider` is only needed for right-to-left languages (see Right-to-left).
+
+## 5. Use a component
+
+```tsx
+import { Button } from "@aureus-core/ui/shadcn/button";
+
+export function SaveButton() {
+  return <Button onClick={() => console.log("saved")}>Save</Button>;
+}
+```
+
+</En>
+<Es>
+
+# Primeros pasos
+
+## Requisitos
+
+- React 19 y React DOM 19.
+- Tailwind CSS v4. Con Vite, usa `@tailwindcss/vite`.
+
+## 1. Instalación
+
+```sh
+pnpm add @aureus-core/ui
+pnpm add -D tailwindcss @tailwindcss/vite
+```
+
+`date-fns` y `@tanstack/react-table` **no** son dependencias del paquete. Instálalas tú si construyes un DatePicker o una DataTable. Para componer gráficos con `Chart`, instala `recharts@3.8.0` (la versión que usa el paquete), así tu app y el paquete comparten una sola copia.
+
+## 2. Importa los estilos
+
+En tu archivo CSS principal, **sustituye** `@import "tailwindcss";` por:
+
+```css
+@import "@aureus-core/ui/styles.css";
+```
+
+Este único import trae Tailwind, los tokens de shadcn, los ajustes del tema de Aureus y una regla `@source` para que Tailwind genere las clases que usan los componentes del paquete.
+
+## 3. Importa los componentes
+
+Cada componente tiene su propia ruta, así que solo envías lo que importas.
+
+| Qué                     | Ruta de import                            | Ejemplo                                                        |
+| ----------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| Componentes shadcn      | `@aureus-core/ui/shadcn/<name>`           | `import { Button } from "@aureus-core/ui/shadcn/button"`       |
+| Componentes de Aureus   | `@aureus-core/ui/components/<name>`       | `import { X } from "@aureus-core/ui/components/x"`             |
+| Hooks                   | `@aureus-core/ui/hooks/<name>`            | `import { useIsMobile } from "@aureus-core/ui/hooks/use-mobile"` |
+| Utilidades              | `@aureus-core/ui/lib/utils`               | `import { cn } from "@aureus-core/ui/lib/utils"`               |
+| Estilos                 | `@aureus-core/ui/styles.css`              | `@import "@aureus-core/ui/styles.css";`                        |
+
+## 4. Monta los providers
+
+Móntalos una vez, cerca de la raíz de la app:
+
+```tsx
+import { DirectionProvider } from "@aureus-core/ui/shadcn/direction";
+import { TooltipProvider } from "@aureus-core/ui/shadcn/tooltip";
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <DirectionProvider dir="ltr">
+      <TooltipProvider>{children}</TooltipProvider>
+    </DirectionProvider>
+  );
+}
+```
+
+- `TooltipProvider` lo necesitan Tooltip y Sidebar (sus elementos contraídos muestran tooltips).
+- `SidebarProvider` envuelve el layout que contiene una Sidebar (mira la página de Sidebar).
+- `DirectionProvider` solo hace falta para idiomas de derecha a izquierda (mira Derecha a izquierda).
+
+## 5. Usa un componente
+
+```tsx
+import { Button } from "@aureus-core/ui/shadcn/button";
+
+export function SaveButton() {
+  return <Button onClick={() => console.log("saved")}>Save</Button>;
+}
+```
+
+</Es>

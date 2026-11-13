@@ -1,0 +1,276 @@
+import { defineComponentDocs } from "@sb/docs/define-component-docs";
+
+const node = { children: { type: "ReactNode" } };
+const nav = {
+  variant: { type: "Button variant" },
+  size: { type: "Button size", default: '"default"' },
+  children: { type: "ReactNode" },
+};
+
+export const docs = defineComponentDocs({
+  name: "Questionnaire",
+  importPath: "@aureus-core/ui/shadcn/questionnaire",
+  exports: [
+    "Questionnaire",
+    "QuestionnaireProgress",
+    "QuestionnaireItem",
+    "QuestionnaireTitle",
+    "QuestionnaireDescription",
+    "QuestionnaireChoices",
+    "QuestionnaireChoice",
+    "QuestionnaireChoiceDescription",
+    "QuestionnaireInput",
+    "QuestionnaireError",
+    "QuestionnaireActions",
+    "QuestionnairePrevious",
+    "QuestionnaireSkip",
+    "QuestionnaireNext",
+    "QuestionnaireSubmit",
+  ],
+  primitive: { label: "@shadcn/react Questionnaire", href: "https://ui.shadcn.com/" },
+  api: {
+    Questionnaire: {
+      item: { type: "string" },
+      defaultItem: { type: "string" },
+      onItemChange: { type: "(item: string) => void" },
+      shortcuts: { type: '"letters" | "numbers"' },
+      onSubmit: { type: "(event: FormEvent<HTMLFormElement>) => void" },
+    },
+    QuestionnaireProgress: { children: { type: "ReactNode", default: '"Question N of T"' } },
+    QuestionnaireItem: {
+      name: { type: "string", required: true },
+      required: { type: "boolean", default: "false" },
+      multiple: { type: "boolean", default: "false" },
+      invalid: { type: "boolean", default: "false" },
+      disabled: { type: "boolean", default: "false" },
+      onStatusChange: { type: '(status: "unanswered" | "answered" | "skipped") => void' },
+    },
+    QuestionnaireTitle: node,
+    QuestionnaireDescription: node,
+    QuestionnaireChoices: node,
+    QuestionnaireChoice: {
+      value: { type: "string", required: true },
+      disabled: { type: "boolean", default: "false" },
+      defaultChecked: { type: "boolean" },
+    },
+    QuestionnaireChoiceDescription: node,
+    QuestionnaireInput: {
+      type: { type: '"text" | "email" | "number" | "date" | …', default: '"text"' },
+    },
+    QuestionnaireError: node,
+    QuestionnaireActions: node,
+    QuestionnairePrevious: nav,
+    QuestionnaireSkip: nav,
+    QuestionnaireNext: nav,
+    QuestionnaireSubmit: nav,
+  },
+  stories: ["SingleChoice", "SkipOptional", "LetterShortcuts"],
+  keyboard: ["1–9 / A–Z", "↑ / ↓", "Space", "Enter", "Tab"],
+  links: [{ label: "shadcn/ui", href: "https://ui.shadcn.com/" }],
+  en: {
+    summary:
+      "A step-by-step form that asks one question at a time: single or multiple choice, or free text, with progress, back/next/skip navigation and keyboard shortcuts. It is a real `<form>`, so answers arrive in `onSubmit` as `FormData`.",
+    whenToUse: [
+      "For onboarding surveys, feedback forms and an AI assistant asking clarifying questions.",
+      "When showing all questions at once would overwhelm the user.",
+    ],
+    whenNotToUse: [
+      "For short forms the user wants to scan and edit freely: use Field and regular inputs.",
+      "For a single yes/no: use AlertDialog or two buttons.",
+    ],
+    anatomy: {
+      Questionnaire: "The `<form>` root: knows the questions, the active one and the shortcuts.",
+      QuestionnaireProgress:
+        '`role="progressbar"` that reads “Question 2 of 3” and is announced politely.',
+      QuestionnaireItem: "One question: a `<fieldset>` whose `name` becomes the form field name.",
+      QuestionnaireTitle: "The question, as the fieldset `<legend>`.",
+      QuestionnaireDescription: "Muted help text, linked to the question.",
+      QuestionnaireChoices: "The list of options.",
+      QuestionnaireChoice:
+        "One option: a radio (or checkbox with `multiple`) with indicator and shortcut hint.",
+      QuestionnaireChoiceDescription: "Secondary text inside a choice.",
+      QuestionnaireInput: "A free-text answer.",
+      QuestionnaireError: "Shown when a required question is left unanswered.",
+      QuestionnaireActions: "Row for the navigation buttons.",
+      QuestionnairePrevious: "Goes back to the previous question; hidden on the first.",
+      QuestionnaireSkip: "Skips an optional question.",
+      QuestionnaireNext: "Goes to the next question once the current one is valid.",
+      QuestionnaireSubmit: "Submits the form; shown on the last question.",
+    },
+    props: {
+      Questionnaire: {
+        item: "Controlled name of the active question.",
+        defaultItem: "Question shown first.",
+        onItemChange: "Called with the name of the question that becomes active.",
+        shortcuts: "Show `numbers` (1, 2, 3) or `letters` (A, B, C) as choice shortcuts.",
+        onSubmit: "Native form submit; read the answers with `new FormData(event.currentTarget)`.",
+      },
+      QuestionnaireProgress: { children: "Custom text; defaults to “Question N of T”." },
+      QuestionnaireItem: {
+        name: "Field name of the answer.",
+        required: "Next is blocked and QuestionnaireError shows until it is answered.",
+        multiple: "Checkbox choices: several values with the same name.",
+        invalid: "Forces the invalid state (e.g. from server validation).",
+        disabled: "Disables the question.",
+        onStatusChange: "Called when the question becomes answered, skipped or unanswered.",
+      },
+      QuestionnaireTitle: { children: "Question text." },
+      QuestionnaireDescription: { children: "Help text." },
+      QuestionnaireChoices: { children: "Choices." },
+      QuestionnaireChoice: {
+        value: "Submitted value.",
+        disabled: "Shows the option but prevents choosing it.",
+        defaultChecked: "Initially selected.",
+      },
+      QuestionnaireChoiceDescription: { children: "Detail text." },
+      QuestionnaireInput: { type: "Input type for the free-text answer." },
+      QuestionnaireError: { children: "Error message." },
+      QuestionnaireActions: { children: "Navigation buttons." },
+      QuestionnairePrevious: {
+        variant: "Button variant (`outline`).",
+        size: "Button size.",
+        children: "Label; “Previous” by default.",
+      },
+      QuestionnaireSkip: {
+        variant: "Button variant (`outline`).",
+        size: "Button size.",
+        children: "Label; “Skip” by default.",
+      },
+      QuestionnaireNext: {
+        variant: "Button variant (`default`).",
+        size: "Button size.",
+        children: "Label; “Next” by default.",
+      },
+      QuestionnaireSubmit: {
+        variant: "Button variant (`default`).",
+        size: "Button size.",
+        children: "Label; “Submit” by default.",
+      },
+    },
+    stories: {
+      SingleChoice: "A single-choice question rendered as a fieldset of radios.",
+      SkipOptional: "Skip moves past an optional multiple-choice question.",
+      LetterShortcuts: '`shortcuts="letters"` shows A, B, C next to the choices.',
+    },
+    keyboard: {
+      "1–9 / A–Z": "With shortcuts on, selects the matching choice.",
+      "↑ / ↓": "Moves between radio choices.",
+      Space: "Toggles the focused checkbox choice.",
+      Enter: "Goes to the next question (or submits on the last one).",
+      Tab: "Moves through choices and navigation buttons.",
+    },
+    aria: [
+      "Each question is a `<fieldset>` named by its `<legend>`; choices are native radios or checkboxes.",
+      "Progress is a `progressbar` with `aria-valuetext` (“Question 2 of 3”) and a polite live region.",
+      "Translate the default button labels and the progress text through `children` for non-English UIs.",
+    ],
+    theming: [
+      "Choices use `--input` borders and a `--primary` indicator when checked; shortcut hints use `--muted-foreground`.",
+      "Navigation buttons use Button variants; pass `variant` and `size` to change them.",
+    ],
+  },
+  es: {
+    summary:
+      "Un formulario paso a paso que hace una pregunta cada vez: elección única o múltiple, o texto libre, con progreso, navegación atrás/siguiente/saltar y atajos de teclado. Es un `<form>` real, así que las respuestas llegan en `onSubmit` como `FormData`.",
+    whenToUse: [
+      "Para encuestas de bienvenida, formularios de opinión y un asistente de IA que pide aclaraciones.",
+      "Cuando mostrar todas las preguntas a la vez abrumaría al usuario.",
+    ],
+    whenNotToUse: [
+      "Para formularios cortos que el usuario quiere recorrer y editar libremente: usa Field e inputs normales.",
+      "Para un sí/no: usa AlertDialog o dos botones.",
+    ],
+    anatomy: {
+      Questionnaire: "La raíz `<form>`: conoce las preguntas, la activa y los atajos.",
+      QuestionnaireProgress:
+        '`role="progressbar"` que dice “Question 2 of 3” y se anuncia con cortesía.',
+      QuestionnaireItem:
+        "Una pregunta: un `<fieldset>` cuyo `name` es el nombre del campo del formulario.",
+      QuestionnaireTitle: "La pregunta, como `<legend>` del fieldset.",
+      QuestionnaireDescription: "Texto de ayuda atenuado, enlazado a la pregunta.",
+      QuestionnaireChoices: "La lista de opciones.",
+      QuestionnaireChoice:
+        "Una opción: un radio (o checkbox con `multiple`) con indicador y pista de atajo.",
+      QuestionnaireChoiceDescription: "Texto secundario dentro de una opción.",
+      QuestionnaireInput: "Una respuesta de texto libre.",
+      QuestionnaireError: "Se muestra cuando una pregunta obligatoria queda sin responder.",
+      QuestionnaireActions: "Fila para los botones de navegación.",
+      QuestionnairePrevious: "Vuelve a la pregunta anterior; oculto en la primera.",
+      QuestionnaireSkip: "Salta una pregunta opcional.",
+      QuestionnaireNext: "Va a la siguiente pregunta cuando la actual es válida.",
+      QuestionnaireSubmit: "Envía el formulario; aparece en la última pregunta.",
+    },
+    props: {
+      Questionnaire: {
+        item: "Nombre controlado de la pregunta activa.",
+        defaultItem: "Pregunta que se muestra primero.",
+        onItemChange: "Se llama con el nombre de la pregunta que pasa a estar activa.",
+        shortcuts: "Muestra `numbers` (1, 2, 3) o `letters` (A, B, C) como atajos de las opciones.",
+        onSubmit:
+          "Envío nativo del formulario; lee las respuestas con `new FormData(event.currentTarget)`.",
+      },
+      QuestionnaireProgress: { children: "Texto propio; por defecto “Question N of T”." },
+      QuestionnaireItem: {
+        name: "Nombre del campo de la respuesta.",
+        required: "Bloquea Siguiente y muestra QuestionnaireError hasta que se responde.",
+        multiple: "Opciones checkbox: varios valores con el mismo nombre.",
+        invalid: "Fuerza el estado inválido (p. ej. por validación del servidor).",
+        disabled: "Deshabilita la pregunta.",
+        onStatusChange: "Se llama cuando la pregunta pasa a respondida, saltada o sin responder.",
+      },
+      QuestionnaireTitle: { children: "Texto de la pregunta." },
+      QuestionnaireDescription: { children: "Texto de ayuda." },
+      QuestionnaireChoices: { children: "Opciones." },
+      QuestionnaireChoice: {
+        value: "Valor que se envía.",
+        disabled: "Muestra la opción pero impide elegirla.",
+        defaultChecked: "Seleccionada al inicio.",
+      },
+      QuestionnaireChoiceDescription: { children: "Texto de detalle." },
+      QuestionnaireInput: { type: "Tipo de input para la respuesta libre." },
+      QuestionnaireError: { children: "Mensaje de error." },
+      QuestionnaireActions: { children: "Botones de navegación." },
+      QuestionnairePrevious: {
+        variant: "Variante del botón (`outline`).",
+        size: "Tamaño del botón.",
+        children: "Etiqueta; “Previous” por defecto.",
+      },
+      QuestionnaireSkip: {
+        variant: "Variante del botón (`outline`).",
+        size: "Tamaño del botón.",
+        children: "Etiqueta; “Skip” por defecto.",
+      },
+      QuestionnaireNext: {
+        variant: "Variante del botón (`default`).",
+        size: "Tamaño del botón.",
+        children: "Etiqueta; “Next” por defecto.",
+      },
+      QuestionnaireSubmit: {
+        variant: "Variante del botón (`default`).",
+        size: "Tamaño del botón.",
+        children: "Etiqueta; “Submit” por defecto.",
+      },
+    },
+    stories: {
+      SingleChoice: "Una pregunta de elección única renderizada como un fieldset de radios.",
+      SkipOptional: "Saltar avanza más allá de una pregunta opcional de elección múltiple.",
+      LetterShortcuts: '`shortcuts="letters"` muestra A, B, C junto a las opciones.',
+    },
+    keyboard: {
+      "1–9 / A–Z": "Con atajos activos, elige la opción correspondiente.",
+      "↑ / ↓": "Se mueve entre las opciones radio.",
+      Space: "Marca o desmarca la opción checkbox enfocada.",
+      Enter: "Va a la siguiente pregunta (o envía en la última).",
+      Tab: "Recorre las opciones y los botones de navegación.",
+    },
+    aria: [
+      "Cada pregunta es un `<fieldset>` nombrado por su `<legend>`; las opciones son radios o checkboxes nativos.",
+      "El progreso es un `progressbar` con `aria-valuetext` (“Question 2 of 3”) y una región viva educada.",
+      "Traduce las etiquetas por defecto de los botones y el texto del progreso mediante `children` en interfaces que no estén en inglés.",
+    ],
+    theming: [
+      "Las opciones usan bordes `--input` y un indicador `--primary` al marcarlas; las pistas de atajo usan `--muted-foreground`.",
+      "Los botones de navegación usan variantes de Button; pasa `variant` y `size` para cambiarlos.",
+    ],
+  },
+});

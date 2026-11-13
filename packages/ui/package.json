@@ -45,7 +45,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "shadcn:add": "shadcn add",
-    "shadcn:update": "node scripts/shadcn-update.mjs"
+    "shadcn:update": "node scripts/shadcn-update.mjs",
+    "check:package": "node scripts/check-package.mjs"
   },
   "peerDependencies": {
     "react": "^19",
@@ -53,6 +54,7 @@
     "tailwindcss": "^4"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@aureus-core/tsconfig": "workspace:*",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
@@ -60,6 +62,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "jsdom": "^31.0.0",
+    "publint": "^0.3.25",
     "react": "^19",
     "react-dom": "^19",
     "tailwindcss": "^4",
@@ -71,11 +74,9 @@
     "@base-ui/react": "^1.9.0",
     "@fontsource-variable/geist": "^5.3.0",
     "@shadcn/react": "^0.3.1",
-    "@tanstack/react-table": "^9.3.1",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
     "cn": "^0.5.2",
-    "date-fns": "^4.4.0",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.5.0",
     "lucide-react": "^1.70.0",
@@ -87,5 +88,19 @@
     "shiki": "^4.6.0",
     "tw-animate-css": "^1.4.0",
     "vaul": "^1.1.2"
-  }
+  },
+  "homepage": "https://ing-eddy.github.io/aureus-frontend-core/",
+  "bugs": {
+    "url": "https://github.com/Ing-Eddy/aureus-frontend-core/issues"
+  },
+  "keywords": [
+    "react",
+    "shadcn",
+    "shadcn-ui",
+    "tailwindcss",
+    "ui",
+    "components",
+    "radix-ui",
+    "design-system"
+  ]
 }
