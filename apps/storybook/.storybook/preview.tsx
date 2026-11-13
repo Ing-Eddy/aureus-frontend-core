@@ -92,6 +92,7 @@ const preview: Preview = {
             "AI & Chat",
           ],
           "components",
+          "Tools",
         ],
       },
     },

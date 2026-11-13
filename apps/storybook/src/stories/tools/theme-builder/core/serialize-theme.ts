@@ -1,0 +1,184 @@
+import { formatOklch, mustParse, withAlpha } from "./color";
+import { type ColorSet, colorTokens, type Mode, type ResolvedTheme } from "./theme-types";
+
+/** Tailwind shadow steps the export defines, in output order (`""` is the bare `--shadow`). */
+export const shadowSteps = ["2xs", "xs", "sm", "", "md", "lg", "xl", "2xl"] as const;
+export type ShadowStep = (typeof shadowSteps)[number];
+
+/** Radius steps and factors, copied from `shadcn.css`. */
+const radiusSteps = [
+  ["sm", 0.6],
+  ["md", 0.8],
+  ["lg", 1],
+  ["xl", 1.4],
+  ["2xl", 1.8],
+  ["3xl", 2.2],
+  ["4xl", 2.6],
+] as const;
+
+/** Tailwind's letter-spacing scale, as offsets from `--tracking-normal`. */
+const trackingSteps = [
+  ["tighter", "- 0.05em"],
+  ["tight", "- 0.025em"],
+  ["wide", "+ 0.025em"],
+  ["wider", "+ 0.05em"],
+  ["widest", "+ 0.1em"],
+] as const;
+
+const num = (value: number) => String(Math.round(value * 1000) / 1000);
+const px = (value: number) => `${num(value)}px`;
+const shadowName = (step: ShadowStep) => (step ? `--shadow-${step}` : "--shadow");
+
+/**
+ * Every shadow step from one definition (the scale tweakcn popularised): the first layer is the
+ * user's shadow, the second adds Tailwind's characteristic tight under-shadow per size.
+ */
+export function shadowValues(theme: ResolvedTheme, mode: Mode): Record<ShadowStep, string> {
+  const { shadow } = theme;
+  const color = mustParse(shadow.color[mode]);
+  const tone = (factor: number) => formatOklch(withAlpha(color, shadow.opacity * factor));
+  const first = (factor: number) =>
+    `${px(shadow.x)} ${px(shadow.y)} ${px(shadow.blur)} ${px(shadow.spread)} ${tone(factor)}`;
+  const layered = (y: number, blur: number) =>
+    `${first(1)}, ${px(shadow.x)} ${px(y)} ${px(blur)} ${px(shadow.spread - 1)} ${tone(1)}`;
+  return {
+    "2xs": first(0.5),
+    xs: first(0.5),
+    sm: layered(1, 2),
+    "": layered(1, 2),
+    md: layered(2, 4),
+    lg: layered(4, 6),
+    xl: layered(8, 10),
+    "2xl": first(2.5),
+  };
+}
+
+/** Lowercase, accent-free kebab-case for the download name. `custom` when nothing is left. */
+export function toFileName(name: string): string {
+  const slug = name
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `${slug || "custom"}.css`;
+}
+
+const genericFamilies = new Set([
+  "serif",
+  "sans-serif",
+  "monospace",
+  "cursive",
+  "fantasy",
+  "system-ui",
+  "ui-serif",
+  "ui-sans-serif",
+  "ui-monospace",
+  "ui-rounded",
+  "-apple-system",
+  "blinkmacsystemfont",
+  "segoe ui",
+  "roboto",
+  "helvetica",
+  "helvetica neue",
+  "arial",
+  "georgia",
+  "cambria",
+  "times",
+  "times new roman",
+  "sfmono-regular",
+  "menlo",
+  "monaco",
+  "consolas",
+  "liberation mono",
+  "courier new",
+]);
+
+/** First family of each stack that an app has to load itself (not a system or generic font). */
+export function fontsToLoad(theme: ResolvedTheme): string[] {
+  const families = Object.values(theme.fonts).map((stack) =>
+    (stack.split(",")[0] ?? "").trim().replace(/^['"]|['"]$/g, ""),
+  );
+  return [
+    ...new Set(families.filter((family) => family && !genericFamilies.has(family.toLowerCase()))),
+  ];
+}
+
+const block = (selector: string, lines: readonly string[]) =>
+  `${selector} {\n${lines.map((line) => `  ${line}`).join("\n")}\n}`;
+
+const colorLines = (colors: ColorSet) =>
+  colorTokens.map((token) => `--${token}: ${colors[token]};`);
+
+const shadowLines = (theme: ResolvedTheme, mode: Mode) => {
+  const values = shadowValues(theme, mode);
+  return shadowSteps.map((step) => `${shadowName(step)}: ${values[step]};`);
+};
+
+/** The `:root` and `.dark` blocks: every variable of the theme (shared with the live preview). */
+export function themeVariableBlocks(theme: ResolvedTheme): [root: string, dark: string] {
+  const { shadow } = theme;
+  const root = block(":root", [
+    `--radius: ${num(theme.radius)}rem;`,
+    ...colorLines(theme.colors.light),
+    `--font-sans: ${theme.fonts.sans};`,
+    `--font-serif: ${theme.fonts.serif};`,
+    `--font-mono: ${theme.fonts.mono};`,
+    `--shadow-color: ${shadow.color.light};`,
+    `--shadow-opacity: ${num(shadow.opacity)};`,
+    `--shadow-blur: ${px(shadow.blur)};`,
+    `--shadow-spread: ${px(shadow.spread)};`,
+    `--shadow-offset-x: ${px(shadow.x)};`,
+    `--shadow-offset-y: ${px(shadow.y)};`,
+    ...shadowLines(theme, "light"),
+    `--tracking-normal: ${num(theme.tracking)}em;`,
+    `--spacing: ${num(theme.spacing)}rem;`,
+  ]);
+
+  const dark = block(".dark", [
+    ...colorLines(theme.colors.dark),
+    `--shadow-color: ${shadow.color.dark};`,
+    ...shadowLines(theme, "dark"),
+  ]);
+  return [root, dark];
+}
+
+/** The standalone theme file (design D7). Deterministic: the same theme gives the same bytes. */
+export function serializeTheme(theme: ResolvedTheme): string {
+  const name = theme.name.trim() || "custom";
+  const fonts = fontsToLoad(theme);
+  const header = [
+    `/* ${name.replace(/\*\//g, "* /")} — shadcn theme for Tailwind CSS v4. Generated by Aureus Theme Builder.`,
+    "   Replace the dark variant, :root, .dark and @theme inline blocks of your global CSS with this file",
+    `   (after @import "tailwindcss"). Dark mode uses the .dark class.${fonts.length ? "" : " */"}`,
+    ...(fonts.length
+      ? [`   Fonts: load ${fonts.map((font) => `"${font}"`).join(", ")} in your app. */`]
+      : []),
+  ].join("\n");
+
+  const [root, dark] = themeVariableBlocks(theme);
+
+  const themeInline = block("@theme inline", [
+    ...colorTokens.map((token) => `--color-${token}: var(--${token});`),
+    ...radiusSteps.map(([step, factor]) =>
+      factor === 1
+        ? `--radius-${step}: var(--radius);`
+        : `--radius-${step}: calc(var(--radius) * ${factor});`,
+    ),
+    "--font-sans: var(--font-sans);",
+    "--font-serif: var(--font-serif);",
+    "--font-mono: var(--font-mono);",
+    "--font-heading: var(--font-sans);",
+    ...shadowSteps.map((step) => `${shadowName(step)}: var(${shadowName(step)});`),
+    ...trackingSteps.map(
+      ([step, offset]) => `--tracking-${step}: calc(var(--tracking-normal) ${offset});`,
+    ),
+    "--tracking-normal: var(--tracking-normal);",
+  ]);
+
+  const body = block("body", ["letter-spacing: var(--tracking-normal);"]);
+  // Tailwind's default `dark:` follows prefers-color-scheme; shadcn switches with the .dark class.
+  const darkVariant = "@custom-variant dark (&:is(.dark *));";
+
+  return `${[header, darkVariant, root, dark, themeInline, body].join("\n\n")}\n`;
+}

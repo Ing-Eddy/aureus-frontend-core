@@ -30,6 +30,15 @@ Add your values **after** the package import. Light values go on `:root`, dark v
 
 The tokens are listed, with live swatches, under [Foundations › Colors](?path=/docs/foundations-colors--docs). Check contrast when you change a pair (`--primary` / `--primary-foreground`, `--muted` / `--muted-foreground`…): text needs 4.5:1 for WCAG AA.
 
+## Theme builder
+
+Rather than writing the values by hand, open [Tools › Theme Builder](?path=/story/tools-theme-builder--default). Pick a primary color, a neutral palette and a radius, override any token, and watch the real components and the WCAG contrast of every text pair update live in light and dark mode. You can also paste a theme you already have (from ui.shadcn.com, tweakcn or an earlier export) to keep editing it.
+
+- **Download .css** saves a standalone theme file (`:root`, `.dark` and `@theme inline`, all in OKLCH) for any Tailwind CSS v4 shadcn app.
+- **Copy** puts the same content on the clipboard.
+
+In an app built on this package, add the file's `:root` and `.dark` blocks after `@import "@aureus-core/ui/styles.css"`. In any other shadcn app, the file replaces the theme blocks of your global CSS, after `@import "tailwindcss"`. Your draft is kept in this browser until you select **Reset**.
+
 ## The customization ladder
 
 When a token is not enough, go one step further, and only as far as you need:
@@ -77,6 +86,15 @@ Añade tus valores **después** del import del paquete. Los valores claros van e
 ```
 
 Los tokens están listados, con muestras en vivo, en [Fundamentos › Colores](?path=/docs/foundations-colors--docs). Revisa el contraste cuando cambies una pareja (`--primary` / `--primary-foreground`, `--muted` / `--muted-foreground`…): el texto necesita 4.5:1 para WCAG AA.
+
+## Creador de temas
+
+En lugar de escribir los valores a mano, abre [Herramientas › Creador de temas](?path=/story/tools-theme-builder--default). Elige un color primario, una paleta neutra y un radio, sustituye cualquier token y mira cómo se actualizan en vivo los componentes reales y el contraste WCAG de cada pareja de texto, en modo claro y oscuro. También puedes pegar un tema que ya tengas (de ui.shadcn.com, tweakcn o una exportación anterior) para seguir editándolo.
+
+- **Descargar .css** guarda un archivo de tema independiente (`:root`, `.dark` y `@theme inline`, todo en OKLCH) para cualquier app con shadcn y Tailwind CSS v4.
+- **Copiar** pone el mismo contenido en el portapapeles.
+
+En una app basada en este paquete, añade los bloques `:root` y `.dark` del archivo después de `@import "@aureus-core/ui/styles.css"`. En cualquier otra app con shadcn, el archivo sustituye los bloques del tema de tu CSS global, después de `@import "tailwindcss"`. Tu borrador se guarda en este navegador hasta que pulses **Restablecer**.
 
 ## La escalera de personalización
 
