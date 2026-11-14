@@ -2,4 +2,6 @@
 export const fieldStrings = {
   loading: "Loading",
   moreInformation: "More information",
+  showPassword: "Show password",
+  hidePassword: "Hide password",
 } as const;

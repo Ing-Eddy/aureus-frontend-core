@@ -14,6 +14,15 @@ Every kind of input in `@aureus-core/ui` comes as a pair:
 
 With the same props, a field and its control render **the same markup**, so a form looks the same whichever you use. A control renders its field internally.
 
+Available families:
+
+| Family   | Field           | Control           | Button inside the input                     |
+| -------- | --------------- | ----------------- | ------------------------------------------- |
+| Text     | `TextField`     | `TextControl`     | Optional and configurable (`action`)        |
+| Password | `PasswordField` | `PasswordControl` | Always the show/hide toggle (no `action`)   |
+
+Every family shares the same view, so all fields look alike.
+
 ## Using a field
 
 ```tsx
@@ -85,6 +94,20 @@ Every field and control accepts these props:
 
 A field also takes `error` and `errorMessage`; a control gets both from the form.
 
+## Password
+
+```tsx
+import { PasswordControl } from "@aureus-core/ui/components/password-control";
+
+<PasswordControl name="password" label="Password" required />
+<PasswordControl name="confirm" label="Repeat password" autoComplete="new-password" />
+```
+
+- **The toggle is built in.** It shows or hides the password, has `aria-pressed` and keeps focus and the caret in the input when clicked. Submitting the form hides the password again. There is no `action` prop.
+- **Controlled visibility.** Pass `visible` and `onVisibleChange` to drive several fields at once, for example from a "Show passwords" checkbox. `defaultVisible` sets the initial state when uncontrolled.
+- **Autocomplete.** The default is `current-password` (sign-in). Use `new-password` on sign-up and change-password forms, so password managers offer to generate one.
+- **Confirmation.** Put the match rule in the schema, on the confirmation path (with zod, a `refine` with `path: ["confirm"]`); its message appears on that control.
+
 ## Providers
 
 `TooltipProvider` (from `@aureus-core/ui/shadcn/tooltip`) must wrap the app for the `info` and `action.tooltip` tooltips. Controls also need react-hook-form, which is a peer dependency of the package.
@@ -101,6 +124,15 @@ Cada tipo de input de `@aureus-core/ui` viene en pareja:
 - un **control** (`TextControl`) es el mismo input vinculado a un formulario de react-hook-form.
 
 Con las mismas props, un field y su control renderizan **el mismo markup**, así que un formulario se ve igual uses el que uses. Un control renderiza su field por dentro.
+
+Familias disponibles:
+
+| Familia     | Field           | Control           | Botón dentro del input                          |
+| ----------- | --------------- | ----------------- | ----------------------------------------------- |
+| Texto       | `TextField`     | `TextControl`     | Opcional y configurable (`action`)              |
+| Contraseña  | `PasswordField` | `PasswordControl` | Siempre el de mostrar/ocultar (sin `action`)    |
+
+Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
 ## Usar un field
 
@@ -172,6 +204,20 @@ Todos los fields y controls aceptan estas props:
 | `loadingLabel` / `infoLabel`  | Nombres accesibles del spinner y del botón de información ("Loading", "More information").         |
 
 Un field también recibe `error` y `errorMessage`; un control los obtiene del formulario.
+
+## Contraseña
+
+```tsx
+import { PasswordControl } from "@aureus-core/ui/components/password-control";
+
+<PasswordControl name="password" label="Contraseña" required />
+<PasswordControl name="confirm" label="Repetir contraseña" autoComplete="new-password" />
+```
+
+- **El botón viene incluido.** Muestra u oculta la contraseña, tiene `aria-pressed` y deja el foco y el cursor en el input al pulsarlo. Al enviar el formulario, la contraseña se vuelve a ocultar. No hay prop `action`.
+- **Visibilidad controlada.** Pasa `visible` y `onVisibleChange` para manejar varios campos a la vez, por ejemplo desde un checkbox "Mostrar contraseñas". `defaultVisible` fija el estado inicial en modo no controlado.
+- **Autocompletado.** Por defecto es `current-password` (acceso). Usa `new-password` en formularios de registro y de cambio de contraseña, para que los gestores de contraseñas ofrezcan generar una.
+- **Confirmación.** Pon la regla de coincidencia en el schema, sobre la ruta de la confirmación (con zod, un `refine` con `path: ["confirm"]`); su mensaje aparece en ese control.
 
 ## Providers
 

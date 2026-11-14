@@ -79,8 +79,10 @@ src/internal/
 
 Form inputs come in pairs that must look identical with the same props:
 
-- `<kind>-field` (e.g. `text-field`): general-purpose, controlled or uncontrolled. Built from `FieldShell`, `FieldAction`, `FieldLoading` and `useFieldA11y` in `internal/`.
+- `<kind>-field` (e.g. `text-field`, `password-field`): general-purpose, controlled or uncontrolled. Single-line fields render `InputField` from `internal/components` (field shell, input frame, spinner and action), choosing only the input type and the action, so every family looks the same.
 - `<kind>-control` (e.g. `text-control`): the same input bound to react-hook-form. It takes only `name`, `disabled`, `shouldUnregister` and the field's visual props, reads the form from the `FormProvider` context through `ControlField`, and renders the field with `mapControllerToField`. No `control`, `rules` or type parameters.
+
+A field either accepts a configurable `action` (text) or defines a fixed button of its own (the password visibility toggle); a field with a fixed button must not accept `action`. State a field owns but a consumer may control (such as password visibility) uses `useControllableState` from `internal/hooks`.
 
 The shared props (`FieldBaseProps`, `FieldActionProps`, `FieldClassNames`) live in `internal/types`. Each pair has a parity test that compares the markup of the field and the control.
 

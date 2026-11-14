@@ -21,6 +21,12 @@ export const fieldFrameClassName = [
  */
 export const fieldAddonClassName = "has-[>button]:mr-0 has-[>button]:pr-[0.2rem]";
 
+/**
+ * Classes added to a password input. Some browsers (Edge) draw their own reveal and clear buttons
+ * inside `type="password"` inputs; the field already has its own toggle, so they are hidden.
+ */
+export const passwordInputClassName = "[&::-ms-clear]:hidden [&::-ms-reveal]:hidden";
+
 /** The row that holds the label and the info button. */
 export const fieldHeaderClassName = "flex min-w-0 items-center gap-2";
 
