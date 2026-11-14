@@ -1,0 +1,180 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Guides/Fields & controls" />
+
+<En>
+
+# Fields & controls
+
+Every kind of input in `@aureus-core/ui` comes as a pair:
+
+- a **field** (`TextField`) is a general-purpose input. Use it anywhere, controlled or uncontrolled.
+- a **control** (`TextControl`) is the same input bound to a react-hook-form form.
+
+With the same props, a field and its control render **the same markup**, so a form looks the same whichever you use. A control renders its field internally.
+
+## Using a field
+
+```tsx
+import { TextField } from "@aureus-core/ui/components/text-field";
+import { SearchIcon } from "lucide-react";
+
+<TextField
+  label="Search"
+  helperText="At least 3 characters"
+  loading={isSearching}
+  action={{ children: <SearchIcon />, "aria-label": "Search", tooltip: "Run search", onClick: search }}
+/>;
+```
+
+## Using a control
+
+Controls are always rendered inside a react-hook-form `FormProvider`. The form owns values, default values and validation (usually a schema passed through a resolver); a control only takes the field `name` and visual props. There is no `control` or `rules` prop, and no type parameter to write.
+
+```tsx
+import { TextControl } from "@aureus-core/ui/components/text-control";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
+
+const schema = z.object({ username: z.string().min(3, "Use at least 3 characters.") });
+
+function ProfileForm() {
+  const form = useForm({ resolver: zodResolver(schema), defaultValues: { username: "" } });
+
+  return (
+    <FormProvider {...form}>
+      <form noValidate onSubmit={form.handleSubmit(save)}>
+        <TextControl name="username" label="Username" required helperText="Visible to others" />
+      </form>
+    </FormProvider>
+  );
+}
+```
+
+- **Validation messages appear in the helper slot.** While the field has an error in the form state, its message replaces `helperText`, the input gets `aria-invalid`, and the message is announced. Once the value is fixed, `helperText` comes back.
+- **Always pass `defaultValues`.** `name` is a plain string, so a typo cannot be caught by TypeScript. In development, a control warns when its `name` is not among the form's default values.
+- **Outside a `FormProvider`, a control throws** an error that says so.
+
+## `disabled` vs `loading`
+
+Both make the input unavailable, but they mean different things to the form:
+
+| Prop       | Input    | Spinner | Value submitted |
+| ---------- | -------- | ------- | --------------- |
+| `disabled` | disabled | no      | **no**          |
+| `loading`  | disabled | yes     | **yes**         |
+
+Use `loading` while you are checking or fetching something for a field whose value must still be sent.
+
+## Shared props
+
+Every field and control accepts these props:
+
+| Prop                          | What it does                                                                                       |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| `label`                       | Text above the input, and its accessible name.                                                     |
+| `required`                    | Red asterisk and `aria-required`. It adds no validation rule.                                      |
+| `info`                        | Info button at the far end of the label row, with a tooltip that also opens on tap.                |
+| `helperText`                  | Text below the input, part of its accessible description.                                          |
+| `loading` / `disabled`        | See above.                                                                                         |
+| `action`                      | One button inside the input frame: text or icon, `tooltip`, and any button prop.                   |
+| `className` / `classNames`    | Extra classes for the root, or per part: `root`, `header`, `label`, `requiredMark`, `info`, `control`, `input`, `helper`, `action`. |
+| `loadingLabel` / `infoLabel`  | Accessible names of the spinner and the info button ("Loading", "More information").               |
+
+A field also takes `error` and `errorMessage`; a control gets both from the form.
+
+## Providers
+
+`TooltipProvider` (from `@aureus-core/ui/shadcn/tooltip`) must wrap the app for the `info` and `action.tooltip` tooltips. Controls also need react-hook-form, which is a peer dependency of the package.
+
+</En>
+
+<Es>
+
+# Fields y controls
+
+Cada tipo de input de `@aureus-core/ui` viene en pareja:
+
+- un **field** (`TextField`) es un input de propósito general. Úsalo en cualquier lugar, controlado o no controlado.
+- un **control** (`TextControl`) es el mismo input vinculado a un formulario de react-hook-form.
+
+Con las mismas props, un field y su control renderizan **el mismo markup**, así que un formulario se ve igual uses el que uses. Un control renderiza su field por dentro.
+
+## Usar un field
+
+```tsx
+import { TextField } from "@aureus-core/ui/components/text-field";
+import { SearchIcon } from "lucide-react";
+
+<TextField
+  label="Buscar"
+  helperText="Mínimo 3 caracteres"
+  loading={isSearching}
+  action={{ children: <SearchIcon />, "aria-label": "Buscar", tooltip: "Lanzar búsqueda", onClick: search }}
+/>;
+```
+
+## Usar un control
+
+Los controls siempre se renderizan dentro de un `FormProvider` de react-hook-form. El formulario es dueño de los valores, los valores por defecto y la validación (normalmente un schema pasado mediante un resolver); un control solo recibe el `name` del campo y las props visuales. No hay prop `control` ni `rules`, ni parámetros de tipo que escribir.
+
+```tsx
+import { TextControl } from "@aureus-core/ui/components/text-control";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
+
+const schema = z.object({ username: z.string().min(3, "Usa al menos 3 caracteres.") });
+
+function ProfileForm() {
+  const form = useForm({ resolver: zodResolver(schema), defaultValues: { username: "" } });
+
+  return (
+    <FormProvider {...form}>
+      <form noValidate onSubmit={form.handleSubmit(save)}>
+        <TextControl name="username" label="Usuario" required helperText="Visible para otros" />
+      </form>
+    </FormProvider>
+  );
+}
+```
+
+- **Los mensajes de validación aparecen en el lugar del texto de ayuda.** Mientras el campo tiene un error en el estado del formulario, su mensaje sustituye a `helperText`, el input recibe `aria-invalid` y el mensaje se anuncia. Cuando el valor se corrige, `helperText` vuelve.
+- **Pasa siempre `defaultValues`.** `name` es un string, así que TypeScript no detecta un error tipográfico. En desarrollo, un control avisa cuando su `name` no está entre los valores por defecto del formulario.
+- **Fuera de un `FormProvider`, un control lanza** un error que lo indica.
+
+## `disabled` frente a `loading`
+
+Los dos hacen que el input no esté disponible, pero significan cosas distintas para el formulario:
+
+| Prop       | Input         | Spinner | Valor enviado |
+| ---------- | ------------- | ------- | ------------- |
+| `disabled` | deshabilitado | no      | **no**        |
+| `loading`  | deshabilitado | sí      | **sí**        |
+
+Usa `loading` mientras compruebas o cargas algo para un campo cuyo valor se debe seguir enviando.
+
+## Props comunes
+
+Todos los fields y controls aceptan estas props:
+
+| Prop                          | Qué hace                                                                                           |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| `label`                       | Texto sobre el input, y su nombre accesible.                                                       |
+| `required`                    | Asterisco rojo y `aria-required`. No añade ninguna regla de validación.                            |
+| `info`                        | Botón de información al extremo de la fila del label, con un tooltip que también se abre con tap.  |
+| `helperText`                  | Texto bajo el input, parte de su descripción accesible.                                            |
+| `loading` / `disabled`        | Ver arriba.                                                                                        |
+| `action`                      | Un botón dentro del marco del input: texto o icono, `tooltip` y cualquier prop de botón.           |
+| `className` / `classNames`    | Clases extra para la raíz, o por parte: `root`, `header`, `label`, `requiredMark`, `info`, `control`, `input`, `helper`, `action`. |
+| `loadingLabel` / `infoLabel`  | Nombres accesibles del spinner y del botón de información ("Loading", "More information").         |
+
+Un field también recibe `error` y `errorMessage`; un control los obtiene del formulario.
+
+## Providers
+
+`TooltipProvider` (de `@aureus-core/ui/shadcn/tooltip`) debe envolver la app para los tooltips de `info` y `action.tooltip`. Los controls necesitan además react-hook-form, que es una peer dependency del paquete.
+
+</Es>

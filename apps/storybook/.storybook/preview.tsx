@@ -77,6 +77,7 @@ const preview: Preview = {
             "Dark mode",
             "Right-to-left",
             "Hooks & utilities",
+            "Fields & controls",
           ],
           "Foundations",
           ["Colors", "Radius", "Typography"],

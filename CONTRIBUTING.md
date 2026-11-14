@@ -26,14 +26,25 @@ Code in `src/shadcn/` must never import from `src/components/`.
 
 ## Custom components
 
-One kebab-case folder per component. Its `index.ts` is the only public entry point:
+One kebab-case folder per component. Its `index.ts` is the only public entry point. The folder root holds **only** `index.ts` and `<name>.tsx`, with two exceptions while they stay simple: `<name>-types.ts` and a single `<name>-tests.tsx`.
 
 ```
 src/components/example-button/
+├─ index.ts
 ├─ example-button.tsx
-├─ example-button-types.ts
-├─ example-button-tests.tsx
-└─ index.ts
+└─ example-button-types.ts      # only while it is simple
+```
+
+When a component grows, its other code goes in category subfolders, each with its own `index.ts`: `components/`, `hooks/`, `types/` and `utils/`. Tests split across several files go in `tests/` (no `index.ts`: tests are not imported; anything in a `tests/` folder is never built).
+
+```
+src/components/example-picker/
+├─ index.ts
+├─ example-picker.tsx
+├─ components/   index.ts, example-picker-option.tsx
+├─ hooks/        index.ts, use-example-picker.ts
+├─ types/        index.ts, example-picker-types.ts
+└─ tests/        example-picker-keyboard-tests.tsx, example-picker-a11y-tests.tsx
 ```
 
 ```ts
@@ -45,6 +56,33 @@ export type { ExampleButtonProps } from "./example-button-types";
 - Consumers import it as `@aureus-core/ui/components/example-button`. Exports are wildcards, so you never edit `package.json`.
 - Inside the package, import other components through their folder (`@/components/x`), never their internal files.
 - **No root barrel** (`src/index.ts`).
+
+## The private `internal/` layer
+
+Building blocks shared by several custom components live in `packages/ui/src/internal/`. It is compiled with the package but is **not exported**: consumers cannot import it, so its API can change freely.
+
+```
+src/internal/
+├─ components/   # internal components, each in its own folder (same structure rules as above)
+├─ hooks/
+├─ types/
+└─ utils/
+   ├─ constants/
+   ├─ helpers/   # pure functions
+   └─ libs/      # wrappers or configuration of third-party libraries
+```
+
+- Every category and sub-category has an `index.ts`; import through it (`@/internal/hooks`, `@/internal/utils/helpers`). Do not create empty folders.
+- Dependency direction: `shadcn/` ← `internal/` ← `components/`. `shadcn/` imports neither; `internal/` never imports `components/`. Inside `internal/`: `types` and `utils/constants` ← `utils/helpers` and `utils/libs` ← `hooks` ← `components`.
+
+## Fields and controls
+
+Form inputs come in pairs that must look identical with the same props:
+
+- `<kind>-field` (e.g. `text-field`): general-purpose, controlled or uncontrolled. Built from `FieldShell`, `FieldAction`, `FieldLoading` and `useFieldA11y` in `internal/`.
+- `<kind>-control` (e.g. `text-control`): the same input bound to react-hook-form. It takes only `name`, `disabled`, `shouldUnregister` and the field's visual props, reads the form from the `FormProvider` context through `ControlField`, and renders the field with `mapControllerToField`. No `control`, `rules` or type parameters.
+
+The shared props (`FieldBaseProps`, `FieldActionProps`, `FieldClassNames`) live in `internal/types`. Each pair has a parity test that compares the markup of the field and the control.
 
 ## Naming
 
@@ -59,18 +97,24 @@ Pure kebab-case. Role suffixes use `-`, never `.`:
 
 ## Stories and docs
 
-Every installed shadcn component has a folder in the Storybook app. `pnpm test` fails if one is missing or incomplete.
+Every installed shadcn component, and every custom component in `src/components/`, has a folder in the Storybook app. `pnpm test` fails if one is missing or incomplete.
 
 ```
 apps/storybook/src/stories/shadcn/<category>/<name>/
 ├─ <name>-stories.tsx   # title "shadcn/<Category>/<Name>", parameters: { aureusDocs: docs }
 └─ <name>-docs.ts       # export const docs = defineComponentDocs({ …, en: {…}, es: {…} })
+
+apps/storybook/src/stories/components/<category>/<name>/
+├─ <name>-stories.tsx   # title "components/<Category>/<Name>"
+└─ <name>-docs.ts       # importPath "@aureus-core/ui/components/<name>"
 ```
+
+`src/internal/` is not documented: it is not public API.
 
 Categories: `actions`, `forms`, `overlays`, `navigation`, `data-display`, `feedback`, `layout`, `ai-chat`.
 Use [`actions/button/`](apps/storybook/src/stories/shadcn/actions/button) as the template.
 
-**Stories** import the package only through public paths (`@aureus-core/ui/shadcn/<name>`), never source files. Each component needs:
+**Stories** import the package only through public paths (`@aureus-core/ui/shadcn/<name>`, `@aureus-core/ui/components/<name>`), never source files. Each component needs:
 
 1. `Playground`: a control for every prop that changes the output, grouped with `table.category` (Content, Appearance, State, Behavior, Events). Callbacks use `fn()` from `storybook/test`, so calls show in the Actions panel.
 2. Variants and sizes (a gallery story is fine), plus the states the component supports: disabled, invalid (`aria-invalid`), loading.

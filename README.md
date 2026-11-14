@@ -16,11 +16,12 @@ Monorepo of shared frontend resources (React + TypeScript), published to npm und
 
 - React 19 and React DOM 19.
 - Tailwind CSS v4. With Vite, use `@tailwindcss/vite`.
+- react-hook-form 7, used by the form controls (`*-control` components).
 
 ### Install
 
 ```sh
-pnpm add @aureus-core/ui
+pnpm add @aureus-core/ui react-hook-form
 pnpm add -D tailwindcss @tailwindcss/vite
 ```
 
@@ -65,9 +66,35 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 }
 ```
 
-- `TooltipProvider`: required by Tooltip and Sidebar.
+- `TooltipProvider`: required by Tooltip, Sidebar, and the `info` and `action.tooltip` tooltips of fields and controls.
+- `FormProvider` (from `react-hook-form`): wraps every form that uses `*-control` components.
 - `SidebarProvider` (`@aureus-core/ui/shadcn/sidebar`): wraps the layout that contains a Sidebar.
 - `DirectionProvider`: only needed for right-to-left languages.
+
+### Fields & controls
+
+Each input comes as a pair that looks the same: a **field** for general use and a **control** bound to react-hook-form. Controls only take a `name` (plus visual props) and must be rendered inside a `FormProvider`; values, defaults and validation (for example a zod schema) belong to the form, and validation messages appear as the helper text.
+
+```tsx
+import { TextControl } from "@aureus-core/ui/components/text-control";
+import { TextField } from "@aureus-core/ui/components/text-field";
+import { FormProvider, useForm } from "react-hook-form";
+
+<TextField label="Search" helperText="At least 3 characters" />;
+
+function ProfileForm() {
+  const form = useForm({ resolver, defaultValues: { username: "" } });
+  return (
+    <FormProvider {...form}>
+      <form noValidate onSubmit={form.handleSubmit(save)}>
+        <TextControl name="username" label="Username" required helperText="Visible to others" />
+      </form>
+    </FormProvider>
+  );
+}
+```
+
+See the "Fields & controls" guide in the documentation for the shared props.
 
 ### Dark mode
 
