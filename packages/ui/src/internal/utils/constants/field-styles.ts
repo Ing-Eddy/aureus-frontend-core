@@ -27,6 +27,20 @@ export const fieldAddonClassName = "has-[>button]:mr-0 has-[>button]:pr-[0.2rem]
  */
 export const passwordInputClassName = "[&::-ms-clear]:hidden [&::-ms-reveal]:hidden";
 
+/**
+ * Classes added to the footer bar of a multi-line field (`InputGroupAddon align="block-end"`).
+ * shadcn's addon already pads the top when it has `border-t`; the bar is a single row.
+ */
+export const fieldFooterClassName = "cursor-default flex-wrap gap-2 border-t";
+
+/**
+ * Classes added to a textarea whose height is managed by `useTextareaAutosize`: cancels the
+ * content-based sizing and minimum height of shadcn's Textarea (not supported everywhere), and
+ * replaces `InputGroupTextarea`'s `flex-1`: once the footer bar turns the frame into a column, a
+ * zero flex-basis would override the computed height.
+ */
+export const textareaClassName = "field-sizing-fixed min-h-0 flex-none";
+
 /** The row that holds the label and the info button. */
 export const fieldHeaderClassName = "flex min-w-0 items-center gap-2";
 

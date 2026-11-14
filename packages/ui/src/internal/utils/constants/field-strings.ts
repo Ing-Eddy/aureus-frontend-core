@@ -4,4 +4,9 @@ export const fieldStrings = {
   moreInformation: "More information",
   showPassword: "Show password",
   hidePassword: "Hide password",
+  /** Accessible counter text when the field has a `maxLength`. */
+  charactersRemaining: (remaining: number) =>
+    `${remaining} ${remaining === 1 ? "character" : "characters"} remaining`,
+  /** Accessible counter text when the field has no `maxLength`. */
+  characters: (count: number) => `${count} ${count === 1 ? "character" : "characters"}`,
 } as const;

@@ -20,6 +20,7 @@ Available families:
 | -------- | --------------- | ----------------- | ------------------------------------------- |
 | Text     | `TextField`     | `TextControl`     | Optional and configurable (`action`)        |
 | Password | `PasswordField` | `PasswordControl` | Always the show/hide toggle (no `action`)   |
+| Text area | `TextAreaField` | `TextAreaControl` | Optional (`action`), in a footer bar below the text |
 
 Every family shares the same view, so all fields look alike.
 
@@ -108,6 +109,27 @@ import { PasswordControl } from "@aureus-core/ui/components/password-control";
 - **Autocomplete.** The default is `current-password` (sign-in). Use `new-password` on sign-up and change-password forms, so password managers offer to generate one.
 - **Confirmation.** Put the match rule in the schema, on the confirmation path (with zod, a `refine` with `path: ["confirm"]`); its message appears on that control.
 
+## Text area
+
+```tsx
+import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
+
+<TextAreaField
+  label="Comment"
+  minRows={3}
+  maxRows={8}
+  maxLength={280}
+  showCount
+  actionShortcut
+  action={{ children: "Post", variant: "default", onClick: post }}
+/>;
+```
+
+- **Live height.** The field grows with its content from `minRows` to `maxRows` lines, then scrolls. Users can also drag it taller or shorter; the height they choose becomes the new minimum. `resize={false}` removes the handle.
+- **Footer bar.** The spinner, the counter and the `action` live in a bar along the bottom edge of the frame, so the button follows any height change and never covers the text. The bar only appears when it has something to show.
+- **Counter.** `showCount` shows "count/maxLength" (or the count alone) and turns red at the limit. Screen readers get the remaining characters in the field's description, announced once the user pauses typing.
+- **Shortcut.** `actionShortcut` lets Ctrl+Enter (Cmd+Enter on macOS) press the action; Enter alone still adds a new line.
+
 ## Providers
 
 `TooltipProvider` (from `@aureus-core/ui/shadcn/tooltip`) must wrap the app for the `info` and `action.tooltip` tooltips. Controls also need react-hook-form, which is a peer dependency of the package.
@@ -131,6 +153,7 @@ Familias disponibles:
 | ----------- | --------------- | ----------------- | ----------------------------------------------- |
 | Texto       | `TextField`     | `TextControl`     | Opcional y configurable (`action`)              |
 | Contraseña  | `PasswordField` | `PasswordControl` | Siempre el de mostrar/ocultar (sin `action`)    |
+| Texto multilínea | `TextAreaField` | `TextAreaControl` | Opcional (`action`), en una barra bajo el texto |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -218,6 +241,27 @@ import { PasswordControl } from "@aureus-core/ui/components/password-control";
 - **Visibilidad controlada.** Pasa `visible` y `onVisibleChange` para manejar varios campos a la vez, por ejemplo desde un checkbox "Mostrar contraseñas". `defaultVisible` fija el estado inicial en modo no controlado.
 - **Autocompletado.** Por defecto es `current-password` (acceso). Usa `new-password` en formularios de registro y de cambio de contraseña, para que los gestores de contraseñas ofrezcan generar una.
 - **Confirmación.** Pon la regla de coincidencia en el schema, sobre la ruta de la confirmación (con zod, un `refine` con `path: ["confirm"]`); su mensaje aparece en ese control.
+
+## Texto multilínea
+
+```tsx
+import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
+
+<TextAreaField
+  label="Comentario"
+  minRows={3}
+  maxRows={8}
+  maxLength={280}
+  showCount
+  actionShortcut
+  action={{ children: "Publicar", variant: "default", onClick: publicar }}
+/>;
+```
+
+- **Altura en vivo.** El campo crece con su contenido de `minRows` a `maxRows` líneas y luego hace scroll. El usuario también puede arrastrarlo para hacerlo más alto o más bajo; la altura que elige pasa a ser el nuevo mínimo. `resize={false}` quita el asa.
+- **Barra inferior.** El spinner, el contador y la `action` van en una barra pegada al borde de abajo del marco, así el botón acompaña cualquier cambio de altura y nunca tapa el texto. La barra solo aparece cuando tiene algo que mostrar.
+- **Contador.** `showCount` muestra "cuenta/maxLength" (o solo la cuenta) y se pone en rojo al llegar al límite. Los lectores de pantalla reciben los caracteres restantes en la descripción del campo, anunciados cuando el usuario deja de escribir.
+- **Atajo.** `actionShortcut` permite pulsar la acción con Ctrl+Enter (Cmd+Enter en macOS); Enter solo sigue haciendo un salto de línea.
 
 ## Providers
 

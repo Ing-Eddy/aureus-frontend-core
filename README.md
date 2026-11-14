@@ -73,10 +73,11 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
 ### Fields & controls
 
-Each input comes as a pair that looks the same: a **field** for general use and a **control** bound to react-hook-form. Available pairs: `TextField` / `TextControl` and `PasswordField` / `PasswordControl` (with a built-in show/hide toggle). Controls only take a `name` (plus visual props) and must be rendered inside a `FormProvider`; values, defaults and validation (for example a zod schema) belong to the form, and validation messages appear as the helper text.
+Each input comes as a pair that looks the same: a **field** for general use and a **control** bound to react-hook-form. Available pairs: `TextField` / `TextControl`, `PasswordField` / `PasswordControl` (with a built-in show/hide toggle) and `TextAreaField` / `TextAreaControl` (multi-line: grows with its content, optional character counter, and its action in a footer bar). Controls only take a `name` (plus visual props) and must be rendered inside a `FormProvider`; values, defaults and validation (for example a zod schema) belong to the form, and validation messages appear as the helper text.
 
 ```tsx
 import { PasswordControl } from "@aureus-core/ui/components/password-control";
+import { TextAreaControl } from "@aureus-core/ui/components/text-area-control";
 import { TextControl } from "@aureus-core/ui/components/text-control";
 import { TextField } from "@aureus-core/ui/components/text-field";
 import { FormProvider, useForm } from "react-hook-form";
@@ -84,12 +85,13 @@ import { FormProvider, useForm } from "react-hook-form";
 <TextField label="Search" helperText="At least 3 characters" />;
 
 function ProfileForm() {
-  const form = useForm({ resolver, defaultValues: { username: "", password: "" } });
+  const form = useForm({ resolver, defaultValues: { username: "", password: "", bio: "" } });
   return (
     <FormProvider {...form}>
       <form noValidate onSubmit={form.handleSubmit(save)}>
         <TextControl name="username" label="Username" required helperText="Visible to others" />
         <PasswordControl name="password" label="Password" required />
+        <TextAreaControl name="bio" label="Bio" maxLength={280} showCount />
       </form>
     </FormProvider>
   );

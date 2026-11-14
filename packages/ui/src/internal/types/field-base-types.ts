@@ -20,6 +20,8 @@ export interface FieldClassNames {
   helper?: string;
   /** The integrated action button. */
   action?: string;
+  /** The footer bar below the text (spinner, counter, action). Multi-line fields only. */
+  footer?: string;
 }
 
 /** Props shared by every field and control. */
