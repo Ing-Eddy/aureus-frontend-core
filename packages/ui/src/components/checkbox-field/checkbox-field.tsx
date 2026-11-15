@@ -1,8 +1,8 @@
 import { type ReactElement, useMemo, useRef } from "react";
 import {
   CheckboxBox,
-  CheckboxRow,
-  checkboxStyles,
+  ChoiceRow,
+  choiceStyles,
   FieldAction,
   FieldLoading,
   FieldShell,
@@ -151,12 +151,12 @@ export function CheckboxField<V extends CheckboxValue = boolean>(
       className={className}
       classNames={{
         ...classNames,
-        helper: cn(indentHelper && checkboxStyles.helperIndent, classNames?.helper),
+        helper: cn(indentHelper && choiceStyles.helperIndent, classNames?.helper),
       }}
       labelFor={!hasText}
       labelledByRoot={groupLabelled}
     >
-      <CheckboxRow
+      <ChoiceRow
         box={box}
         textId={textId}
         boxRef={boxRef}

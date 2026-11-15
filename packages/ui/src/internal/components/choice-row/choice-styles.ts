@@ -1,5 +1,5 @@
-/** Classes of the checkbox row and its parts. */
-export const checkboxStyles = {
+/** Classes of the choice row (checkbox or radio) and its parts. */
+export const choiceStyles = {
   /**
    * The mixed state on top of shadcn's checkbox. Arbitrary `data-[state=…]` variants are used on
    * purpose: shadcn redefines some `data-*` variants (such as `data-checked`) with stricter matches.
@@ -21,13 +21,14 @@ export const checkboxStyles = {
   row: "flex w-full min-w-0 items-start gap-2",
   card: [
     "rounded-lg border border-input p-3 transition-colors dark:bg-input/30",
-    "has-[[data-slot=checkbox][data-state=checked]]:border-primary",
-    "has-[[data-slot=checkbox][data-state=checked]]:bg-primary/5",
-    "has-[[data-slot=checkbox][data-state=indeterminate]]:border-primary",
+    "has-[[data-slot$=box-slot]>[data-state=checked]]:border-primary",
+    "has-[[data-slot$=box-slot]>[data-state=checked]]:bg-primary/5",
+    "has-[[data-slot$=box-slot]>[data-state=indeterminate]]:border-primary",
     // A disabled card keeps its text readable (descriptions explain why); only the surface changes.
-    "has-[[data-slot=checkbox]:disabled]:cursor-not-allowed has-[[data-slot=checkbox]:disabled]:bg-muted/50",
+    "has-[[data-slot$=box-slot]>:disabled]:cursor-not-allowed has-[[data-slot$=box-slot]>:disabled]:bg-muted/50",
   ].join(" "),
-  cardError: "border-destructive has-[[data-slot=checkbox][data-state=checked]]:border-destructive",
+  cardError:
+    "border-destructive has-[[data-slot$=box-slot]>[data-state=checked]]:border-destructive",
   /** Keeps the 16px box on the first line of text (20px line height). */
   boxSlot: "flex h-5 shrink-0 items-center",
   text: "min-w-0 flex-1 text-sm leading-5 text-foreground select-none [overflow-wrap:anywhere]",

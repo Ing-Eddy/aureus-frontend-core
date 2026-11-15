@@ -1,15 +1,13 @@
 import { type FocusEvent, type ReactNode, type Ref, useRef } from "react";
-import { CheckboxBox, CheckboxRow } from "@/internal/components";
+import {
+  CheckboxBox,
+  ChoiceRow,
+  choiceLayoutClassName,
+  choiceOptionClassName,
+} from "@/internal/components";
 import { cn } from "@/shadcn/lib/utils";
 import type { CheckboxGroupSelectAllState } from "../hooks";
 import type { CheckboxGroupFieldClassNames, CheckboxGroupOption } from "../types";
-
-/** Literal classes, so Tailwind finds them. The grid collapses with its container's width. */
-const columnClasses = {
-  2: "grid grid-cols-1 gap-3 @sm:grid-cols-2",
-  3: "grid grid-cols-1 gap-3 @sm:grid-cols-2 @lg:grid-cols-3",
-  4: "grid grid-cols-1 gap-3 @sm:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4",
-} as const;
 
 export interface CheckboxGroupBoxState {
   checked: boolean;
@@ -81,7 +79,7 @@ function OptionRow({
   const textId = `${id}-text`;
   const descriptionId = description ? `${id}-description` : undefined;
   return (
-    <CheckboxRow
+    <ChoiceRow
       box={
         <CheckboxBox
           ref={boxRef}
@@ -131,13 +129,9 @@ export function CheckboxGroupOptions({
   onBlur,
 }: CheckboxGroupOptionsProps) {
   const card = appearance === "card";
-  const layout = columns
-    ? columnClasses[columns]
-    : orientation === "horizontal"
-      ? "flex flex-row flex-wrap gap-x-6 gap-y-3"
-      : cn("flex flex-col", card ? "gap-2" : "gap-3");
   // Under a select-all row, a plain vertical list is indented to read as its children.
   const indent = selectAll && !card && !columns && orientation === "vertical";
+  const layout = { orientation, columns, appearance, indent: Boolean(indent) };
 
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: listens to focus leaving the boxes inside; it is not itself interactive.
@@ -168,7 +162,7 @@ export function CheckboxGroupOptions({
         data-slot="checkbox-group-options"
         data-orientation={orientation}
         data-columns={columns}
-        className={cn(layout, indent && "ps-6", classNames?.options)}
+        className={cn(choiceLayoutClassName(layout), classNames?.options)}
       >
         {options.map((option, index) => {
           const state = boxState(option);
@@ -186,10 +180,7 @@ export function CheckboxGroupOptions({
               error={error}
               appearance={appearance}
               position={checkboxPosition}
-              className={cn(
-                columns || orientation === "vertical" ? undefined : "w-auto",
-                classNames?.option,
-              )}
+              className={cn(choiceOptionClassName(layout), classNames?.option)}
               checkboxClassName={classNames?.checkbox}
               labelClassName={classNames?.optionLabel}
             />

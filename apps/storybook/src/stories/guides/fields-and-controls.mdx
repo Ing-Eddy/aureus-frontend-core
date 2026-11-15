@@ -25,6 +25,7 @@ Available families:
 | Select   | `SelectField`   | `SelectControl`   | Chevron, optional clear (✕) and an optional `action` |
 | Checkbox | `CheckboxField` | `CheckboxControl` | No frame: an optional `action` at the end of the row |
 | Checkbox group | `CheckboxGroupField` | `CheckboxGroupControl` | No frame: one box per option |
+| Radio group | `RadioGroupField` | `RadioGroupControl` | No frame: one radio per option, or segments |
 
 Every family shares the same view, so all fields look alike.
 
@@ -213,6 +214,22 @@ import { CheckboxGroupField } from "@aureus-core/ui/components/checkbox-group-fi
 - **Opt-in extras.** `selectAll` (its `label` is required), `maxSelected` with an optional `maxSelectedMessage`, `orientation="horizontal"`, `columns` (collapsing in narrow containers), `appearance="card"` and `checkboxPosition="end"`.
 - **Naming.** The `label` names the group and each option's label names its box. `required` marks the label only.
 
+## Radio group
+
+```tsx
+import { RadioGroupControl } from "@aureus-core/ui/components/radio-group-control";
+import { RadioGroupField } from "@aureus-core/ui/components/radio-group-field";
+
+<RadioGroupField label="Plan" options={plans} />                               // string | null
+<RadioGroupField label="Billing" options={billing} appearance="segmented" orientation="horizontal" />
+<RadioGroupControl name="source" label="Source" options={sources}
+  otherOption={{ label: "Other", inputLabel: "Tell us how you found us" }} />
+```
+
+- **Exactly one option at a time.** The value is `string | null` (`null` until something is chosen), and schemas such as `z.string({ error })` hold the rules.
+- **Keyboard:** the group is one tab stop, and the arrow keys move and select, skipping disabled options.
+- **Opt-in extras.** `orientation="horizontal"`, `columns`, `appearance` (`card` or `segmented`), `radioPosition="end"`, `otherOption` (its `label` and `inputLabel` are required; the value becomes the typed text) and `deselectable` (it departs from the standard pattern).
+
 ## Messages are the developer's
 
 Select is the first family that ships **no texts of its own**, neither visible nor accessible. The developer writes every text for the situation where it appears.
@@ -257,6 +274,7 @@ Familias disponibles:
 | Select      | `SelectField`   | `SelectControl`   | Chevron, limpiar (✕) opcional y una `action` opcional |
 | Checkbox    | `CheckboxField` | `CheckboxControl` | Sin marco: una `action` opcional al final de la fila |
 | Grupo de checkboxes | `CheckboxGroupField` | `CheckboxGroupControl` | Sin marco: una casilla por opción |
+| Grupo de radios | `RadioGroupField` | `RadioGroupControl` | Sin marco: un radio por opción, o segmentos |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -444,6 +462,22 @@ import { CheckboxGroupField } from "@aureus-core/ui/components/checkbox-group-fi
 - **El valor es un `string[]` en el orden de `options`,** sin importar el orden en que se marquen. Las reglas van en schemas como `z.array(z.string()).min(1)`.
 - **Extras opcionales.** `selectAll` (su `label` es obligatorio), `maxSelected` con un `maxSelectedMessage` opcional, `orientation="horizontal"`, `columns` (se reducen en contenedores estrechos), `appearance="card"` y `checkboxPosition="end"`.
 - **Nombres.** El `label` nombra el grupo y el label de cada opción nombra su casilla. `required` solo marca el label.
+
+## Grupo de radios
+
+```tsx
+import { RadioGroupControl } from "@aureus-core/ui/components/radio-group-control";
+import { RadioGroupField } from "@aureus-core/ui/components/radio-group-field";
+
+<RadioGroupField label="Plan" options={plans} />                               // string | null
+<RadioGroupField label="Facturación" options={billing} appearance="segmented" orientation="horizontal" />
+<RadioGroupControl name="source" label="Origen" options={sources}
+  otherOption={{ label: "Otro", inputLabel: "Cuéntanos cómo nos conociste" }} />
+```
+
+- **Una sola opción a la vez.** El valor es `string | null` (`null` mientras no se elija nada), y las reglas van en schemas como `z.string({ error })`.
+- **Teclado:** el grupo es una sola parada de Tab, y las flechas mueven y seleccionan, saltando las opciones deshabilitadas.
+- **Extras opcionales.** `orientation="horizontal"`, `columns`, `appearance` (`card` o `segmented`), `radioPosition="end"`, `otherOption` (su `label` e `inputLabel` son obligatorios; el valor pasa a ser lo escrito) y `deselectable` (se aparta del patrón estándar).
 
 ## Los mensajes son del desarrollador
 
