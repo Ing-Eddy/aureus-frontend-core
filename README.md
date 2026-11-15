@@ -73,9 +73,10 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
 ### Fields & controls
 
-Each input comes as a pair that looks the same: a **field** for general use and a **control** bound to react-hook-form. Available pairs: `TextField` / `TextControl`, `PasswordField` / `PasswordControl` (with a built-in show/hide toggle), `TextAreaField` / `TextAreaControl` (multi-line: grows with its content, optional character counter, and its action in a footer bar) and `NumberField` / `NumberControl` (value `number | null`; separators, decimals, currency, prefix/suffix, accounting negatives, custom step buttons, shorthand and calculations, each an independent opt-in prop) and `SelectField` / `SelectControl` (single `string | null` or multiple `string[]` shown as chips or a summary; optional search inside the list, groups, descriptions, server search, a selection limit, select all and creatable options). The select ships no texts of its own: every message is yours, and the texts a feature needs (such as `searchLabel` for `searchable`) are required by TypeScript when you enable it. Controls only take a `name` (plus visual props) and must be rendered inside a `FormProvider`; values, defaults and validation (for example a zod schema) belong to the form, and validation messages appear as the helper text.
+Each input comes as a pair that looks the same: a **field** for general use and a **control** bound to react-hook-form. Available pairs: `TextField` / `TextControl`, `PasswordField` / `PasswordControl` (with a built-in show/hide toggle), `TextAreaField` / `TextAreaControl` (multi-line: grows with its content, optional character counter, and its action in a footer bar) and `NumberField` / `NumberControl` (value `number | null`; separators, decimals, currency, prefix/suffix, accounting negatives, custom step buttons, shorthand and calculations, each an independent opt-in prop) and `SelectField` / `SelectControl` (single `string | null` or multiple `string[]` shown as chips or a summary; optional search inside the list, groups, descriptions, server search, a selection limit, select all and creatable options). `CheckboxField` / `CheckboxControl` add a checkbox with two texts (the field `label` above and a clickable `checkboxLabel` beside the box); its value is a `boolean`, or the custom values you pass with `checkedValue`/`uncheckedValue`, with opt-in `indeterminate`, `checkboxPosition="end"` and `appearance="card"`. The select ships no texts of its own: every message is yours, and the texts a feature needs (such as `searchLabel` for `searchable`) are required by TypeScript when you enable it. Controls only take a `name` (plus visual props) and must be rendered inside a `FormProvider`; values, defaults and validation (for example a zod schema) belong to the form, and validation messages appear as the helper text.
 
 ```tsx
+import { CheckboxControl } from "@aureus-core/ui/components/checkbox-control";
 import { NumberControl } from "@aureus-core/ui/components/number-control";
 import { PasswordControl } from "@aureus-core/ui/components/password-control";
 import { SelectControl } from "@aureus-core/ui/components/select-control";
@@ -89,7 +90,14 @@ import { FormProvider, useForm } from "react-hook-form";
 function ProfileForm() {
   const form = useForm({
     resolver,
-    defaultValues: { username: "", password: "", bio: "", amount: null, country: null },
+    defaultValues: {
+      username: "",
+      password: "",
+      bio: "",
+      amount: null,
+      country: null,
+      terms: false,
+    },
   });
   return (
     <FormProvider {...form}>
@@ -104,6 +112,7 @@ function ProfileForm() {
           options={countries}
           placeholder="Choose a country"
         />
+        <CheckboxControl name="terms" checkboxLabel="I accept the terms" required />
       </form>
     </FormProvider>
   );

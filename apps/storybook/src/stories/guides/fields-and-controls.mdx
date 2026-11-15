@@ -23,6 +23,7 @@ Available families:
 | Text area | `TextAreaField` | `TextAreaControl` | Optional (`action`), in a footer bar below the text |
 | Number   | `NumberField`   | `NumberControl`   | Step buttons (stacked or split) plus an optional `action` |
 | Select   | `SelectField`   | `SelectControl`   | Chevron, optional clear (✕) and an optional `action` |
+| Checkbox | `CheckboxField` | `CheckboxControl` | No frame: an optional `action` at the end of the row |
 
 Every family shares the same view, so all fields look alike.
 
@@ -179,6 +180,22 @@ import { SelectField } from "@aureus-core/ui/components/select-field";
 - **Search inside the list.** `searchable` adds a search box at the top of the popup; local filtering ignores case and accents. For server search pass `filter={false}`, load the options in `onSearchChange` and set `optionsLoading`.
 - **Opt-in extras.** Groups (`group`), descriptions, disabled options, `maxSelected`, `selectAll` and `creatable`, each independent of the others.
 
+## Checkbox
+
+```tsx
+import { CheckboxControl } from "@aureus-core/ui/components/checkbox-control";
+import { CheckboxField } from "@aureus-core/ui/components/checkbox-field";
+
+<CheckboxField checkboxLabel="Remember me" />                                   // true / false
+<CheckboxField label="Notifications" checkboxLabel="Weekly digest" />           // two texts
+<CheckboxControl name="active" checkboxLabel="Active" checkedValue="S" uncheckedValue="N" />
+<CheckboxField checkboxLabel="Compact mode" checkboxPosition="end" appearance="card" />
+```
+
+- **Two texts.** `label` sits above, as in every field; `checkboxLabel` sits beside the box and is clickable (links inside it still navigate). With both, `label` names the group and `checkboxLabel` names the box.
+- **The value is `boolean`,** or the custom values you pass with `checkedValue` and `uncheckedValue` (both or neither; the type is inferred). Schemas such as `z.literal(true)` (accept terms) or `z.enum(["S", "N"])` work directly.
+- **Opt-in extras.** `indeterminate` (visual mixed state), `checkboxPosition="end"` and `appearance="card"`, each independent.
+
 ## Messages are the developer's
 
 Select is the first family that ships **no texts of its own**, neither visible nor accessible. The developer writes every text for the situation where it appears.
@@ -221,6 +238,7 @@ Familias disponibles:
 | Texto multilínea | `TextAreaField` | `TextAreaControl` | Opcional (`action`), en una barra bajo el texto |
 | Número      | `NumberField`   | `NumberControl`   | Botones de paso (apilados o split) y una `action` opcional |
 | Select      | `SelectField`   | `SelectControl`   | Chevron, limpiar (✕) opcional y una `action` opcional |
+| Checkbox    | `CheckboxField` | `CheckboxControl` | Sin marco: una `action` opcional al final de la fila |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -376,6 +394,22 @@ import { SelectField } from "@aureus-core/ui/components/select-field";
 - **Simple o múltiple.** El valor es `string | null`, o `string[]` con `multiple`. Con `multiple`, `multipleDisplay` es obligatorio: `"chips"` (etiquetas removibles; el campo crece) o `"summary"` (una línea que escribes en `renderSummary`).
 - **Búsqueda dentro de la lista.** `searchable` añade un buscador arriba del desplegable; el filtrado local ignora mayúsculas y acentos. Para buscar en servidor pasa `filter={false}`, carga las opciones en `onSearchChange` y activa `optionsLoading`.
 - **Extras opcionales.** Grupos (`group`), descripciones, opciones deshabilitadas, `maxSelected`, `selectAll` y `creatable`, cada uno independiente de los demás.
+
+## Checkbox
+
+```tsx
+import { CheckboxControl } from "@aureus-core/ui/components/checkbox-control";
+import { CheckboxField } from "@aureus-core/ui/components/checkbox-field";
+
+<CheckboxField checkboxLabel="Recordarme" />                                    // true / false
+<CheckboxField label="Notificaciones" checkboxLabel="Resumen semanal" />        // dos textos
+<CheckboxControl name="active" checkboxLabel="Activo" checkedValue="S" uncheckedValue="N" />
+<CheckboxField checkboxLabel="Modo compacto" checkboxPosition="end" appearance="card" />
+```
+
+- **Dos textos.** `label` va arriba, como en todo field; `checkboxLabel` va junto a la casilla y es clicable (los enlaces que contenga siguen navegando). Con los dos, `label` nombra el grupo y `checkboxLabel` nombra la casilla.
+- **El valor es `boolean`,** o los valores que pases con `checkedValue` y `uncheckedValue` (los dos o ninguno; el tipo se infiere). Schemas como `z.literal(true)` (aceptar términos) o `z.enum(["S", "N"])` funcionan directamente.
+- **Extras opcionales.** `indeterminate` (estado mixto visual), `checkboxPosition="end"` y `appearance="card"`, cada uno independiente.
 
 ## Los mensajes son del desarrollador
 

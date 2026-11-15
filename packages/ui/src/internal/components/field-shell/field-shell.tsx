@@ -24,6 +24,10 @@ export interface FieldShellProps
   rootProps?: Record<`data-${string}`, boolean | undefined>;
   /** The control: an input frame with its addons. */
   children: ReactNode;
+  /** Associates the header label with the control (default `true`). See `FieldHeader`. */
+  labelFor?: boolean;
+  /** Names the root group with the header label through `aria-labelledby` (default `false`). */
+  labelledByRoot?: boolean;
 }
 
 /**
@@ -45,9 +49,15 @@ export function FieldShell({
   className,
   classNames,
   children,
+  labelFor = true,
+  labelledByRoot = false,
 }: FieldShellProps) {
   return (
-    <Field className={cn("min-w-0", classNames?.root, className)} {...rootProps}>
+    <Field
+      className={cn("min-w-0", classNames?.root, className)}
+      aria-labelledby={labelledByRoot && label ? `${inputId}-label` : undefined}
+      {...rootProps}
+    >
       {label || info ? (
         <FieldHeader
           inputId={inputId}
@@ -57,6 +67,7 @@ export function FieldShell({
           info={info}
           infoLabel={infoLabel}
           classNames={classNames}
+          labelFor={labelFor}
         />
       ) : null}
       {children}

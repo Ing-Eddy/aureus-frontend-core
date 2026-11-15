@@ -14,6 +14,12 @@ export interface FieldHeaderProps {
   info?: ReactNode;
   infoLabel?: string;
   classNames?: FieldClassNames;
+  /**
+   * Associates the label with the control through `htmlFor` (the default). `false` renders it
+   * unassociated, for fields whose control is named by another text and whose group is named by
+   * this label.
+   */
+  labelFor?: boolean;
 }
 
 /** The row above the input: label and required mark at the start, info button at the far end. */
@@ -25,13 +31,14 @@ export function FieldHeader({
   info,
   infoLabel,
   classNames,
+  labelFor = true,
 }: FieldHeaderProps) {
   return (
     <div data-slot="field-header" className={cn(fieldHeaderClassName, classNames?.header)}>
       {label ? (
         <FieldLabel
           id={`${inputId}-label`}
-          htmlFor={inputId}
+          htmlFor={labelFor ? inputId : undefined}
           className={cn(fieldLabelClassName, classNames?.label)}
         >
           {label}

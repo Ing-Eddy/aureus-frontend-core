@@ -106,4 +106,23 @@ describe("FieldShell", () => {
       expect(container.querySelector(`[data-slot=${slot}]`)?.className, slot).toContain(cls);
     }
   });
+
+  it("can render the label without associating it with the control", () => {
+    renderShell({ label: "Name", labelFor: false });
+    const label = screen.getByText("Name").closest("label");
+    expect(label?.hasAttribute("for")).toBe(false);
+    expect(label?.id).toBe("name-label");
+  });
+
+  it("can name the root group with the label", () => {
+    renderShell({ label: "Name", labelFor: false, labelledByRoot: true });
+    expect(screen.getByRole("group", { name: "Name" })).toBeTruthy();
+  });
+
+  it("does not label the root group by default", () => {
+    const { container } = renderShell({ label: "Name" });
+    expect(container.querySelector("[data-slot=field]")?.hasAttribute("aria-labelledby")).toBe(
+      false,
+    );
+  });
 });
