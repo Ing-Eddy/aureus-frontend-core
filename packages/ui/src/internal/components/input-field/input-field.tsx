@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { FieldAction } from "@/internal/components/field-action";
 import { FieldLoading } from "@/internal/components/field-loading";
 import { FieldShell } from "@/internal/components/field-shell";
@@ -17,6 +17,12 @@ export type InputFieldProps = FieldBaseProps &
     type: "text" | "password";
     /** Button inside the input frame, on its inline-end side. */
     action?: FieldActionProps;
+    /** Content before the input (decrease button, currency, prefix). */
+    startSlot?: ReactNode;
+    /** Content at the start of the inline-end addon, before the spinner and the action (suffix). */
+    inputEndSlot?: ReactNode;
+    /** Content after the inline-end addon, at the very end of the frame (step buttons). */
+    endSlot?: ReactNode;
   };
 
 /**
@@ -38,6 +44,9 @@ export function InputField({
   loadingLabel,
   infoLabel,
   action,
+  startSlot,
+  inputEndSlot,
+  endSlot,
   type,
   id,
   "aria-describedby": describedBy,
@@ -71,14 +80,16 @@ export function InputField({
       classNames={classNames}
     >
       <InputGroup className={cn(fieldFrameClassName, classNames?.control)}>
+        {startSlot}
         <InputGroupInput
           {...inputProps}
           {...a11y.inputProps}
           type={type}
           className={classNames?.input}
         />
-        {loading || action ? (
+        {loading || action || inputEndSlot ? (
           <InputGroupAddon align="inline-end" className={fieldAddonClassName}>
+            {inputEndSlot}
             {loading ? <FieldLoading label={loadingLabel} /> : null}
             {action ? (
               <FieldAction
@@ -89,6 +100,7 @@ export function InputField({
             ) : null}
           </InputGroupAddon>
         ) : null}
+        {endSlot}
       </InputGroup>
     </FieldShell>
   );

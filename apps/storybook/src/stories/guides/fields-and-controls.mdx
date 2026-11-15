@@ -21,6 +21,8 @@ Available families:
 | Text     | `TextField`     | `TextControl`     | Optional and configurable (`action`)        |
 | Password | `PasswordField` | `PasswordControl` | Always the show/hide toggle (no `action`)   |
 | Text area | `TextAreaField` | `TextAreaControl` | Optional (`action`), in a footer bar below the text |
+| Number   | `NumberField`   | `NumberControl`   | Step buttons (stacked or split) plus an optional `action` |
+| Select   | `SelectField`   | `SelectControl`   | Chevron, optional clear (✕) and an optional `action` |
 
 Every family shares the same view, so all fields look alike.
 
@@ -130,6 +132,69 @@ import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
 - **Counter.** `showCount` shows "count/maxLength" (or the count alone) and turns red at the limit. Screen readers get the remaining characters in the field's description, announced once the user pauses typing.
 - **Shortcut.** `actionShortcut` lets Ctrl+Enter (Cmd+Enter on macOS) press the action; Enter alone still adds a new line.
 
+## Number
+
+```tsx
+import { NumberControl } from "@aureus-core/ui/components/number-control";
+import { NumberField } from "@aureus-core/ui/components/number-field";
+
+<NumberField label="Quantity" min={0} />                                     // 122345
+<NumberField label="Units" grouping />                                       // 123,345
+<NumberField label="Budget" currency="USD" decimals={0} grouping />          // $ 12,000
+<NumberField label="Rate" suffix="%" decimals={3} stepper={false} />         // 4.125 %
+<NumberControl name="amount" label="Amount" currency="USD" decimals={2} padDecimals grouping />
+```
+
+- **Every prop is independent and opt-in.** Without props the field shows digits as typed. `grouping`, `decimals`, `padDecimals`, `currency`, `prefix`, `suffix`, `align` and the negative format never change each other's defaults: `currency` only adds a symbol. The implementation decides which combination is right.
+- **The value is `number | null`.** The control stores a number in the form, so schemas such as `z.number()` work directly.
+- **Step buttons.** `stepperLayout="stacked"` (▲▼ at the end) or `"split"` (− and + on each side); on touch screens stacked becomes split automatically. `stepper={false}` hides them. Holding a button repeats the step.
+- **Keyboard.** Arrows step by `step`, Shift or Page Up/Down by `largeStep`, Home/End go to `min`/`max`, Enter commits, Escape restores the last committed value.
+- **Conveniences, all off by default.** `selectOnFocus`, `wheel`, `shorthand` (1.5k → 1500) and `expressions` (`=120*3` → 360). An expression is remembered while the field is mounted: the field shows the result, and the expression again when focused, so it can be edited.
+
+## Select
+
+```tsx
+import { SelectControl } from "@aureus-core/ui/components/select-control";
+import { SelectField } from "@aureus-core/ui/components/select-field";
+
+<SelectField label="Country" options={countries} placeholder="Choose a country" />
+<SelectField
+  label="Country"
+  options={countries}
+  searchable
+  searchLabel="Search countries"           // required by `searchable`
+  noResultsMessage="No country matches"    // optional: nothing is shown without it
+/>
+<SelectControl
+  name="tags"
+  label="Tags"
+  options={tags}
+  multiple
+  multipleDisplay="chips"
+  removeChipLabel={(option) => `Remove ${option.label}`}   // required by chips
+/>
+```
+
+- **Single or multiple.** The value is `string | null`, or `string[]` with `multiple`. With `multiple`, `multipleDisplay` is required: `"chips"` (removable tags; the field grows) or `"summary"` (one line you write in `renderSummary`).
+- **Search inside the list.** `searchable` adds a search box at the top of the popup; local filtering ignores case and accents. For server search pass `filter={false}`, load the options in `onSearchChange` and set `optionsLoading`.
+- **Opt-in extras.** Groups (`group`), descriptions, disabled options, `maxSelected`, `selectAll` and `creatable`, each independent of the others.
+
+## Messages are the developer's
+
+Select is the first family that ships **no texts of its own**, neither visible nor accessible. The developer writes every text for the situation where it appears.
+
+- **Visible messages are optional.** `placeholder`, `emptyMessage`, `noResultsMessage`, `optionsLoadingMessage` and `maxSelectedMessage` render nothing when they are omitted: there is no fallback text in another language.
+- **The texts a feature needs are required when the feature is enabled.** TypeScript rejects the props without them, and plain JavaScript gets a development warning that names the missing prop:
+
+| Feature | Requires |
+| ------- | -------- |
+| `searchable` | `searchLabel` |
+| `clearable` | `clearLabel` |
+| `multiple` + `multipleDisplay="chips"` | `removeChipLabel(option)` |
+| `multiple` + `multipleDisplay="summary"` | `renderSummary(selected)` |
+| `selectAll` | `selectAll.label` |
+| `creatable` | `createLabel(query)` and `onCreate(query)` |
+
 ## Providers
 
 `TooltipProvider` (from `@aureus-core/ui/shadcn/tooltip`) must wrap the app for the `info` and `action.tooltip` tooltips. Controls also need react-hook-form, which is a peer dependency of the package.
@@ -154,6 +219,8 @@ Familias disponibles:
 | Texto       | `TextField`     | `TextControl`     | Opcional y configurable (`action`)              |
 | Contraseña  | `PasswordField` | `PasswordControl` | Siempre el de mostrar/ocultar (sin `action`)    |
 | Texto multilínea | `TextAreaField` | `TextAreaControl` | Opcional (`action`), en una barra bajo el texto |
+| Número      | `NumberField`   | `NumberControl`   | Botones de paso (apilados o split) y una `action` opcional |
+| Select      | `SelectField`   | `SelectControl`   | Chevron, limpiar (✕) opcional y una `action` opcional |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -262,6 +329,69 @@ import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
 - **Barra inferior.** El spinner, el contador y la `action` van en una barra pegada al borde de abajo del marco, así el botón acompaña cualquier cambio de altura y nunca tapa el texto. La barra solo aparece cuando tiene algo que mostrar.
 - **Contador.** `showCount` muestra "cuenta/maxLength" (o solo la cuenta) y se pone en rojo al llegar al límite. Los lectores de pantalla reciben los caracteres restantes en la descripción del campo, anunciados cuando el usuario deja de escribir.
 - **Atajo.** `actionShortcut` permite pulsar la acción con Ctrl+Enter (Cmd+Enter en macOS); Enter solo sigue haciendo un salto de línea.
+
+## Número
+
+```tsx
+import { NumberControl } from "@aureus-core/ui/components/number-control";
+import { NumberField } from "@aureus-core/ui/components/number-field";
+
+<NumberField label="Cantidad" min={0} />                                     // 122345
+<NumberField label="Unidades" grouping />                                    // 123,345
+<NumberField label="Presupuesto" currency="USD" decimals={0} grouping />     // $ 12,000
+<NumberField label="Tasa" suffix="%" decimals={3} stepper={false} />         // 4.125 %
+<NumberControl name="amount" label="Importe" currency="USD" decimals={2} padDecimals grouping />
+```
+
+- **Cada prop es independiente y opcional.** Sin props, el campo muestra los dígitos tal como se escriben. `grouping`, `decimals`, `padDecimals`, `currency`, `prefix`, `suffix`, `align` y el formato de negativos nunca cambian los valores por defecto de las demás: `currency` solo añade un símbolo. La implementación decide qué combinación es la correcta.
+- **El valor es `number | null`.** El control guarda un número en el formulario, así schemas como `z.number()` funcionan directamente.
+- **Botones de paso.** `stepperLayout="stacked"` (▲▼ al final) o `"split"` (− y + a cada lado); en pantallas táctiles, el apilado pasa a split automáticamente. `stepper={false}` los oculta. Mantener pulsado un botón repite el paso.
+- **Teclado.** Las flechas suman `step`, Shift o Re Pág/Av Pág suman `largeStep`, Inicio/Fin van a `min`/`max`, Enter confirma y Escape restaura el último valor confirmado.
+- **Comodidades, todas desactivadas por defecto.** `selectOnFocus`, `wheel`, `shorthand` (1.5k → 1500) y `expressions` (`=120*3` → 360). Una expresión se recuerda mientras el campo está montado: se ve el resultado y, al enfocarlo, vuelve la expresión para editarla.
+
+## Select
+
+```tsx
+import { SelectControl } from "@aureus-core/ui/components/select-control";
+import { SelectField } from "@aureus-core/ui/components/select-field";
+
+<SelectField label="País" options={countries} placeholder="Elige un país" />
+<SelectField
+  label="País"
+  options={countries}
+  searchable
+  searchLabel="Buscar país"                  // obligatorio con `searchable`
+  noResultsMessage="Ningún país coincide"    // opcional: sin él no se muestra nada
+/>
+<SelectControl
+  name="tags"
+  label="Etiquetas"
+  options={tags}
+  multiple
+  multipleDisplay="chips"
+  removeChipLabel={(option) => `Quitar ${option.label}`}   // obligatorio con chips
+/>
+```
+
+- **Simple o múltiple.** El valor es `string | null`, o `string[]` con `multiple`. Con `multiple`, `multipleDisplay` es obligatorio: `"chips"` (etiquetas removibles; el campo crece) o `"summary"` (una línea que escribes en `renderSummary`).
+- **Búsqueda dentro de la lista.** `searchable` añade un buscador arriba del desplegable; el filtrado local ignora mayúsculas y acentos. Para buscar en servidor pasa `filter={false}`, carga las opciones en `onSearchChange` y activa `optionsLoading`.
+- **Extras opcionales.** Grupos (`group`), descripciones, opciones deshabilitadas, `maxSelected`, `selectAll` y `creatable`, cada uno independiente de los demás.
+
+## Los mensajes son del desarrollador
+
+Select es la primera familia que **no trae textos propios**, ni visibles ni accesibles. El desarrollador escribe cada texto para la situación en que aparece.
+
+- **Los mensajes visibles son opcionales.** `placeholder`, `emptyMessage`, `noResultsMessage`, `optionsLoadingMessage` y `maxSelectedMessage` no muestran nada si se omiten: no hay texto de reserva en otro idioma.
+- **Los textos que necesita una función son obligatorios al activarla.** TypeScript rechaza las props sin ellos, y en JavaScript sin tipos aparece un aviso en desarrollo con el nombre de la prop que falta:
+
+| Función | Exige |
+| ------- | ----- |
+| `searchable` | `searchLabel` |
+| `clearable` | `clearLabel` |
+| `multiple` + `multipleDisplay="chips"` | `removeChipLabel(option)` |
+| `multiple` + `multipleDisplay="summary"` | `renderSummary(selected)` |
+| `selectAll` | `selectAll.label` |
+| `creatable` | `createLabel(query)` y `onCreate(query)` |
 
 ## Providers
 

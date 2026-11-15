@@ -28,3 +28,34 @@ describe("InputField", () => {
     expect(screen.getByRole("status", { name: "Loading" })).toBeTruthy();
   });
 });
+
+describe("InputField slots", () => {
+  it("renders the start slot before the input, the input-end slot first in the addon, and the end slot last", () => {
+    const { container } = render(
+      <InputField
+        label="Amount"
+        type="text"
+        loading
+        startSlot={<span data-testid="start" />}
+        inputEndSlot={<span data-testid="input-end" />}
+        endSlot={<span data-testid="end" />}
+      />,
+    );
+    const frame = container.querySelector("[data-slot=input-group]") as HTMLElement;
+    const children = [...frame.children];
+    expect(children[0]?.getAttribute("data-testid")).toBe("start");
+    expect(children[1]?.tagName).toBe("INPUT");
+    const addon = children[2] as HTMLElement;
+    expect(addon.getAttribute("data-slot")).toBe("input-group-addon");
+    expect(addon.firstElementChild?.getAttribute("data-testid")).toBe("input-end");
+    expect(addon.children[1]?.getAttribute("data-slot")).toBe("field-loading");
+    expect(children[3]?.getAttribute("data-testid")).toBe("end");
+  });
+
+  it("renders the inline-end addon for an input-end slot alone", () => {
+    const { container } = render(
+      <InputField label="Weight" type="text" inputEndSlot={<span>kg</span>} />,
+    );
+    expect(container.querySelector("[data-slot=input-group-addon]")?.textContent).toBe("kg");
+  });
+});

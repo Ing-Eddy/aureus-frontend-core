@@ -29,7 +29,11 @@ export function FieldHeader({
   return (
     <div data-slot="field-header" className={cn(fieldHeaderClassName, classNames?.header)}>
       {label ? (
-        <FieldLabel htmlFor={inputId} className={cn(fieldLabelClassName, classNames?.label)}>
+        <FieldLabel
+          id={`${inputId}-label`}
+          htmlFor={inputId}
+          className={cn(fieldLabelClassName, classNames?.label)}
+        >
           {label}
           {required ? <RequiredMark className={classNames?.requiredMark} /> : null}
         </FieldLabel>

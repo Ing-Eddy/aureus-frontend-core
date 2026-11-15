@@ -24,6 +24,8 @@ export function useFieldA11y(options: UseFieldA11yOptions) {
   const inputId = options.id ?? generatedId;
   const helperId = `${inputId}-helper`;
   const infoId = `${inputId}-info`;
+  /** The label's id, for elements that must be named by it (such as a select's listbox). */
+  const labelId = `${inputId}-label`;
   const isDisabled = Boolean(options.disabled || options.loading);
 
   const describedBy =
@@ -39,6 +41,7 @@ export function useFieldA11y(options: UseFieldA11yOptions) {
     inputId,
     helperId,
     infoId,
+    labelId,
     isDisabled,
     /** Spread on the input element. */
     inputProps: {
