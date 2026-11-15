@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 import { cn } from "@/shadcn/lib/utils";
 import { Checkbox } from "@/shadcn/ui/checkbox";
-import { checkboxStyles } from "./styles";
+import { checkboxStyles } from "./checkbox-styles";
 
 export type CheckboxBoxProps = Omit<ComponentProps<typeof Checkbox>, "checked"> & {
   checked: boolean;
@@ -14,7 +14,7 @@ export function CheckboxBox({ checked, indeterminate, className, ...props }: Che
   return (
     <Checkbox
       checked={indeterminate ? "indeterminate" : checked}
-      className={cn(checkboxStyles.indeterminate, className)}
+      className={cn(checkboxStyles.indeterminate, checkboxStyles.enabledBox, className)}
       {...props}
     />
   );

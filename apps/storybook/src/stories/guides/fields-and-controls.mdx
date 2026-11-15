@@ -24,6 +24,7 @@ Available families:
 | Number   | `NumberField`   | `NumberControl`   | Step buttons (stacked or split) plus an optional `action` |
 | Select   | `SelectField`   | `SelectControl`   | Chevron, optional clear (✕) and an optional `action` |
 | Checkbox | `CheckboxField` | `CheckboxControl` | No frame: an optional `action` at the end of the row |
+| Checkbox group | `CheckboxGroupField` | `CheckboxGroupControl` | No frame: one box per option |
 
 Every family shares the same view, so all fields look alike.
 
@@ -196,6 +197,22 @@ import { CheckboxField } from "@aureus-core/ui/components/checkbox-field";
 - **The value is `boolean`,** or the custom values you pass with `checkedValue` and `uncheckedValue` (both or neither; the type is inferred). Schemas such as `z.literal(true)` (accept terms) or `z.enum(["S", "N"])` work directly.
 - **Opt-in extras.** `indeterminate` (visual mixed state), `checkboxPosition="end"` and `appearance="card"`, each independent.
 
+## Checkbox group
+
+```tsx
+import { CheckboxGroupControl } from "@aureus-core/ui/components/checkbox-group-control";
+import { CheckboxGroupField } from "@aureus-core/ui/components/checkbox-group-field";
+
+<CheckboxGroupField label="Channels" options={channels} />                    // string[]
+<CheckboxGroupControl name="permissions" label="Permissions" options={permissions}
+  selectAll={{ label: "All permissions" }} maxSelected={3} />
+<CheckboxGroupField label="Working days" options={weekdays} columns={3} />
+```
+
+- **The value is a `string[]` in the order of `options`,** whatever order the boxes are checked in. Schemas such as `z.array(z.string()).min(1)` hold the rules.
+- **Opt-in extras.** `selectAll` (its `label` is required), `maxSelected` with an optional `maxSelectedMessage`, `orientation="horizontal"`, `columns` (collapsing in narrow containers), `appearance="card"` and `checkboxPosition="end"`.
+- **Naming.** The `label` names the group and each option's label names its box. `required` marks the label only.
+
 ## Messages are the developer's
 
 Select is the first family that ships **no texts of its own**, neither visible nor accessible. The developer writes every text for the situation where it appears.
@@ -239,6 +256,7 @@ Familias disponibles:
 | Número      | `NumberField`   | `NumberControl`   | Botones de paso (apilados o split) y una `action` opcional |
 | Select      | `SelectField`   | `SelectControl`   | Chevron, limpiar (✕) opcional y una `action` opcional |
 | Checkbox    | `CheckboxField` | `CheckboxControl` | Sin marco: una `action` opcional al final de la fila |
+| Grupo de checkboxes | `CheckboxGroupField` | `CheckboxGroupControl` | Sin marco: una casilla por opción |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -410,6 +428,22 @@ import { CheckboxField } from "@aureus-core/ui/components/checkbox-field";
 - **Dos textos.** `label` va arriba, como en todo field; `checkboxLabel` va junto a la casilla y es clicable (los enlaces que contenga siguen navegando). Con los dos, `label` nombra el grupo y `checkboxLabel` nombra la casilla.
 - **El valor es `boolean`,** o los valores que pases con `checkedValue` y `uncheckedValue` (los dos o ninguno; el tipo se infiere). Schemas como `z.literal(true)` (aceptar términos) o `z.enum(["S", "N"])` funcionan directamente.
 - **Extras opcionales.** `indeterminate` (estado mixto visual), `checkboxPosition="end"` y `appearance="card"`, cada uno independiente.
+
+## Grupo de checkboxes
+
+```tsx
+import { CheckboxGroupControl } from "@aureus-core/ui/components/checkbox-group-control";
+import { CheckboxGroupField } from "@aureus-core/ui/components/checkbox-group-field";
+
+<CheckboxGroupField label="Canales" options={channels} />                     // string[]
+<CheckboxGroupControl name="permissions" label="Permisos" options={permissions}
+  selectAll={{ label: "Todos los permisos" }} maxSelected={3} />
+<CheckboxGroupField label="Días laborables" options={weekdays} columns={3} />
+```
+
+- **El valor es un `string[]` en el orden de `options`,** sin importar el orden en que se marquen. Las reglas van en schemas como `z.array(z.string()).min(1)`.
+- **Extras opcionales.** `selectAll` (su `label` es obligatorio), `maxSelected` con un `maxSelectedMessage` opcional, `orientation="horizontal"`, `columns` (se reducen en contenedores estrechos), `appearance="card"` y `checkboxPosition="end"`.
+- **Nombres.** El `label` nombra el grupo y el label de cada opción nombra su casilla. `required` solo marca el label.
 
 ## Los mensajes son del desarrollador
 

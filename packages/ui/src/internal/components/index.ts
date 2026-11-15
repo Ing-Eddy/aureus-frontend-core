@@ -1,3 +1,4 @@
+export * from "./checkbox-row";
 export * from "./control-field";
 export * from "./field-action";
 export * from "./field-counter";

@@ -28,6 +28,19 @@ export interface FieldShellProps
   labelFor?: boolean;
   /** Names the root group with the header label through `aria-labelledby` (default `false`). */
   labelledByRoot?: boolean;
+  /**
+   * ARIA attributes for the root group, for fields whose control is the whole group (such as a
+   * checkbox group). `labelledByRoot` takes precedence for `aria-labelledby`.
+   */
+  rootAria?: {
+    "aria-describedby"?: string;
+    "aria-busy"?: boolean;
+    "aria-disabled"?: boolean;
+    "aria-label"?: string;
+    "aria-labelledby"?: string;
+  };
+  /** Content at the end of the header row, before the info button. */
+  headerEnd?: ReactNode;
 }
 
 /**
@@ -51,14 +64,17 @@ export function FieldShell({
   children,
   labelFor = true,
   labelledByRoot = false,
+  rootAria,
+  headerEnd,
 }: FieldShellProps) {
   return (
     <Field
       className={cn("min-w-0", classNames?.root, className)}
-      aria-labelledby={labelledByRoot && label ? `${inputId}-label` : undefined}
+      {...rootAria}
+      aria-labelledby={labelledByRoot && label ? `${inputId}-label` : rootAria?.["aria-labelledby"]}
       {...rootProps}
     >
-      {label || info ? (
+      {label || info || headerEnd ? (
         <FieldHeader
           inputId={inputId}
           infoId={infoId}
@@ -68,6 +84,7 @@ export function FieldShell({
           infoLabel={infoLabel}
           classNames={classNames}
           labelFor={labelFor}
+          headerEnd={headerEnd}
         />
       ) : null}
       {children}

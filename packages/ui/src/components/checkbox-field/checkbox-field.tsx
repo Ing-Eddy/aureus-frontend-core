@@ -1,5 +1,12 @@
 import { type ReactElement, useMemo, useRef } from "react";
-import { FieldAction, FieldLoading, FieldShell } from "@/internal/components";
+import {
+  CheckboxBox,
+  CheckboxRow,
+  checkboxStyles,
+  FieldAction,
+  FieldLoading,
+  FieldShell,
+} from "@/internal/components";
 import { useFieldA11y } from "@/internal/hooks";
 import { mergeRefs } from "@/internal/utils/helpers";
 import { cn } from "@/shadcn/lib/utils";
@@ -10,7 +17,6 @@ import type {
   CheckboxFieldProps,
   CheckboxValue,
 } from "./checkbox-field-types";
-import { CheckboxBox, CheckboxRow, checkboxStyles } from "./components";
 import { useCheckboxValue, useCheckboxWarnings } from "./hooks";
 
 /**

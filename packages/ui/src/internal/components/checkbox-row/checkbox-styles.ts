@@ -12,18 +12,28 @@ export const checkboxStyles = {
     "data-[state=indeterminate]:before:w-2 data-[state=indeterminate]:before:rounded-full",
     "data-[state=indeterminate]:before:bg-current",
   ].join(" "),
+  /**
+   * shadcn dims every checkbox inside a field that holds any disabled element
+   * (`group-has-disabled/field:opacity-50`). In a group, or next to a disabled action, that dims
+   * enabled boxes too; this keeps enabled boxes opaque, and disabled boxes keep their own dimming.
+   */
+  enabledBox: "group-has-disabled/field:not-disabled:opacity-100",
   row: "flex w-full min-w-0 items-start gap-2",
   card: [
     "rounded-lg border border-input p-3 transition-colors dark:bg-input/30",
     "has-[[data-slot=checkbox][data-state=checked]]:border-primary",
     "has-[[data-slot=checkbox][data-state=checked]]:bg-primary/5",
     "has-[[data-slot=checkbox][data-state=indeterminate]]:border-primary",
-    "has-[[data-slot=checkbox]:disabled]:opacity-60",
+    // A disabled card keeps its text readable (descriptions explain why); only the surface changes.
+    "has-[[data-slot=checkbox]:disabled]:cursor-not-allowed has-[[data-slot=checkbox]:disabled]:bg-muted/50",
   ].join(" "),
   cardError: "border-destructive has-[[data-slot=checkbox][data-state=checked]]:border-destructive",
   /** Keeps the 16px box on the first line of text (20px line height). */
   boxSlot: "flex h-5 shrink-0 items-center",
   text: "min-w-0 flex-1 text-sm leading-5 text-foreground select-none [overflow-wrap:anywhere]",
+  /** Text and description stacked, when there is a description. */
+  textColumn: "flex min-w-0 flex-1 flex-col gap-0.5",
+  description: "text-sm leading-5 text-muted-foreground select-none [overflow-wrap:anywhere]",
   textInteractive: "cursor-pointer",
   textLocked: "cursor-not-allowed opacity-50",
   end: "flex h-5 shrink-0 items-center gap-1",

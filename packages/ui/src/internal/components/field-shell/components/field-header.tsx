@@ -20,6 +20,8 @@ export interface FieldHeaderProps {
    * this label.
    */
   labelFor?: boolean;
+  /** Content at the end of the row, before the info button (for example a group's spinner). */
+  headerEnd?: ReactNode;
 }
 
 /** The row above the input: label and required mark at the start, info button at the far end. */
@@ -32,6 +34,7 @@ export function FieldHeader({
   infoLabel,
   classNames,
   labelFor = true,
+  headerEnd,
 }: FieldHeaderProps) {
   return (
     <div data-slot="field-header" className={cn(fieldHeaderClassName, classNames?.header)}>
@@ -45,12 +48,17 @@ export function FieldHeader({
           {required ? <RequiredMark className={classNames?.requiredMark} /> : null}
         </FieldLabel>
       ) : null}
+      {headerEnd ? (
+        <span data-slot="field-header-end" className="ms-auto flex items-center gap-2">
+          {headerEnd}
+        </span>
+      ) : null}
       {info ? (
         <FieldInfo
           id={infoId}
           content={info}
           label={infoLabel}
-          className={cn("ms-auto", classNames?.info)}
+          className={cn(!headerEnd && "ms-auto", classNames?.info)}
         />
       ) : null}
     </div>

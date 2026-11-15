@@ -125,4 +125,44 @@ describe("FieldShell", () => {
       false,
     );
   });
+
+  it("puts the root ARIA attributes on the group", () => {
+    renderShell({
+      rootAria: { "aria-describedby": "name-helper", "aria-busy": true, "aria-label": "Channels" },
+    });
+    const group = screen.getByRole("group", { name: "Channels" });
+    expect(group.getAttribute("aria-describedby")).toBe("name-helper");
+    expect(group.getAttribute("aria-busy")).toBe("true");
+  });
+
+  it("prefers the label over rootAria for aria-labelledby", () => {
+    renderShell({
+      label: "Name",
+      labelFor: false,
+      labelledByRoot: true,
+      rootAria: { "aria-labelledby": "other" },
+    });
+    expect(screen.getByRole("group").getAttribute("aria-labelledby")).toBe("name-label");
+  });
+
+  it("renders the header with only headerEnd, before the info button", () => {
+    const { container, rerender } = renderShell({ headerEnd: <span>spinner</span> });
+    expect(container.querySelector("[data-slot=field-header-end]")?.textContent).toBe("spinner");
+    rerender(
+      <TooltipProvider>
+        <FieldShell
+          inputId="name"
+          helperId="name-helper"
+          infoId="name-info"
+          info="More"
+          headerEnd={<span>spinner</span>}
+        >
+          <input id="name" />
+        </FieldShell>
+      </TooltipProvider>,
+    );
+    const header = container.querySelector("[data-slot=field-header]");
+    const children = [...(header?.children ?? [])].map((child) => child.getAttribute("data-slot"));
+    expect(children.indexOf("field-header-end")).toBeLessThan(children.length - 1);
+  });
 });
