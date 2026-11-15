@@ -7,7 +7,7 @@ import {
   FieldLoading,
   FieldShell,
 } from "@/internal/components";
-import { useFieldA11y } from "@/internal/hooks";
+import { useFieldA11y, useToggleValue } from "@/internal/hooks";
 import { mergeRefs } from "@/internal/utils/helpers";
 import { cn } from "@/shadcn/lib/utils";
 import type {
@@ -17,7 +17,7 @@ import type {
   CheckboxFieldProps,
   CheckboxValue,
 } from "./checkbox-field-types";
-import { useCheckboxValue, useCheckboxWarnings } from "./hooks";
+import { useCheckboxWarnings } from "./hooks";
 
 /**
  * A checkbox with the shared field layout. The value is `boolean` by default, or the custom
@@ -63,7 +63,7 @@ export function CheckboxField<V extends CheckboxValue = boolean>(
 
   useCheckboxWarnings("CheckboxField", props);
 
-  const state = useCheckboxValue<V>({
+  const state = useToggleValue<V>({
     value: props.value as V | undefined,
     defaultValue: props.defaultValue as V | undefined,
     onValueChange: props.onValueChange as ((value: V) => void) | undefined,

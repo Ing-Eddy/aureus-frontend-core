@@ -26,6 +26,8 @@ Available families:
 | Checkbox | `CheckboxField` | `CheckboxControl` | No frame: an optional `action` at the end of the row |
 | Checkbox group | `CheckboxGroupField` | `CheckboxGroupControl` | No frame: one box per option |
 | Radio group | `RadioGroupField` | `RadioGroupControl` | No frame: one radio per option, or segments |
+| Switch | `SwitchField` | `SwitchControl` | No frame: an optional `action` at the end of the row |
+| OTP | `OtpField` | `OtpControl` | Boxes over one input; optional show/hide toggle and `action` |
 
 Every family shares the same view, so all fields look alike.
 
@@ -230,6 +232,38 @@ import { RadioGroupField } from "@aureus-core/ui/components/radio-group-field";
 - **Keyboard:** the group is one tab stop, and the arrow keys move and select, skipping disabled options.
 - **Opt-in extras.** `orientation="horizontal"`, `columns`, `appearance` (`card` or `segmented`), `radioPosition="end"`, `otherOption` (its `label` and `inputLabel` are required; the value becomes the typed text) and `deselectable` (it departs from the standard pattern).
 
+## Switch
+
+```tsx
+import { SwitchControl } from "@aureus-core/ui/components/switch-control";
+import { SwitchField } from "@aureus-core/ui/components/switch-field";
+
+<SwitchField switchLabel="Email notifications" />                              // true / false
+<SwitchField switchLabel="Compact mode" switchPosition="end" size="sm" />
+<SwitchControl name="alerts" switchLabel="Alerts"
+  onBeforeChange={(next) => api.save("alerts", next)} />                       // spinner in the thumb while saving
+```
+
+- **Switch or checkbox?** A switch applies immediately (a setting); a checkbox is confirmed later with a button (terms in a form).
+- **The value is a `boolean`,** or custom values with `checkedValue`/`uncheckedValue` (both or neither), as in the checkbox.
+- **`onBeforeChange`** confirms each change: while its promise is pending the switch stays put with a spinner in the thumb; only confirmed changes are reported (and stored by the control).
+- **Opt-in extras.** `switchPosition="end"`, `appearance="card"`, `size="sm"`, and decorative `stateLabels` and `thumbIcons` (both entries required).
+
+## OTP
+
+```tsx
+import { OtpControl } from "@aureus-core/ui/components/otp-control";
+import { OtpField } from "@aureus-core/ui/components/otp-field";
+
+<OtpField label="Verification code" length={6} onComplete={verify} />
+<OtpField label="Recovery code" length={6} groups={[3, 3]} charset="alphanumeric" uppercase />
+<OtpControl name="pin" label="PIN" length={4} masked reveal={{ showLabel: "Show PIN", hideLabel: "Hide PIN" }} />
+```
+
+- **One real input behind the boxes,** so SMS autofill (`autocomplete="one-time-code"`), pasting (`"123 456"` → `123456`) and screen readers work as with any input. The boxes are decorative.
+- **The value is a `string`;** `onComplete(code)` fires when the last box is filled, and `submitOnComplete` (opt-in) submits the form.
+- **Opt-in extras.** `charset` (also sets the mobile keyboard), `uppercase`, `groups` with a `separator`, `masked` with an optional `reveal` (both texts required). Codes keep a left-to-right order in RTL.
+
 ## Messages are the developer's
 
 Select is the first family that ships **no texts of its own**, neither visible nor accessible. The developer writes every text for the situation where it appears.
@@ -275,6 +309,8 @@ Familias disponibles:
 | Checkbox    | `CheckboxField` | `CheckboxControl` | Sin marco: una `action` opcional al final de la fila |
 | Grupo de checkboxes | `CheckboxGroupField` | `CheckboxGroupControl` | Sin marco: una casilla por opción |
 | Grupo de radios | `RadioGroupField` | `RadioGroupControl` | Sin marco: un radio por opción, o segmentos |
+| Switch | `SwitchField` | `SwitchControl` | Sin marco: una `action` opcional al final de la fila |
+| OTP | `OtpField` | `OtpControl` | Casillas sobre un input; botón mostrar/ocultar y `action` opcionales |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -478,6 +514,38 @@ import { RadioGroupField } from "@aureus-core/ui/components/radio-group-field";
 - **Una sola opción a la vez.** El valor es `string | null` (`null` mientras no se elija nada), y las reglas van en schemas como `z.string({ error })`.
 - **Teclado:** el grupo es una sola parada de Tab, y las flechas mueven y seleccionan, saltando las opciones deshabilitadas.
 - **Extras opcionales.** `orientation="horizontal"`, `columns`, `appearance` (`card` o `segmented`), `radioPosition="end"`, `otherOption` (su `label` e `inputLabel` son obligatorios; el valor pasa a ser lo escrito) y `deselectable` (se aparta del patrón estándar).
+
+## Switch
+
+```tsx
+import { SwitchControl } from "@aureus-core/ui/components/switch-control";
+import { SwitchField } from "@aureus-core/ui/components/switch-field";
+
+<SwitchField switchLabel="Notificaciones por correo" />                         // true / false
+<SwitchField switchLabel="Modo compacto" switchPosition="end" size="sm" />
+<SwitchControl name="alerts" switchLabel="Alertas"
+  onBeforeChange={(next) => api.save("alerts", next)} />                       // spinner en el thumb mientras guarda
+```
+
+- **¿Switch o checkbox?** Un switch se aplica al momento (un ajuste); un checkbox se confirma después con un botón (términos en un formulario).
+- **El valor es un `boolean`,** o valores personalizados con `checkedValue`/`uncheckedValue` (los dos o ninguno), como en el checkbox.
+- **`onBeforeChange`** confirma cada cambio: mientras su promesa está pendiente el switch no se mueve y muestra un spinner en el thumb; solo se emiten (y el control solo guarda) los cambios confirmados.
+- **Extras opcionales.** `switchPosition="end"`, `appearance="card"`, `size="sm"`, y `stateLabels` y `thumbIcons` decorativos (las dos entradas obligatorias).
+
+## OTP
+
+```tsx
+import { OtpControl } from "@aureus-core/ui/components/otp-control";
+import { OtpField } from "@aureus-core/ui/components/otp-field";
+
+<OtpField label="Código de verificación" length={6} onComplete={verify} />
+<OtpField label="Código de recuperación" length={6} groups={[3, 3]} charset="alphanumeric" uppercase />
+<OtpControl name="pin" label="PIN" length={4} masked reveal={{ showLabel: "Mostrar PIN", hideLabel: "Ocultar PIN" }} />
+```
+
+- **Un solo input real detrás de las casillas,** así el autocompletado de SMS (`autocomplete="one-time-code"`), el pegado (`"123 456"` → `123456`) y los lectores de pantalla funcionan como en cualquier input. Las casillas son decorativas.
+- **El valor es un `string`;** `onComplete(code)` se llama al llenar la última casilla, y `submitOnComplete` (opcional) envía el formulario.
+- **Extras opcionales.** `charset` (también ajusta el teclado móvil), `uppercase`, `groups` con un `separator`, `masked` con un `reveal` opcional (los dos textos obligatorios). Los códigos mantienen el orden de izquierda a derecha en RTL.
 
 ## Los mensajes son del desarrollador
 

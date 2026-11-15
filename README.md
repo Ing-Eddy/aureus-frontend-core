@@ -73,13 +73,15 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
 ### Fields & controls
 
-Each input comes as a pair that looks the same: a **field** for general use and a **control** bound to react-hook-form. Available pairs: `TextField` / `TextControl`, `PasswordField` / `PasswordControl` (with a built-in show/hide toggle), `TextAreaField` / `TextAreaControl` (multi-line: grows with its content, optional character counter, and its action in a footer bar) and `NumberField` / `NumberControl` (value `number | null`; separators, decimals, currency, prefix/suffix, accounting negatives, custom step buttons, shorthand and calculations, each an independent opt-in prop) and `SelectField` / `SelectControl` (single `string | null` or multiple `string[]` shown as chips or a summary; optional search inside the list, groups, descriptions, server search, a selection limit, select all and creatable options). `CheckboxField` / `CheckboxControl` add a checkbox with two texts (the field `label` above and a clickable `checkboxLabel` beside the box); its value is a `boolean`, or the custom values you pass with `checkedValue`/`uncheckedValue`, with opt-in `indeterminate`, `checkboxPosition="end"` and `appearance="card"`. `CheckboxGroupField` / `CheckboxGroupControl` hold a `string[]` in the order of `options`, with opt-in select all, selection limit, horizontal or column layouts and cards. `RadioGroupField` / `RadioGroupControl` choose exactly one value (`string | null`) with the WAI-ARIA radio group keyboard, plus opt-in cards, segments, an "other" option with free text and deselection. The select ships no texts of its own: every message is yours, and the texts a feature needs (such as `searchLabel` for `searchable`) are required by TypeScript when you enable it. Controls only take a `name` (plus visual props) and must be rendered inside a `FormProvider`; values, defaults and validation (for example a zod schema) belong to the form, and validation messages appear as the helper text.
+Each input comes as a pair that looks the same: a **field** for general use and a **control** bound to react-hook-form. Available pairs: `TextField` / `TextControl`, `PasswordField` / `PasswordControl` (with a built-in show/hide toggle), `TextAreaField` / `TextAreaControl` (multi-line: grows with its content, optional character counter, and its action in a footer bar) and `NumberField` / `NumberControl` (value `number | null`; separators, decimals, currency, prefix/suffix, accounting negatives, custom step buttons, shorthand and calculations, each an independent opt-in prop) and `SelectField` / `SelectControl` (single `string | null` or multiple `string[]` shown as chips or a summary; optional search inside the list, groups, descriptions, server search, a selection limit, select all and creatable options). `CheckboxField` / `CheckboxControl` add a checkbox with two texts (the field `label` above and a clickable `checkboxLabel` beside the box); its value is a `boolean`, or the custom values you pass with `checkedValue`/`uncheckedValue`, with opt-in `indeterminate`, `checkboxPosition="end"` and `appearance="card"`. `CheckboxGroupField` / `CheckboxGroupControl` hold a `string[]` in the order of `options`, with opt-in select all, selection limit, horizontal or column layouts and cards. `RadioGroupField` / `RadioGroupControl` choose exactly one value (`string | null`) with the WAI-ARIA radio group keyboard, plus opt-in cards, segments, an "other" option with free text and deselection. `SwitchField` / `SwitchControl` add an on/off switch for settings that apply immediately, with optional custom values, decorative state labels and thumb icons, and `onBeforeChange` to confirm each change (for example after saving it) with a spinner in the thumb. `OtpField` / `OtpControl` add one-time codes and PINs: boxes over one real input (SMS autofill, pasting), with opt-in character sets, groups, masking and submitting on completion. The select ships no texts of its own: every message is yours, and the texts a feature needs (such as `searchLabel` for `searchable`) are required by TypeScript when you enable it. Controls only take a `name` (plus visual props) and must be rendered inside a `FormProvider`; values, defaults and validation (for example a zod schema) belong to the form, and validation messages appear as the helper text.
 
 ```tsx
 import { CheckboxControl } from "@aureus-core/ui/components/checkbox-control";
 import { CheckboxGroupControl } from "@aureus-core/ui/components/checkbox-group-control";
 import { NumberControl } from "@aureus-core/ui/components/number-control";
+import { OtpControl } from "@aureus-core/ui/components/otp-control";
 import { RadioGroupControl } from "@aureus-core/ui/components/radio-group-control";
+import { SwitchControl } from "@aureus-core/ui/components/switch-control";
 import { PasswordControl } from "@aureus-core/ui/components/password-control";
 import { SelectControl } from "@aureus-core/ui/components/select-control";
 import { TextAreaControl } from "@aureus-core/ui/components/text-area-control";
@@ -101,6 +103,8 @@ function ProfileForm() {
       terms: false,
       channels: [],
       plan: null,
+      alerts: false,
+      code: "",
     },
   });
   return (
@@ -119,6 +123,8 @@ function ProfileForm() {
         <CheckboxControl name="terms" checkboxLabel="I accept the terms" required />
         <CheckboxGroupControl name="channels" label="Channels" options={channels} />
         <RadioGroupControl name="plan" label="Plan" options={plans} />
+        <SwitchControl name="alerts" switchLabel="Email alerts" />
+        <OtpControl name="code" label="Verification code" length={6} />
       </form>
     </FormProvider>
   );

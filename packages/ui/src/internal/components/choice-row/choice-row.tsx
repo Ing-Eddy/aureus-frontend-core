@@ -5,7 +5,7 @@ import { choiceStyles } from "./choice-styles";
 
 export interface ChoiceRowProps {
   /** Prefix of every part's `data-slot` (`checkbox-row`, `radio-label`…). Defaults to `"checkbox"`. */
-  slot?: "checkbox" | "radio";
+  slot?: "checkbox" | "radio" | "switch";
   /** The control element (a checkbox or a radio). */
   box: ReactNode;
   /** Id of the text element; the control is named by it through `aria-labelledby`. */
@@ -68,7 +68,8 @@ export function ChoiceRow({
 }: ChoiceRowProps) {
   const card = appearance === "card";
   const pointer = locked ? choiceStyles.textLocked : choiceStyles.textInteractive;
-  const textParts = `[data-slot=${slot}-label], [data-slot=${slot}-description]`;
+  // Text parts whose clicks toggle the control (a switch's state label is one too).
+  const textParts = `[data-slot=${slot}-label], [data-slot=${slot}-description], [data-slot=${slot}-state-label]`;
 
   // Pointer enhancement only: keyboard and assistive technology use the control itself.
   const forwardClick = (event: MouseEvent<HTMLDivElement>) => {

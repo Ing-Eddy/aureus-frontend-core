@@ -1,14 +1,14 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { useCheckboxValue } from "./use-checkbox-value";
+import { useToggleValue } from "./use-toggle-value";
 
 afterEach(() => vi.restoreAllMocks());
 
-describe("useCheckboxValue", () => {
+describe("useToggleValue", () => {
   it("is a boolean by default, uncontrolled", () => {
     const onValueChange = vi.fn();
     const { result } = renderHook(() =>
-      useCheckboxValue<boolean>({ onValueChange, componentName: "CheckboxField" }),
+      useToggleValue<boolean>({ onValueChange, componentName: "CheckboxField" }),
     );
     expect(result.current.checked).toBe(false);
     expect(result.current.value).toBe(false);
@@ -22,7 +22,7 @@ describe("useCheckboxValue", () => {
   it("maps the checked state to custom values", () => {
     const onValueChange = vi.fn();
     const { result } = renderHook(() =>
-      useCheckboxValue<"S" | "N">({
+      useToggleValue<"S" | "N">({
         checkedValue: "S",
         uncheckedValue: "N",
         onValueChange,
@@ -39,7 +39,7 @@ describe("useCheckboxValue", () => {
     const onValueChange = vi.fn();
     const { result, rerender } = renderHook(
       ({ value }) =>
-        useCheckboxValue<number>({
+        useToggleValue<number>({
           value,
           checkedValue: 1,
           uncheckedValue: 0,
@@ -59,7 +59,7 @@ describe("useCheckboxValue", () => {
   it("shows an unknown value unchecked and warns once", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const { result, rerender } = renderHook(() =>
-      useCheckboxValue<string>({
+      useToggleValue<string>({
         value: "maybe",
         checkedValue: "S",
         uncheckedValue: "N",

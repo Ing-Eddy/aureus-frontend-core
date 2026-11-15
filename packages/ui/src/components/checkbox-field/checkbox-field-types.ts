@@ -1,8 +1,15 @@
 import type { FocusEvent, ReactNode, Ref } from "react";
-import type { FieldActionProps, FieldBaseProps, FieldClassNames } from "@/internal/types";
+import type {
+  FieldActionProps,
+  FieldBaseProps,
+  FieldClassNames,
+  ToggleBooleanValueProps,
+  ToggleCustomValueProps,
+  ToggleValue,
+} from "@/internal/types";
 
 /** Values a checkbox can report: `boolean` by default, or the custom values you choose. */
-export type CheckboxValue = string | number | boolean;
+export type CheckboxValue = ToggleValue;
 
 /** Extra parts of a checkbox field that accept classes. */
 export interface CheckboxFieldClassNames extends FieldClassNames {
@@ -57,30 +64,10 @@ export interface CheckboxFieldBaseProps extends Omit<FieldBaseProps, "classNames
 }
 
 /** The default: the value is `true` when checked and `false` when not. */
-export interface CheckboxBooleanValueProps {
-  checkedValue?: undefined;
-  uncheckedValue?: undefined;
-  /** Controlled value. */
-  value?: boolean;
-  /** Initial value when uncontrolled. Defaults to `false`. */
-  defaultValue?: boolean;
-  /** Called with `true` or `false`. */
-  onValueChange?: (value: boolean) => void;
-}
+export type CheckboxBooleanValueProps = ToggleBooleanValueProps;
 
 /** Custom values: pass both, for example `"S"`/`"N"` or `1`/`0`. */
-export interface CheckboxCustomValueProps<V extends CheckboxValue> {
-  /** Value reported and stored when checked. Required together with `uncheckedValue`. */
-  checkedValue: V;
-  /** Value reported and stored when unchecked. Required together with `checkedValue`. */
-  uncheckedValue: V;
-  /** Controlled value. The box is checked only when it equals `checkedValue`. */
-  value?: V;
-  /** Initial value when uncontrolled. Defaults to `uncheckedValue`. */
-  defaultValue?: V;
-  /** Called with `checkedValue` or `uncheckedValue`. */
-  onValueChange?: (value: V) => void;
-}
+export type CheckboxCustomValueProps<V extends CheckboxValue> = ToggleCustomValueProps<V>;
 
 /**
  * Props of `CheckboxField`. The value is `boolean` unless both `checkedValue` and

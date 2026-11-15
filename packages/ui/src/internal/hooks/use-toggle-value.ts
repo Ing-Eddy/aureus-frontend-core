@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
-import { useControllableState } from "@/internal/hooks";
+import type { ToggleValue } from "@/internal/types";
 import { isDev } from "@/internal/utils/constants";
-import type { CheckboxValue } from "../checkbox-field-types";
+import { useControllableState } from "./use-controllable-state";
 
-export interface UseCheckboxValueOptions<V extends CheckboxValue> {
+export interface UseToggleValueOptions<V extends ToggleValue> {
   value?: V;
   defaultValue?: V;
   onValueChange?: (value: V) => void;
@@ -19,14 +19,14 @@ export interface UseCheckboxValueOptions<V extends CheckboxValue> {
  * The checkbox value: controlled or uncontrolled, mapped between the box's checked state and the
  * values the consumer stores (`true`/`false` by default, or custom values).
  */
-export function useCheckboxValue<V extends CheckboxValue>({
+export function useToggleValue<V extends ToggleValue>({
   value,
   defaultValue,
   onValueChange,
   checkedValue = true as V,
   uncheckedValue = false as V,
   componentName,
-}: UseCheckboxValueOptions<V>) {
+}: UseToggleValueOptions<V>) {
   const [current, setCurrent] = useControllableState<V>({
     value,
     defaultValue: defaultValue ?? uncheckedValue,
