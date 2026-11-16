@@ -1,7 +1,7 @@
 import { ChevronDownIcon, XIcon } from "lucide-react";
 import { type KeyboardEvent, useMemo, useRef, useState } from "react";
 import { FieldAction, FieldLoading, FieldShell } from "@/internal/components";
-import { useFieldA11y } from "@/internal/hooks";
+import { fieldTextChecks, inputNameCheck, useFieldA11y, useMissingTexts } from "@/internal/hooks";
 import { fieldFrameClassName } from "@/internal/utils/constants";
 import { mergeRefs } from "@/internal/utils/helpers";
 import { cn } from "@/shadcn/lib/utils";
@@ -17,7 +17,7 @@ import {
   CREATE_ID,
   type FeatureTexts,
   SELECT_ALL_ID,
-  useMissingTextWarnings,
+  selectTextChecks,
   useSelectOptions,
   useSelectValue,
 } from "./hooks";
@@ -53,12 +53,18 @@ export function SelectField(props: SelectFieldProps) {
     onBlur,
     onOpenChange,
     "aria-describedby": describedBy,
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
   } = props;
   const multiple = props.multiple === true;
   const searchable = props.searchable === true;
   const chips = props.multiple === true && props.multipleDisplay === "chips";
 
-  useMissingTextWarnings("SelectField", props as FeatureTexts);
+  useMissingTexts("SelectField", [
+    inputNameCheck(props, "select"),
+    ...fieldTextChecks(props),
+    ...selectTextChecks(props as FeatureTexts),
+  ]);
 
   const selection = useSelectValue({
     multiple,
@@ -162,6 +168,7 @@ export function SelectField(props: SelectFieldProps) {
       {action ? (
         <FieldAction
           {...action}
+          componentName="SelectField"
           disabled={locked || action.disabled}
           className={cn(classNames?.action, action.className)}
         />
@@ -234,6 +241,8 @@ export function SelectField(props: SelectFieldProps) {
         classNames?.input,
       ),
       "aria-describedby": a11y.inputProps["aria-describedby"],
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledBy,
       "aria-invalid": a11y.inputProps["aria-invalid"],
       "aria-required": a11y.inputProps["aria-required"],
       "aria-busy": a11y.inputProps["aria-busy"],
@@ -248,7 +257,8 @@ export function SelectField(props: SelectFieldProps) {
       },
     },
     triggerContent,
-    listLabelledBy: label ? a11y.labelId : undefined,
+    listLabelledBy: label ? a11y.labelId : ariaLabelledBy,
+    listLabel: label || ariaLabelledBy ? undefined : ariaLabel,
     popupClassName: classNames?.popup,
     optionClassName: classNames?.option,
     status,

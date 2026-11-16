@@ -54,7 +54,7 @@ describe("OtpControl in a form", () => {
   it("leaves disabled values out and keeps loading values", async () => {
     const { onSubmit } = renderInForm(
       <>
-        <OtpControl name="code" label="Code" length={6} loading />
+        <OtpControl loadingLabel="Loading" name="code" label="Code" length={6} loading />
         <OtpControl name="pin" label="PIN" length={4} disabled />
       </>,
       { code: "123456", pin: "1234" },

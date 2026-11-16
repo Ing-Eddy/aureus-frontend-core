@@ -1,5 +1,5 @@
 import type { TextAreaFieldProps } from "@/components/text-area-field";
-import type { ControlBaseProps } from "@/internal/types";
+import type { ControlBaseProps, DistributiveOmit } from "@/internal/types";
 
 /**
  * Props of `TextAreaControl`: the field `name` and binding options, plus the same visual,
@@ -7,7 +7,7 @@ import type { ControlBaseProps } from "@/internal/types";
  * error come from the surrounding form.
  */
 export type TextAreaControlProps = ControlBaseProps &
-  Omit<
+  DistributiveOmit<
     TextAreaFieldProps,
     "name" | "value" | "defaultValue" | "error" | "errorMessage" | "disabled"
   >;

@@ -1,7 +1,8 @@
-import { type ReactNode, useEffect } from "react";
-import { isDev } from "@/internal/utils/constants";
+import type { ReactNode } from "react";
+import { fieldTextChecks, useMissingTexts } from "@/internal/hooks";
+import type { FieldStatusInternal } from "@/internal/types";
 
-export interface SwitchNameSources {
+export interface SwitchNameSources extends Pick<FieldStatusInternal, "info" | "infoLabel"> {
   label?: ReactNode;
   switchLabel?: ReactNode;
   "aria-label"?: string;
@@ -15,13 +16,17 @@ export function hasSwitchName(props: SwitchNameSources) {
   );
 }
 
-/** Development warning for a switch without an accessible name. No text is generated for it. */
+/**
+ * Development warnings for a field without an accessible name, and for `info` without
+ * `infoLabel`. No text is ever generated.
+ */
 export function useSwitchWarnings(componentName: string, props: SwitchNameSources) {
-  const named = hasSwitchName(props);
-  useEffect(() => {
-    if (!isDev || named) return;
-    console.warn(
-      `${componentName}: the switch has no accessible name. Pass \`label\`, \`switchLabel\`, \`aria-label\` or \`aria-labelledby\`.`,
-    );
-  }, [componentName, named]);
+  useMissingTexts(componentName, [
+    [
+      !hasSwitchName(props),
+      "the switch has no accessible name. Pass `label`, `switchLabel`, `aria-label` or `aria-labelledby`",
+    ],
+    // The spinner is decorative (`aria-busy` announces the state), so only `info` needs a text.
+    ...fieldTextChecks({ info: props.info, infoLabel: props.infoLabel }),
+  ]);
 }

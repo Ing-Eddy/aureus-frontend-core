@@ -5,7 +5,7 @@ import {
   InputField,
   useStepperLayout,
 } from "@/internal/components";
-import { fieldStrings } from "@/internal/utils/constants";
+import { fieldTextChecks, inputNameCheck, useMissingTexts } from "@/internal/hooks";
 import { mergeRefs } from "@/internal/utils/helpers";
 import { cn } from "@/shadcn/lib/utils";
 import { InputGroupAddon, InputGroupText } from "@/shadcn/ui/input-group";
@@ -16,55 +16,64 @@ import { formatEditing, getCurrencySymbol } from "./utils";
 /**
  * A number input with the shared field layout. Every number behaviour is an independent, opt-in
  * prop: formatting (locale, grouping, decimals, currency, prefix, suffix), negatives, custom step
- * buttons, keyboard stepping, paste, shorthand and remembered expressions.
+ * buttons, keyboard stepping, paste, shorthand and remembered expressions. It ships no default
+ * texts.
  */
-export function NumberField({
-  value: valueProp,
-  defaultValue,
-  onValueChange,
-  min,
-  max,
-  clampOnBlur = true,
-  allowNegative = true,
-  step = 1,
-  largeStep,
-  locale = "en-US",
-  grouping = false,
-  decimals,
-  padDecimals = false,
-  currency,
-  currencyDisplay = "symbol",
-  prefix,
-  suffix,
-  align = "start",
-  negativeFormat = "minus",
-  negativeColor = false,
-  stepper = true,
-  stepperLayout = "stacked",
-  incrementLabel,
-  decrementLabel,
-  selectOnFocus = false,
-  wheel = false,
-  shorthand = false,
-  expressions = false,
-  invalidExpressionLabel = fieldStrings.invalidExpression,
-  calculatedFromLabel = fieldStrings.calculatedFrom,
-  minusLabel = fieldStrings.minus,
-  id,
-  ref,
-  disabled,
-  loading,
-  error,
-  errorMessage,
-  classNames,
-  onChange,
-  onFocus,
-  onBlur,
-  onKeyDown,
-  onPaste,
-  "aria-describedby": describedBy,
-  ...props
-}: NumberFieldProps) {
+export function NumberField(allProps: NumberFieldProps) {
+  const {
+    value: valueProp,
+    defaultValue,
+    onValueChange,
+    min,
+    max,
+    clampOnBlur = true,
+    allowNegative = true,
+    step = 1,
+    largeStep,
+    locale = "en-US",
+    grouping = false,
+    decimals,
+    padDecimals = false,
+    currency,
+    currencyDisplay = "symbol",
+    prefix,
+    suffix,
+    align = "start",
+    negativeFormat = "minus",
+    negativeColor = false,
+    stepper = true,
+    stepperLayout = "stacked",
+    incrementLabel,
+    decrementLabel,
+    selectOnFocus = false,
+    wheel = false,
+    shorthand = false,
+    expressions = false,
+    invalidExpressionLabel,
+    calculatedFromLabel,
+    id,
+    ref,
+    disabled,
+    loading,
+    error,
+    errorMessage,
+    classNames,
+    onChange,
+    onFocus,
+    onBlur,
+    onKeyDown,
+    onPaste,
+    "aria-describedby": describedBy,
+    ...props
+  } = allProps;
+  useMissingTexts("NumberField", [
+    inputNameCheck(allProps),
+    ...fieldTextChecks(allProps),
+    [stepper && !incrementLabel, "the step buttons need `incrementLabel`"],
+    [stepper && !decrementLabel, "the step buttons need `decrementLabel`"],
+    [expressions && !invalidExpressionLabel, "`expressions` needs `invalidExpressionLabel`"],
+    [expressions && !calculatedFromLabel, "`expressions` needs `calculatedFromLabel`"],
+  ]);
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const calculatedId = `${inputId}-calculated`;
@@ -106,12 +115,13 @@ export function NumberField({
     : undefined;
   const value = number.value;
 
+  // The formatted number with its minus sign (never parentheses, never words), so screen readers
+  // speak it in their own language: "-$1,234.50".
   const valueText =
     value === null
       ? undefined
       : [
-          value < 0 ? minusLabel : "",
-          `${currencySymbol ?? ""}${formatEditing(Math.abs(value), number.format)}`,
+          `${value < 0 ? "-" : ""}${currencySymbol ?? ""}${formatEditing(Math.abs(value), number.format)}`,
           typeof suffix === "string" ? suffix : "",
         ]
           .filter(Boolean)
@@ -170,6 +180,7 @@ export function NumberField({
       <InputField
         {...props}
         {...number.inputProps}
+        componentName="NumberField"
         id={inputId}
         ref={mergedRef}
         type="text"
@@ -208,7 +219,7 @@ export function NumberField({
       />
       {number.remembered ? (
         <span id={calculatedId} className="sr-only">
-          {calculatedFromLabel(number.remembered.source)}
+          {calculatedFromLabel?.(number.remembered.source)}
         </span>
       ) : null}
     </>

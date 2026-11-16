@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { InputField, type InputFieldProps } from "./input-field";
 
 const renderInput = (props: Partial<InputFieldProps>) =>
-  render(<InputField label="Secret" type="text" {...props} />);
+  render(<InputField componentName="TextField" label="Secret" type="text" {...props} />);
 
 describe("InputField", () => {
   it("renders the requested input type", () => {
@@ -18,12 +18,14 @@ describe("InputField", () => {
     // Public fields spread their props first and pass `type` last, so a stray `type` forced past
     // the types by a consumer never reaches the input.
     const stray = { type: "email" } as unknown as Partial<InputFieldProps>;
-    const { container } = render(<InputField label="Secret" {...stray} type="password" />);
+    const { container } = render(
+      <InputField componentName="TextField" label="Secret" {...stray} type="password" />,
+    );
     expect(container.querySelector("input")?.getAttribute("type")).toBe("password");
   });
 
   it("disables the action while loading", () => {
-    renderInput({ loading: true, action: { children: "Go" } });
+    renderInput({ loading: true, loadingLabel: "Loading", action: { children: "Go" } });
     expect((screen.getByRole("button", { name: "Go" }) as HTMLButtonElement).disabled).toBe(true);
     expect(screen.getByRole("status", { name: "Loading" })).toBeTruthy();
   });
@@ -33,6 +35,8 @@ describe("InputField slots", () => {
   it("renders the start slot before the input, the input-end slot first in the addon, and the end slot last", () => {
     const { container } = render(
       <InputField
+        componentName="TextField"
+        loadingLabel="Loading"
         label="Amount"
         type="text"
         loading
@@ -54,7 +58,12 @@ describe("InputField slots", () => {
 
   it("renders the inline-end addon for an input-end slot alone", () => {
     const { container } = render(
-      <InputField label="Weight" type="text" inputEndSlot={<span>kg</span>} />,
+      <InputField
+        componentName="TextField"
+        label="Weight"
+        type="text"
+        inputEndSlot={<span>kg</span>}
+      />,
     );
     expect(container.querySelector("[data-slot=input-group-addon]")?.textContent).toBe("kg");
   });

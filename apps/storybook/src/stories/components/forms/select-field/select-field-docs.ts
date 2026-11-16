@@ -51,6 +51,12 @@ export const docs = defineComponentDocs({
       action: { type: "FieldActionProps" },
       className: { type: "string" },
       classNames: { type: "SelectFieldClassNames" },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
+      id: { type: "string" },
+      onBlur: { type: "(event: FocusEvent) => void" },
+      "aria-label": { type: "string" },
+      "aria-labelledby": { type: "string" },
       ref: { type: "Ref<HTMLButtonElement>" },
     },
     SelectOption: {
@@ -74,6 +80,7 @@ export const docs = defineComponentDocs({
     "Creatable",
     "Keyboard",
     "States",
+    "Rtl",
     "Responsive",
   ],
   keyboard: [
@@ -159,6 +166,16 @@ export const docs = defineComponentDocs({
         action: "A button inside the frame, before the clear button.",
         className: "Extra classes for the root.",
         classNames: "Extra classes per part, including `trigger`, `popup`, `option` and `chip`.",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
+        id: "Id of the field's control. Generated when missing; the ids of the label, helper text and info derive from it.",
+        onBlur: "Called when focus leaves the field.",
+        "aria-label":
+          "Accessible name of the field's button and list, for a select without a visible `label`.",
+        "aria-labelledby":
+          "Id of an element that names the field's button and list, instead of `label`.",
         ref: "Reaches the field's button.",
       },
       SelectOption: {
@@ -171,6 +188,7 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Rtl: "In a right-to-left container the chevron sits at the left of the selected value.",
       Single: "Pick one country. No placeholder, no messages: only what you pass is shown.",
       Multiple:
         "Several colors as removable chips; each remove button is named by `removeChipLabel`.",
@@ -280,6 +298,16 @@ export const docs = defineComponentDocs({
         action: "Un botón dentro del marco, antes del botón de limpiar.",
         className: "Clases extra para la raíz.",
         classNames: "Clases extra por parte, incluidas `trigger`, `popup`, `option` y `chip`.",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
+        id: "Id del control del field. Se genera si falta; los ids del label, el texto de ayuda y la info se derivan de él.",
+        onBlur: "Se llama cuando el foco sale del field.",
+        "aria-label":
+          "Nombre accesible del botón y de la lista, para un select sin `label` visible.",
+        "aria-labelledby":
+          "Id de un elemento que da nombre al botón y a la lista, en lugar de `label`.",
         ref: "Apunta al botón del campo.",
       },
       SelectOption: {
@@ -292,6 +320,7 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Rtl: "En un contenedor de derecha a izquierda, el chevron queda a la izquierda del valor seleccionado.",
       Single: "Elige un país. Sin placeholder ni mensajes: solo se muestra lo que pasas.",
       Multiple:
         "Varios colores como chips removibles; cada botón de quitar lo nombra `removeChipLabel`.",

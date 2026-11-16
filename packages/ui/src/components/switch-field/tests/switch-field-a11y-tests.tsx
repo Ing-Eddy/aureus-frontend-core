@@ -31,7 +31,14 @@ describe("SwitchField accessibility", () => {
 
   it("is described by helper and info, and marked invalid", () => {
     renderField(
-      <SwitchField id="alerts" switchLabel="Alerts" helperText="Help" info="More" error />,
+      <SwitchField
+        infoLabel="More information"
+        id="alerts"
+        switchLabel="Alerts"
+        helperText="Help"
+        info="More"
+        error
+      />,
     );
     expect(toggle("Alerts").getAttribute("aria-describedby")?.split(" ")).toEqual([
       "alerts-helper",

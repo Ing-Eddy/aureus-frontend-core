@@ -1,5 +1,5 @@
 import type { CheckboxGroupFieldProps } from "@/components/checkbox-group-field";
-import type { ControlBaseProps } from "@/internal/types";
+import type { ControlBaseProps, DistributiveOmit } from "@/internal/types";
 
 /**
  * Props of `CheckboxGroupControl`: the field `name` and binding options, plus every
@@ -7,7 +7,7 @@ import type { ControlBaseProps } from "@/internal/types";
  * The form holds a `string[]`.
  */
 export type CheckboxGroupControlProps = ControlBaseProps &
-  Omit<
+  DistributiveOmit<
     CheckboxGroupFieldProps,
     "name" | "value" | "defaultValue" | "error" | "errorMessage" | "disabled"
   >;

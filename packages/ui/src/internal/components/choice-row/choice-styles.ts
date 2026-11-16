@@ -26,7 +26,7 @@ export const choiceStyles = {
    * The `ShadcnParity` story compares the computed result with shadcn's `Switch`.
    */
   switchTrack: [
-    "peer group/switch relative inline-flex shrink-0 items-center rounded-full border border-transparent transition-all outline-none",
+    "peer group/switch relative inline-flex shrink-0 items-center rounded-full border border-transparent transition-all motion-reduce:transition-none outline-none",
     "after:absolute after:-inset-x-3 after:-inset-y-2",
     "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
     "aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20",
@@ -37,7 +37,7 @@ export const choiceStyles = {
     "motion-reduce:transition-none",
   ].join(" "),
   switchThumb: [
-    "pointer-events-none flex items-center justify-center rounded-full bg-background ring-0 transition-transform",
+    "pointer-events-none flex items-center justify-center rounded-full bg-background ring-0 transition-transform motion-reduce:transition-none",
     "group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3",
     "data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0",
     "rtl:data-[state=checked]:-translate-x-[calc(100%-2px)]",
@@ -50,7 +50,7 @@ export const choiceStyles = {
   switchStateLabel:
     "grid text-sm leading-5 text-muted-foreground select-none [&>*]:col-start-1 [&>*]:row-start-1",
   card: [
-    "rounded-lg border border-input p-3 transition-colors dark:bg-input/30",
+    "rounded-lg border border-input p-3 transition-colors motion-reduce:transition-none dark:bg-input/30",
     "has-[[data-slot$=box-slot]>[data-state=checked]]:border-primary",
     "has-[[data-slot$=box-slot]>[data-state=checked]]:bg-primary/5",
     "has-[[data-slot$=box-slot]>[data-state=indeterminate]]:border-primary",

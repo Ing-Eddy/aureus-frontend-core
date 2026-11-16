@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { useEffect } from "react";
-import { isDev } from "@/internal/utils/constants";
+import { fieldTextChecks, useMissingTexts } from "@/internal/hooks";
+import type { FieldStatusInternal } from "@/internal/types";
 
-export interface CheckboxNameSources {
+export interface CheckboxNameSources extends FieldStatusInternal {
   label?: ReactNode;
   checkboxLabel?: ReactNode;
   "aria-label"?: string;
@@ -16,13 +16,16 @@ export function hasAccessibleName(props: CheckboxNameSources) {
   );
 }
 
-/** Development warning for a box without an accessible name. No text is ever generated for it. */
+/**
+ * Development warnings for a field without an accessible name, and for `loading` or `info`
+ * without their texts. No text is ever generated.
+ */
 export function useCheckboxWarnings(componentName: string, props: CheckboxNameSources) {
-  const named = hasAccessibleName(props);
-  useEffect(() => {
-    if (!isDev || named) return;
-    console.warn(
-      `${componentName}: the checkbox has no accessible name. Pass \`label\`, \`checkboxLabel\`, \`aria-label\` or \`aria-labelledby\`.`,
-    );
-  }, [componentName, named]);
+  useMissingTexts(componentName, [
+    [
+      !hasAccessibleName(props),
+      "the checkbox has no accessible name. Pass `label`, `checkboxLabel`, `aria-label` or `aria-labelledby`",
+    ],
+    ...fieldTextChecks(props),
+  ]);
 }

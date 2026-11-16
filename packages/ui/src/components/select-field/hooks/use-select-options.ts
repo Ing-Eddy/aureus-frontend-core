@@ -98,7 +98,7 @@ export function useSelectOptions({
     for (const id of selectedIds) {
       if (!known.has(id) && !warned.current.has(id)) {
         warned.current.add(id);
-        console.warn(`SelectField: value "${id}" is not among the options. It is kept as is.`);
+        console.warn(`SelectField: the value "${id}" matches no option; it is kept.`);
       }
     }
   }, [options, selectedIds]);

@@ -36,6 +36,9 @@ export const docs = defineComponentDocs({
       "aria-label": { type: "string" },
       className: { type: "string" },
       classNames: { type: "SwitchFieldClassNames" },
+      infoLabel: { type: "string" },
+      id: { type: "string" },
+      onBlur: { type: "(event: FocusEvent) => void" },
       ref: { type: "Ref<HTMLButtonElement>" },
     },
   },
@@ -103,7 +106,8 @@ export const docs = defineComponentDocs({
           "Decorative icon of the current state, inside the thumb. Both icons are required; hidden from assistive technology.",
         name: "Name of the native checkbox, for native forms. With custom values it submits `checkedValue`.",
         required: "Shows the required mark and sets `aria-required`. It adds no validation.",
-        loading: "Shows a spinner inside the thumb, locks the switch and sets `aria-busy`.",
+        loading:
+          "Shows a spinner inside the thumb, locks the switch and sets `aria-busy`. The spinner is decorative and `aria-busy` announces the state, so it needs no text: there is no `loadingLabel`.",
         disabled: "Locks the switch and dims it.",
         info: "Content of the info tooltip next to the label; part of the switch's description.",
         helperText: "Text below the row; part of the switch's description.",
@@ -114,6 +118,10 @@ export const docs = defineComponentDocs({
         className: "Extra classes for the root.",
         classNames:
           "Extra classes per part: `switch`, `thumb`, `switchLabel`, `stateLabel`, `row` plus the family's parts.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
+        id: "Id of the field's control. Generated when missing; the ids of the label, helper text and info derive from it.",
+        onBlur: "Called when focus leaves the field.",
         ref: 'Reaches the switch (`button role="switch"`).',
       },
     },
@@ -193,7 +201,8 @@ export const docs = defineComponentDocs({
           "Icono decorativo del estado actual, dentro del thumb. Los dos iconos son obligatorios; oculto para tecnologías de asistencia.",
         name: "Nombre del checkbox nativo, para formularios nativos. Con valores personalizados envía `checkedValue`.",
         required: "Muestra el asterisco y pone `aria-required`. No añade validación.",
-        loading: "Muestra un spinner dentro del thumb, bloquea el switch y pone `aria-busy`.",
+        loading:
+          "Muestra un spinner dentro del thumb, bloquea el switch y pone `aria-busy`. El spinner es decorativo y `aria-busy` anuncia el estado, así que no necesita texto: no hay `loadingLabel`.",
         disabled: "Bloquea el switch y lo atenúa.",
         info: "Contenido del tooltip de información junto al label; forma parte de la descripción del switch.",
         helperText: "Texto bajo la fila; forma parte de la descripción del switch.",
@@ -204,6 +213,10 @@ export const docs = defineComponentDocs({
         className: "Clases extra para la raíz.",
         classNames:
           "Clases extra por parte: `switch`, `thumb`, `switchLabel`, `stateLabel`, `row` y las partes de la familia.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
+        id: "Id del control del field. Se genera si falta; los ids del label, el texto de ayuda y la info se derivan de él.",
+        onBlur: "Se llama cuando el foco sale del field.",
         ref: 'Llega al switch (`button role="switch"`).',
       },
     },

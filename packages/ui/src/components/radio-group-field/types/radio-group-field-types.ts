@@ -1,5 +1,5 @@
 import type { FocusEvent, ReactNode, Ref } from "react";
-import type { ChoiceOption, FieldBaseProps, FieldClassNames } from "@/internal/types";
+import type { ChoiceOption, FieldBaseProps, FieldClassNames, FieldTexts } from "@/internal/types";
 
 /** One option of a radio group: `value`, `label`, an optional `description` and `disabled`. */
 export type RadioGroupOption = ChoiceOption;
@@ -32,7 +32,7 @@ export interface RadioGroupOtherOption {
  * Props of `RadioGroupField`. Every option is independent and opt-in, and there are no default
  * texts: a text that is not passed is not shown.
  */
-export interface RadioGroupFieldProps extends Omit<FieldBaseProps, "classNames"> {
+export interface RadioGroupFieldBaseProps extends Omit<FieldBaseProps, "classNames"> {
   /** The choices, rendered in this order. */
   options: readonly RadioGroupOption[];
   /** Controlled value: the chosen option value, the other text, or `null` when nothing is chosen. */
@@ -73,3 +73,9 @@ export interface RadioGroupFieldProps extends Omit<FieldBaseProps, "classNames">
   /** Extra classes per part. */
   classNames?: RadioGroupFieldClassNames;
 }
+
+/**
+ * Props of `RadioGroupField`. `loading` requires `loadingLabel` and `info` requires `infoLabel`; no text
+ * is generated.
+ */
+export type RadioGroupFieldProps = RadioGroupFieldBaseProps & FieldTexts;

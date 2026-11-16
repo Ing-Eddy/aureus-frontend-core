@@ -10,6 +10,7 @@ describe("CheckboxGroupField accessibility", () => {
   it("is a group named by the label and described by helper and info", () => {
     renderField(
       <CheckboxGroupField
+        infoLabel="More information"
         id="channels"
         label="Channels"
         helperText="Choose where we write to you"

@@ -35,7 +35,11 @@ describe("TextField action", () => {
   });
 
   it("disables the action while loading or disabled", () => {
-    const { unmount } = renderField({ loading: true, action: { children: "Apply" } });
+    const { unmount } = renderField({
+      loading: true,
+      loadingLabel: "Loading",
+      action: { children: "Apply" },
+    });
     expect((screen.getByRole("button", { name: "Apply" }) as HTMLButtonElement).disabled).toBe(
       true,
     );
@@ -55,7 +59,11 @@ describe("TextField action", () => {
   });
 
   it("shows the spinner before the action", () => {
-    const { container } = renderField({ loading: true, action: { children: "Apply" } });
+    const { container } = renderField({
+      loading: true,
+      loadingLabel: "Loading",
+      action: { children: "Apply" },
+    });
     const addon = container.querySelector("[data-slot=input-group-addon]");
     const slots = [...(addon?.children ?? [])].map((child) => child.getAttribute("data-slot"));
     expect(slots).toEqual(["field-loading", "field-action"]);

@@ -6,7 +6,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn/ui/input-
 import { TooltipProvider } from "@/shadcn/ui/tooltip";
 import { FieldAction } from "./field-action";
 
-function renderAction(props: FieldActionProps) {
+function renderAction(props: FieldActionProps & { componentName?: string }) {
   return render(
     <TooltipProvider>
       <FieldAction {...props} />
@@ -57,7 +57,15 @@ describe("FieldAction", () => {
   it("warns about an icon-only action without an accessible name", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     renderAction({ children: <svg /> });
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining("accessible name"));
+    expect(warn).toHaveBeenCalledWith(
+      "Field action: an icon-only action needs an accessible name. Pass `aria-label` in `action`.",
+    );
+  });
+
+  it("names the field that renders it in the warning", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    renderAction({ children: <svg />, componentName: "NumberField" });
+    expect(warn).toHaveBeenCalledWith(expect.stringMatching(/^NumberField: an icon-only action/));
   });
 
   it("does not warn when the icon action is named", () => {

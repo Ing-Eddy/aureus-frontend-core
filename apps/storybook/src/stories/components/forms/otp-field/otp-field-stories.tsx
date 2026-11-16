@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ComponentType, useEffect, useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import { infoTexts, loadingTexts } from "../story-args";
 import { docs } from "./otp-field-docs";
 
 /** Flat, story-only args; the render builds `groups` and `reveal` from them. */
@@ -10,6 +11,7 @@ interface PlaygroundArgs extends ActionArgs {
   label: string;
   helperText: string;
   info: string;
+  infoLabel: string;
   errorMessage: string;
   length: number;
   charset: "digits" | "letters" | "alphanumeric";
@@ -20,6 +22,7 @@ interface PlaygroundArgs extends ActionArgs {
   hideLabel: string;
   required: boolean;
   loading: boolean;
+  loadingLabel: string;
   disabled: boolean;
   error: boolean;
   onValueChange: (value: string) => void;
@@ -53,7 +56,7 @@ const meta = {
       <OtpField
         label={text(base.label)}
         helperText={text(base.helperText)}
-        info={text(base.info)}
+        {...infoTexts(base.info, base.infoLabel)}
         errorMessage={text(base.errorMessage)}
         length={base.length}
         charset={base.charset}
@@ -66,7 +69,7 @@ const meta = {
             : undefined
         }
         required={base.required}
-        loading={base.loading}
+        {...loadingTexts(base.loading, base.loadingLabel)}
         disabled={base.disabled}
         error={base.error}
         action={action}
@@ -79,6 +82,7 @@ const meta = {
     label: "Verification code",
     helperText: "",
     info: "",
+    infoLabel: "More information",
     errorMessage: "",
     length: 6,
     charset: "digits",
@@ -89,6 +93,7 @@ const meta = {
     hideLabel: "",
     required: false,
     loading: false,
+    loadingLabel: "Loading",
     disabled: false,
     error: false,
     onValueChange: fn(),
@@ -100,6 +105,7 @@ const meta = {
     label: { control: "text", ...content },
     helperText: { control: "text", ...content },
     info: { control: "text", ...content },
+    infoLabel: { control: "text", ...content },
     errorMessage: { control: "text", ...content },
     length: { control: { type: "number", min: 1, max: 10 }, ...behavior },
     charset: {
@@ -114,6 +120,7 @@ const meta = {
     hideLabel: { control: "text", name: "reveal.hideLabel", ...behavior },
     required: { control: "boolean", ...state },
     loading: { control: "boolean", ...state },
+    loadingLabel: { control: "text", ...content },
     disabled: { control: "boolean", ...state },
     error: { control: "boolean", ...state },
     ...actionArgTypes,
@@ -248,6 +255,7 @@ function VerifyingExample() {
   const [error, setError] = useState(false);
   return (
     <OtpField
+      loadingLabel="Loading"
       label="Verification code"
       length={6}
       loading={verifying}
@@ -289,6 +297,7 @@ export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
       <OtpField
+        infoLabel="More information"
         label="Code"
         length={6}
         required
@@ -302,7 +311,13 @@ export const States: Story = {
         error
         errorMessage="Enter the 6 digits."
       />
-      <OtpField label="Code (verifying)" length={6} defaultValue="123456" loading />
+      <OtpField
+        loadingLabel="Loading"
+        label="Code (verifying)"
+        length={6}
+        defaultValue="123456"
+        loading
+      />
       <OtpField label="Code (disabled)" length={6} disabled />
     </div>
   ),

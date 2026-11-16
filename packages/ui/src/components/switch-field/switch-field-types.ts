@@ -3,6 +3,7 @@ import type {
   FieldActionProps,
   FieldBaseProps,
   FieldClassNames,
+  FieldInfoTexts,
   ToggleBooleanValueProps,
   ToggleCustomValueProps,
   ToggleValue,
@@ -36,7 +37,12 @@ export interface SwitchFieldClassNames extends FieldClassNames {
  * texts: a text that is not passed is not shown. While loading, the spinner in the thumb is
  * decorative and `aria-busy` announces the state, so there is no `loadingLabel`.
  */
-export interface SwitchFieldBaseProps extends Omit<FieldBaseProps, "classNames" | "loadingLabel"> {
+export interface SwitchFieldBaseProps extends Omit<FieldBaseProps, "classNames"> {
+  /**
+   * Disables the switch and the action and shows a decorative spinner in the thumb. `aria-busy`
+   * announces the state, so no text is needed.
+   */
+  loading?: boolean;
   /**
    * Text beside the switch. Clicking it toggles the switch and it may contain links. With `label` as
    * well, `label` names the field's group and this text names the switch. No default.
@@ -77,6 +83,7 @@ export type SwitchBeforeChange<V> = (next: V) => boolean | Promise<boolean>;
 
 /** The switch storing `true` / `false`. */
 export type SwitchBooleanProps = SwitchFieldBaseProps &
+  FieldInfoTexts &
   ToggleBooleanValueProps & {
     /**
      * Called with the value the switch would change to. While a returned promise is pending, the
@@ -88,6 +95,7 @@ export type SwitchBooleanProps = SwitchFieldBaseProps &
 
 /** The switch storing custom values: pass both `checkedValue` and `uncheckedValue`. */
 export type SwitchCustomProps<V extends SwitchValue> = SwitchFieldBaseProps &
+  FieldInfoTexts &
   ToggleCustomValueProps<V> & {
     /** Called with the value the switch would change to; see the boolean variant. */
     onBeforeChange?: SwitchBeforeChange<V>;

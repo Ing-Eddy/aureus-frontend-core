@@ -1,8 +1,6 @@
-import { render } from "@testing-library/react";
-import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
 import { SelectField } from "@/components/select-field";
-import { TooltipProvider } from "@/shadcn/ui/tooltip";
+import { fieldMarkup, normalizedMarkup } from "@/internal/testing";
 import { SelectControl } from "../select-control";
 import { renderInForm } from "./render-in-form";
 
@@ -10,37 +8,6 @@ const countries = [
   { value: "es", label: "España" },
   { value: "mx", label: "México" },
 ];
-
-/** Serializes an element with its attributes sorted, so DOM insertion order does not matter. */
-function canonical(node: Element): string {
-  const attributes = [...node.attributes]
-    .map((attribute) => `${attribute.name}="${attribute.value}"`)
-    .sort()
-    .join(" ");
-  const children = [...node.childNodes]
-    .map((child) =>
-      child.nodeType === Node.ELEMENT_NODE ? canonical(child as Element) : child.textContent,
-    )
-    .join("");
-  return `<${node.tagName.toLowerCase()} ${attributes}>${children}</${node.tagName.toLowerCase()}>`;
-}
-
-/**
- * Field markup with every React-generated id replaced: the field's own ids and the id Base UI
- * gives its hidden input both come from `useId`.
- */
-function normalizedMarkup(container: HTMLElement) {
-  const field = container.querySelector("[data-slot=field]");
-  if (!field) throw new Error("no field rendered");
-  return canonical(field).replace(/_r_[0-9a-z]+_|«r[0-9a-z]+»|:r[0-9a-z]+:/g, "RID");
-}
-
-function fieldMarkup(element: ReactElement) {
-  const { container, unmount } = render(<TooltipProvider>{element}</TooltipProvider>);
-  const markup = normalizedMarkup(container);
-  unmount();
-  return markup;
-}
 
 const noop = () => {};
 

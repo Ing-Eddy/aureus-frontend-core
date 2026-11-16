@@ -7,7 +7,9 @@ import { countries, openList, trigger } from "./helpers";
 
 describe("SelectField states", () => {
   it("does not open while loading or disabled", async () => {
-    const { unmount } = render(<SelectField label="País" options={countries} loading />);
+    const { unmount } = render(
+      <SelectField loadingLabel="Loading" label="País" options={countries} loading />,
+    );
     await openList();
     expect(trigger().getAttribute("aria-expanded")).toBe("false");
     unmount();

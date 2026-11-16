@@ -5,9 +5,22 @@ import { PasswordField } from "../password-field";
 
 const toggle = () => screen.getByRole("button", { name: "Show password" }) as HTMLButtonElement;
 
+const toggleTexts = {
+  showPasswordLabel: "Show password",
+  hidePasswordLabel: "Hide password",
+} as const;
+
 describe("PasswordField states and props", () => {
   it("disables the toggle while loading, with the spinner before it", () => {
-    const { container } = render(<PasswordField label="Password" loading />);
+    const { container } = render(
+      <PasswordField
+        loadingLabel="Loading"
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        loading
+      />,
+    );
     expect(toggle().disabled).toBe(true);
     expect((container.querySelector("input") as HTMLInputElement).disabled).toBe(true);
     const addon = container.querySelector("[data-slot=input-group-addon]");
@@ -16,21 +29,48 @@ describe("PasswordField states and props", () => {
   });
 
   it("disables the toggle when disabled", () => {
-    render(<PasswordField label="Password" disabled />);
+    render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        disabled
+      />,
+    );
     expect(toggle().disabled).toBe(true);
   });
 
   it("defaults autoComplete to current-password and lets it be changed", () => {
-    const { container, rerender } = render(<PasswordField label="Password" />);
+    const { container, rerender } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+      />,
+    );
     const input = () => container.querySelector("input") as HTMLInputElement;
     expect(input().getAttribute("autocomplete")).toBe("current-password");
-    rerender(<PasswordField label="Password" autoComplete="new-password" />);
+    rerender(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        autoComplete="new-password"
+      />,
+    );
     expect(input().getAttribute("autocomplete")).toBe("new-password");
   });
 
   it("turns spell-check, auto-correct and auto-capitalize off, always", () => {
     const { container } = render(
-      <PasswordField label="Password" spellCheck autoCorrect="on" autoCapitalize="on" />,
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        spellCheck
+        autoCorrect="on"
+        autoCapitalize="on"
+      />,
     );
     const input = container.querySelector("input") as HTMLInputElement;
     expect(input.getAttribute("spellcheck")).toBe("false");
@@ -39,7 +79,14 @@ describe("PasswordField states and props", () => {
   });
 
   it("hides the browser's own reveal button", () => {
-    const { container } = render(<PasswordField label="Password" classNames={{ input: "x" }} />);
+    const { container } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        classNames={{ input: "x" }}
+      />,
+    );
     const classes = container.querySelector("input")?.className ?? "";
     expect(classes).toContain("[&::-ms-reveal]:hidden");
     expect(classes).toContain("x");
@@ -47,16 +94,23 @@ describe("PasswordField states and props", () => {
 
   it("forwards the ref to the input", () => {
     const ref = createRef<HTMLInputElement>();
-    const { container } = render(<PasswordField label="Password" ref={ref} />);
+    const { container } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        ref={ref}
+      />,
+    );
     expect(ref.current).toBe(container.querySelector("input"));
   });
 
   it("has no action or type prop", () => {
     const checks = [
       // @ts-expect-error The button is always the visibility toggle.
-      <PasswordField key="action" label="Password" action={{ children: "Go" }} />,
+      <PasswordField key="action" {...toggleTexts} label="Password" action={{ children: "Go" }} />,
       // @ts-expect-error The type comes from the visibility state.
-      <PasswordField key="type" label="Password" type="text" />,
+      <PasswordField key="type" {...toggleTexts} label="Password" type="text" />,
     ];
     expect(checks).toHaveLength(2);
   });

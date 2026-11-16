@@ -27,7 +27,21 @@ const typeChecks: ReactElement[] = [
   <CheckboxField key="string-value" checkboxLabel="A" value="S" />,
 ];
 
+// The texts of the loading state and the info tooltip. Only constructed, never rendered.
+const textChecks = [
+  <CheckboxField key="loading-ok" checkboxLabel="A" loading loadingLabel="Cargando" />,
+  // @ts-expect-error `loading` needs `loadingLabel`.
+  <CheckboxField key="loading" checkboxLabel="A" loading />,
+  <CheckboxField key="info-ok" checkboxLabel="A" info="Help" infoLabel="Más información" />,
+  // @ts-expect-error `info` needs `infoLabel`.
+  <CheckboxField key="info" checkboxLabel="A" info="Help" />,
+];
+
 describe("CheckboxField types", () => {
+  it("require the texts of loading and info", () => {
+    expect(textChecks).toHaveLength(4);
+  });
+
   it("renders every valid combination", () => {
     const { container } = render(<div>{typeChecks.slice(0, 3)}</div>);
     expect(container.querySelectorAll("[role=checkbox]")).toHaveLength(3);

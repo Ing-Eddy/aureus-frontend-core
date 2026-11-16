@@ -87,7 +87,7 @@ describe("TextControl in a form", () => {
     const { onSubmit } = renderInForm(
       <>
         <TextControl name="username" label="Username" />
-        <TextControl name="nickname" label="Nickname" loading />
+        <TextControl loadingLabel="Loading" name="nickname" label="Nickname" loading />
       </>,
       { username: "ada", nickname: "countess" },
     );

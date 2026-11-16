@@ -1,8 +1,14 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-  // Tests never ship: `*-tests` files anywhere, and every `tests/` folder (with its helpers).
-  entry: ["src/**/*.{ts,tsx}", "!src/**/*-tests.{ts,tsx}", "!src/**/tests/**"],
+  // Tests never ship: `*-tests` files anywhere, every `tests/` folder (with its helpers), and the
+  // shared test helpers in `internal/testing`.
+  entry: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*-tests.{ts,tsx}",
+    "!src/**/tests/**",
+    "!src/internal/testing/**",
+  ],
   root: "src",
   unbundle: true, // one output file per source file -> consumers only load what they import
   format: "esm",

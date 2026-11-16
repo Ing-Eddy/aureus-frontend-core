@@ -3,6 +3,7 @@ import { channels, permissions, sizes, weekdays } from "@fixtures/checkbox-optio
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ComponentType } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
+import { infoTexts, loadingTexts } from "../story-args";
 import { docs } from "./checkbox-group-field-docs";
 
 /** Flat, story-only args; the render builds `selectAll` from its label. */
@@ -10,6 +11,7 @@ interface PlaygroundArgs {
   label: string;
   helperText: string;
   info: string;
+  infoLabel: string;
   errorMessage: string;
   selectAllLabel: string;
   maxSelected?: number;
@@ -20,6 +22,7 @@ interface PlaygroundArgs {
   checkboxPosition: "start" | "end";
   required: boolean;
   loading: boolean;
+  loadingLabel: string;
   disabled: boolean;
   error: boolean;
   onValueChange: (value: string[]) => void;
@@ -50,7 +53,7 @@ const meta = {
     <CheckboxGroupField
       label={text(args.label)}
       helperText={text(args.helperText)}
-      info={text(args.info)}
+      {...infoTexts(args.info, args.infoLabel)}
       errorMessage={text(args.errorMessage)}
       options={channels}
       selectAll={args.selectAllLabel ? { label: args.selectAllLabel } : undefined}
@@ -61,7 +64,7 @@ const meta = {
       appearance={args.appearance}
       checkboxPosition={args.checkboxPosition}
       required={args.required}
-      loading={args.loading}
+      {...loadingTexts(args.loading, args.loadingLabel)}
       disabled={args.disabled}
       error={args.error}
       onValueChange={args.onValueChange}
@@ -71,6 +74,7 @@ const meta = {
     label: "Notification channels",
     helperText: "",
     info: "",
+    infoLabel: "More information",
     errorMessage: "",
     selectAllLabel: "",
     maxSelectedMessage: "",
@@ -79,6 +83,7 @@ const meta = {
     checkboxPosition: "start",
     required: false,
     loading: false,
+    loadingLabel: "Loading",
     disabled: false,
     error: false,
     onValueChange: fn(),
@@ -87,6 +92,7 @@ const meta = {
     label: { control: "text", ...content },
     helperText: { control: "text", ...content },
     info: { control: "text", ...content },
+    infoLabel: { control: "text", ...content },
     errorMessage: { control: "text", ...content },
     selectAllLabel: { control: "text", name: "selectAll.label", ...behavior },
     maxSelected: { control: { type: "number", min: 1 }, ...behavior },
@@ -97,6 +103,7 @@ const meta = {
     checkboxPosition: { control: "inline-radio", options: ["start", "end"], ...layout },
     required: { control: "boolean", ...state },
     loading: { control: "boolean", ...state },
+    loadingLabel: { control: "text", ...content },
     disabled: { control: "boolean", ...state },
     error: { control: "boolean", ...state },
     onValueChange: { table: { category: "Events" } },
@@ -273,6 +280,7 @@ export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-8">
       <CheckboxGroupField
+        infoLabel="More information"
         label="Channels"
         options={channels}
         required
@@ -285,7 +293,13 @@ export const States: Story = {
         error
         errorMessage="Choose at least one permission."
       />
-      <CheckboxGroupField label="Sizes (loading)" options={sizes} loading defaultValue={["m"]} />
+      <CheckboxGroupField
+        loadingLabel="Loading"
+        label="Sizes (loading)"
+        options={sizes}
+        loading
+        defaultValue={["m"]}
+      />
       <CheckboxGroupField label="Sizes (disabled)" options={sizes} disabled defaultValue={["l"]} />
     </div>
   ),
@@ -298,6 +312,23 @@ export const States: Story = {
     await expect(canvas.getByRole("checkbox", { name: "Read" })).toHaveAttribute(
       "aria-invalid",
       "true",
+    );
+  },
+};
+
+/** Right to left: each box moves to the inline start, on the right of its option. */
+export const Rtl: Story = {
+  render: () => (
+    <div dir="rtl">
+      <CheckboxGroupField label="Channels" options={channels} />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const first = channels[0] as { label: string };
+    const box = canvas.getByRole("checkbox", { name: first.label });
+    const text = canvas.getByText(first.label);
+    await expect(box.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+      text.getBoundingClientRect().right - 1,
     );
   },
 };

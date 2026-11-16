@@ -25,8 +25,8 @@ export const docs = defineComponentDocs({
       action: { type: "FieldActionProps" },
       className: { type: "string" },
       classNames: { type: "FieldClassNames" },
-      loadingLabel: { type: "string", default: '"Loading"' },
-      infoLabel: { type: "string", default: '"More information"' },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
       onChange: { type: "(event: ChangeEvent<HTMLInputElement>) => void" },
       onBlur: { type: "(event: FocusEvent<HTMLInputElement>) => void" },
       ref: { type: "Ref<HTMLInputElement>" },
@@ -78,8 +78,10 @@ export const docs = defineComponentDocs({
         action: "The integrated button, as in Text Field.",
         className: "Extra classes for the root element.",
         classNames: "Extra classes per part, as in Text Field.",
-        loadingLabel: "Accessible label of the spinner.",
-        infoLabel: "Accessible name of the info button.",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
         onChange: "Called after react-hook-form handles the change.",
         onBlur: "Called after react-hook-form handles the blur.",
         ref: "Reaches the `<input>`, merged with react-hook-form's own ref (so `setFocus` keeps working).",
@@ -143,8 +145,10 @@ export const docs = defineComponentDocs({
         action: "El botón integrado, como en Text Field.",
         className: "Clases extra para la raíz.",
         classNames: "Clases extra por parte, como en Text Field.",
-        loadingLabel: "Etiqueta accesible del spinner.",
-        infoLabel: "Nombre accesible del botón de información.",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
         onChange: "Se llama después de que react-hook-form procese el cambio.",
         onBlur: "Se llama después de que react-hook-form procese el blur.",
         ref: "Apunta al `<input>`, combinado con el ref propio de react-hook-form (así `setFocus` sigue funcionando).",

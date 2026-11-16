@@ -43,7 +43,21 @@ const typeChecks = [
   <SelectField key="max" label="País" options={options} maxSelected={2} />,
 ];
 
+// The texts of the loading state and the info tooltip. Only constructed, never rendered.
+const textChecks = [
+  <SelectField key="loading-ok" label="A" options={[]} loading loadingLabel="Cargando" />,
+  // @ts-expect-error `loading` needs `loadingLabel`.
+  <SelectField key="loading" label="A" options={[]} loading />,
+  <SelectField key="info-ok" label="A" options={[]} info="Help" infoLabel="Más información" />,
+  // @ts-expect-error `info` needs `infoLabel`.
+  <SelectField key="info" label="A" options={[]} info="Help" />,
+];
+
 describe("SelectField texts", () => {
+  it("require the texts of loading and info", () => {
+    expect(textChecks).toHaveLength(4);
+  });
+
   it("are enforced by the types", () => {
     expect(typeChecks).toHaveLength(10);
   });

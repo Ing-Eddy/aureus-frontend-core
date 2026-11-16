@@ -28,12 +28,14 @@ export const docs = defineComponentDocs({
       resize: { type: "boolean", default: "true" },
       showCount: { type: "boolean", default: "false" },
       maxLength: { type: "number" },
-      countLabel: { type: "(remaining: number) => string" },
+      countLabel: { type: "(count: number, maxLength?: number) => string" },
       actionShortcut: { type: "boolean", default: "false" },
       className: { type: "string" },
       classNames: { type: "FieldClassNames" },
-      loadingLabel: { type: "string", default: '"Loading"' },
-      infoLabel: { type: "string", default: '"More information"' },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
+      id: { type: "string" },
+      onBlur: { type: "(event: FocusEvent) => void" },
       ref: { type: "Ref<HTMLTextAreaElement>" },
     },
     action: {
@@ -59,7 +61,16 @@ export const docs = defineComponentDocs({
       action: { type: "string" },
     },
   },
-  stories: ["States", "AutoGrow", "CharacterCounter", "CommentComposer", "NoResize", "Responsive"],
+  stories: [
+    "States",
+    "AutoGrow",
+    "CharacterCounter",
+    "CommentComposer",
+    "NoResize",
+    "Keyboard",
+    "Rtl",
+    "Responsive",
+  ],
   keyboard: ["Tab", "Shift + Tab", "Enter", "Ctrl + Enter", "Escape"],
   links: [
     { label: "Guide: Fields & controls", href: "?path=/docs/guides-fields-controls--docs" },
@@ -109,13 +120,17 @@ export const docs = defineComponentDocs({
           "Shows a counter in the footer bar: `count/maxLength`, or the count alone without `maxLength`.",
         maxLength: "Native limit on the number of characters; the counter turns red when reached.",
         countLabel:
-          'What assistive technology hears for the counter, given the remaining characters. Defaults to "n characters remaining".',
+          "What assistive technology hears for the counter, given the current count and the `maxLength` (when set), so it can say what remains. Required with `showCount`; there is no default.",
         actionShortcut:
           "Ctrl+Enter (Cmd+Enter on macOS) presses the action. Enter alone still adds a new line.",
         className: "Extra classes for the root element.",
         classNames: "Extra classes per part. See the `classNames` table.",
-        loadingLabel: "Accessible label of the spinner.",
-        infoLabel: "Accessible name of the info button.",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
+        id: "Id of the field's control. Generated when missing; the ids of the label, helper text and info derive from it.",
+        onBlur: "Called when focus leaves the field.",
         ref: "Reaches the `<textarea>`. Other native props (`value`, `onChange`, `placeholder`, `name`…) are passed to it; `rows` is replaced by `minRows`.",
       },
       action: {
@@ -143,6 +158,9 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Keyboard:
+        "Enter adds a new line, and Ctrl + Enter (Cmd + Enter on macOS) presses the action when `actionShortcut` is on.",
+      Rtl: "In a right-to-left container the counter starts the footer bar on the right and the action ends it on the left.",
       States:
         "Required with info, helper text, error with a message, loading (spinner in the footer bar) and disabled.",
       AutoGrow:
@@ -219,13 +237,17 @@ export const docs = defineComponentDocs({
           "Muestra un contador en la barra inferior: `cuenta/maxLength`, o solo la cuenta sin `maxLength`.",
         maxLength: "Límite nativo de caracteres; el contador se pone en rojo al alcanzarlo.",
         countLabel:
-          'Lo que escuchan las tecnologías de asistencia para el contador, a partir de los caracteres restantes. Por defecto "n characters remaining".',
+          "Lo que escuchan las tecnologías de asistencia para el contador, a partir del recuento actual y del `maxLength` (si lo hay), para poder decir cuánto queda. Obligatorio con `showCount`; no hay valor por defecto.",
         actionShortcut:
           "Ctrl+Enter (Cmd+Enter en macOS) pulsa la acción. Enter solo sigue haciendo un salto de línea.",
         className: "Clases extra para la raíz.",
         classNames: "Clases extra por parte. Ver la tabla `classNames`.",
-        loadingLabel: "Etiqueta accesible del spinner.",
-        infoLabel: "Nombre accesible del botón de información.",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
+        id: "Id del control del field. Se genera si falta; los ids del label, el texto de ayuda y la info se derivan de él.",
+        onBlur: "Se llama cuando el foco sale del field.",
         ref: "Apunta al `<textarea>`. El resto de props nativas (`value`, `onChange`, `placeholder`, `name`…) llegan a él; `rows` se sustituye por `minRows`.",
       },
       action: {
@@ -254,6 +276,9 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Keyboard:
+        "Enter añade un salto de línea, y Ctrl + Enter (Cmd + Enter en macOS) pulsa la acción cuando `actionShortcut` está activo.",
+      Rtl: "En un contenedor de derecha a izquierda, el contador abre la barra inferior por la derecha y la acción la cierra por la izquierda.",
       States:
         "Obligatorio con información, texto de ayuda, error con mensaje, cargando (spinner en la barra inferior) y deshabilitado.",
       AutoGrow:

@@ -3,6 +3,7 @@ import type {
   FieldActionProps,
   FieldBaseProps,
   FieldClassNames,
+  FieldTexts,
   ToggleBooleanValueProps,
   ToggleCustomValueProps,
   ToggleValue,
@@ -75,7 +76,5 @@ export type CheckboxCustomValueProps<V extends CheckboxValue> = ToggleCustomValu
  * is overloaded on the two value shapes, so callbacks are typed without annotations.)
  */
 export type CheckboxFieldProps<V extends CheckboxValue = boolean> = CheckboxFieldBaseProps &
+  FieldTexts &
   (CheckboxBooleanValueProps | CheckboxCustomValueProps<V>);
-
-/** `Omit` that keeps a union a union, so the value props stay both-or-neither. */
-export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;

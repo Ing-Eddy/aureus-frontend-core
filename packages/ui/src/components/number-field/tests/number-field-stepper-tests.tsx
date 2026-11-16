@@ -8,7 +8,9 @@ const decrease = () => screen.getByRole("button", { name: "Decrease" }) as HTMLB
 
 describe("NumberField step buttons", () => {
   it("renders stacked buttons by default, after the input", () => {
-    const { container } = render(<NumberField label="Qty" />);
+    const { container } = render(
+      <NumberField incrementLabel="Increase" decrementLabel="Decrease" label="Qty" />,
+    );
     const stepper = container.querySelector("[data-slot=field-stepper]");
     expect(stepper?.getAttribute("data-layout")).toBe("stacked");
     expect(stepper?.contains(increase())).toBe(true);
@@ -16,7 +18,14 @@ describe("NumberField step buttons", () => {
   });
 
   it("renders split buttons on both sides", () => {
-    const { container } = render(<NumberField label="Qty" stepperLayout="split" />);
+    const { container } = render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        stepperLayout="split"
+      />,
+    );
     const frame = container.querySelector("[data-slot=input-group]") as HTMLElement;
     expect(frame.firstElementChild).toBe(decrease());
     expect(frame.lastElementChild).toBe(increase());
@@ -30,7 +39,15 @@ describe("NumberField step buttons", () => {
   it("steps, keeps focus in the input and disables at the limits", async () => {
     const onValueChange = vi.fn();
     render(
-      <NumberField label="Qty" min={0} max={2} defaultValue={1} onValueChange={onValueChange} />,
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        min={0}
+        max={2}
+        defaultValue={1}
+        onValueChange={onValueChange}
+      />,
     );
     const field = screen.getByRole("spinbutton");
     await userEvent.click(field);
@@ -43,16 +60,34 @@ describe("NumberField step buttons", () => {
   });
 
   it("disables both buttons while loading or disabled", () => {
-    const { unmount } = render(<NumberField label="Qty" loading />);
+    const { unmount } = render(
+      <NumberField
+        loadingLabel="Loading"
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        loading
+      />,
+    );
     expect(increase().disabled).toBe(true);
     expect(decrease().disabled).toBe(true);
     unmount();
-    render(<NumberField label="Qty" disabled />);
+    render(
+      <NumberField incrementLabel="Increase" decrementLabel="Decrease" label="Qty" disabled />,
+    );
     expect(increase().disabled).toBe(true);
   });
 
   it("disables decrease at 0 when negatives are not allowed", () => {
-    render(<NumberField label="Qty" allowNegative={false} defaultValue={0} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        allowNegative={false}
+        defaultValue={0}
+      />,
+    );
     expect(decrease().disabled).toBe(true);
   });
 

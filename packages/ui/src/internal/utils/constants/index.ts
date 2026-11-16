@@ -1,4 +1,3 @@
-export { fieldStrings } from "./field-strings";
 export {
   fieldAddonClassName,
   fieldFooterClassName,

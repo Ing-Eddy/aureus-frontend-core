@@ -6,11 +6,12 @@ import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
 import { Button } from "@aureus-core/ui/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type ComponentType, type ReactNode, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { z } from "zod";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import type { StoryArgs } from "../story-args";
 import { docs } from "./text-area-control-docs";
 
 const schema = z.object({
@@ -57,11 +58,11 @@ function DemoForm({ children }: { children: ReactNode }) {
   );
 }
 
-type TextAreaControlStoryArgs = TextAreaControlProps & ActionArgs;
+type TextAreaControlStoryArgs = StoryArgs<TextAreaControlProps> & ActionArgs;
 
 const meta = {
   title: "components/Forms/Text Area Control",
-  component: TextAreaControl,
+  component: TextAreaControl as unknown as ComponentType<TextAreaControlStoryArgs>,
   parameters: { aureusDocs: docs },
   decorators: [
     (Story) => (
@@ -72,20 +73,24 @@ const meta = {
   ],
   render: (args) => {
     const [props, action] = splitActionArgs(args);
-    return <TextAreaControl {...props} action={action} />;
+    return <TextAreaControl {...(props as TextAreaControlProps)} action={action} />;
   },
   args: {
     name: "bio",
     label: "Bio",
     helperText: "Tell us about you.",
     info: "Shown on your public profile.",
+    infoLabel: "More information",
     required: true,
     loading: false,
+    loadingLabel: "Loading",
     disabled: false,
     minRows: 3,
     maxRows: 8,
     resize: true,
     showCount: true,
+    countLabel: (count: number, max?: number) =>
+      max === undefined ? `${count} characters` : `${max - count} characters remaining`,
     maxLength: 500,
     actionShortcut: false,
     onChange: fn(),
@@ -100,12 +105,14 @@ const meta = {
     placeholder: { control: "text", table: { category: "Content" } },
     helperText: { control: "text", table: { category: "Content" } },
     info: { control: "text", table: { category: "Content" } },
+    infoLabel: { control: "text", table: { category: "Content" } },
     classNames: { control: "object", table: { category: "Appearance" } },
     className: { control: "text", table: { category: "Appearance" } },
     minRows: { control: { type: "number", min: 1, max: 20 }, table: { category: "Appearance" } },
     maxRows: { control: { type: "number", min: 1, max: 40 }, table: { category: "Appearance" } },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     resize: { control: "boolean", table: { category: "Behavior" } },
     showCount: { control: "boolean", table: { category: "Behavior" } },
@@ -139,6 +146,9 @@ export const Playground: Story = {
 export const WithSchema: Story = {
   render: () => (
     <TextAreaControl
+      countLabel={(count, max) =>
+        max === undefined ? `${count} characters` : `${max - count} characters remaining`
+      }
       name="bio"
       label="Bio"
       required
@@ -167,6 +177,7 @@ export const DisabledVsLoading: Story = {
     <>
       <TextAreaControl name="bio" label="Bio" minRows={2} />
       <TextAreaControl
+        loadingLabel="Loading"
         name="draft"
         label="Summary (loading)"
         loading
@@ -199,11 +210,14 @@ const shared = {
   label: "Bio",
   required: true,
   info: "Shown on your public profile.",
+  infoLabel: "More information",
   helperText: "Tell us about you.",
   showCount: true,
+  countLabel: (count: number, max?: number) =>
+    max === undefined ? `${count} characters` : `${max - count} characters remaining`,
   maxLength: 500,
   minRows: 2,
-};
+} as const;
 
 export const Parity: Story = {
   render: () => (

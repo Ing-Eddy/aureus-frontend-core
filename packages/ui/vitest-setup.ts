@@ -17,3 +17,15 @@ if (typeof globalThis.ResizeObserver === "undefined") {
 if (typeof document !== "undefined" && typeof document.elementFromPoint !== "function") {
   document.elementFromPoint = () => null;
 }
+
+// jsdom has no object URLs; file fields create them for image previews. Tests spy on these.
+if (typeof URL.createObjectURL !== "function") {
+  let next = 0;
+  URL.createObjectURL = () => {
+    next += 1;
+    return `blob:test/${next}`;
+  };
+}
+if (typeof URL.revokeObjectURL !== "function") {
+  URL.revokeObjectURL = () => {};
+}

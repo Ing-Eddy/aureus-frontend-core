@@ -8,6 +8,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { z } from "zod";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import { loadingTexts } from "../story-args";
 import { docs } from "./checkbox-control-docs";
 
 const schema = z.object({
@@ -72,6 +73,7 @@ type CheckboxControlStoryArgs = ActionArgs & {
   appearance: "plain" | "card";
   required?: boolean;
   loading?: boolean;
+  loadingLabel?: string;
   disabled?: boolean;
   onValueChange: (value: boolean) => void;
 };
@@ -88,11 +90,18 @@ const meta = {
     ),
   ],
   render: (args) => {
-    const [props, action] = splitActionArgs(args);
-    return <CheckboxControl {...props} action={action} />;
+    const [{ loading, loadingLabel, ...props }, action] = splitActionArgs(args);
+    return (
+      <CheckboxControl
+        {...props}
+        {...loadingTexts(Boolean(loading), loadingLabel ?? "")}
+        action={action}
+      />
+    );
   },
   args: {
     name: "newsletter",
+    loadingLabel: "Loading",
     checkboxLabel: "Receive the weekly digest",
     helperText: "Sent on Mondays.",
     checkboxPosition: "start",
@@ -118,6 +127,7 @@ const meta = {
     },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     ...actionArgTypes,
     onValueChange: { table: { category: "Events" } },
@@ -185,6 +195,7 @@ export const DisabledVsLoading: Story = {
     <>
       <CheckboxControl name="newsletter" checkboxLabel="Weekly digest" />
       <CheckboxControl
+        loadingLabel="Loading"
         name="sync"
         checkboxLabel="Sync preferences (loading)"
         loading

@@ -3,16 +3,19 @@ import { FieldAction } from "@/internal/components/field-action";
 import { FieldLoading } from "@/internal/components/field-loading";
 import { FieldShell } from "@/internal/components/field-shell";
 import { useFieldA11y } from "@/internal/hooks";
-import type { FieldActionProps, FieldBaseProps } from "@/internal/types";
+import type { FieldActionProps, FieldBaseProps, FieldStatusInternal } from "@/internal/types";
 import { fieldAddonClassName, fieldFrameClassName } from "@/internal/utils/constants";
 import { cn } from "@/shadcn/lib/utils";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn/ui/input-group";
 
 export type InputFieldProps = FieldBaseProps &
+  FieldStatusInternal &
   Omit<
     ComponentProps<"input">,
     "type" | "size" | "disabled" | "required" | "className" | "children"
   > & {
+    /** Name of the public field, for development warnings. */
+    componentName: string;
     /** The input type. Set by the public field, never by its consumer. */
     type: "text" | "password";
     /** Button inside the input frame, on its inline-end side. */
@@ -47,6 +50,7 @@ export function InputField({
   startSlot,
   inputEndSlot,
   endSlot,
+  componentName,
   type,
   id,
   "aria-describedby": describedBy,
@@ -94,6 +98,7 @@ export function InputField({
             {action ? (
               <FieldAction
                 {...action}
+                componentName={componentName}
                 disabled={a11y.isDisabled || action.disabled}
                 className={cn(classNames?.action, action.className)}
               />

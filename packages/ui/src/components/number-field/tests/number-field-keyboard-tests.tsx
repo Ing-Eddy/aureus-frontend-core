@@ -8,7 +8,15 @@ const input = () => screen.getByRole("spinbutton") as HTMLInputElement;
 describe("NumberField keyboard and wheel", () => {
   it("steps with the arrows, Shift and PageUp/PageDown", async () => {
     const onValueChange = vi.fn();
-    render(<NumberField label="Qty" defaultValue={5} onValueChange={onValueChange} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        defaultValue={5}
+        onValueChange={onValueChange}
+      />,
+    );
     await userEvent.click(input());
     await userEvent.keyboard("{ArrowUp}");
     expect(onValueChange).toHaveBeenLastCalledWith(6);
@@ -24,7 +32,14 @@ describe("NumberField keyboard and wheel", () => {
   it("steps decimals exactly", async () => {
     const onValueChange = vi.fn();
     render(
-      <NumberField label="Rate" step={0.1} defaultValue={0.2} onValueChange={onValueChange} />,
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Rate"
+        step={0.1}
+        defaultValue={0.2}
+        onValueChange={onValueChange}
+      />,
     );
     await userEvent.click(input());
     await userEvent.keyboard("{ArrowUp}");
@@ -34,7 +49,15 @@ describe("NumberField keyboard and wheel", () => {
   it("goes to min and max with Home and End, and steps within them", async () => {
     const onValueChange = vi.fn();
     render(
-      <NumberField label="Qty" min={1} max={10} defaultValue={5} onValueChange={onValueChange} />,
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        min={1}
+        max={10}
+        defaultValue={5}
+        onValueChange={onValueChange}
+      />,
     );
     await userEvent.click(input());
     await userEvent.keyboard("{End}");
@@ -46,12 +69,22 @@ describe("NumberField keyboard and wheel", () => {
   });
 
   it("clamps on blur, unless clampOnBlur is off", async () => {
-    const { unmount } = render(<NumberField label="Qty" max={10} />);
+    const { unmount } = render(
+      <NumberField incrementLabel="Increase" decrementLabel="Decrease" label="Qty" max={10} />,
+    );
     await userEvent.type(input(), "50");
     await userEvent.tab();
     expect(input().value).toBe("10");
     unmount();
-    render(<NumberField label="Qty" max={10} clampOnBlur={false} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        max={10}
+        clampOnBlur={false}
+      />,
+    );
     await userEvent.type(input(), "50");
     await userEvent.tab();
     expect(input().value).toBe("50");
@@ -59,7 +92,16 @@ describe("NumberField keyboard and wheel", () => {
 
   it("steps with the wheel only when enabled and focused", async () => {
     const onValueChange = vi.fn();
-    render(<NumberField label="Qty" wheel defaultValue={5} onValueChange={onValueChange} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        wheel
+        defaultValue={5}
+        onValueChange={onValueChange}
+      />,
+    );
     const outside = fireEvent.wheel(input(), { deltaY: -100 });
     expect(outside).toBe(true);
     expect(onValueChange).not.toHaveBeenCalled();
@@ -72,7 +114,15 @@ describe("NumberField keyboard and wheel", () => {
 
   it("ignores the wheel by default", async () => {
     const onValueChange = vi.fn();
-    render(<NumberField label="Qty" defaultValue={5} onValueChange={onValueChange} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        defaultValue={5}
+        onValueChange={onValueChange}
+      />,
+    );
     await userEvent.click(input());
     fireEvent.wheel(input(), { deltaY: -100 });
     expect(onValueChange).not.toHaveBeenCalled();

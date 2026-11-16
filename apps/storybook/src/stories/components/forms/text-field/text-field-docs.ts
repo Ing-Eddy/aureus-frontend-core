@@ -25,8 +25,10 @@ export const docs = defineComponentDocs({
       action: { type: "FieldActionProps" },
       className: { type: "string" },
       classNames: { type: "FieldClassNames" },
-      loadingLabel: { type: "string", default: '"Loading"' },
-      infoLabel: { type: "string", default: '"More information"' },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
+      id: { type: "string" },
+      onBlur: { type: "(event: FocusEvent) => void" },
       ref: { type: "Ref<HTMLInputElement>" },
     },
     action: {
@@ -51,7 +53,7 @@ export const docs = defineComponentDocs({
       action: { type: "string" },
     },
   },
-  stories: ["States", "WithAction", "CustomLabelStyles", "Responsive"],
+  stories: ["States", "WithAction", "CustomLabelStyles", "Keyboard", "Rtl", "Responsive"],
   keyboard: ["Tab", "Shift + Tab", "Enter", "Space", "Escape"],
   links: [
     { label: "Guide: Fields & controls", href: "?path=/docs/guides-fields-controls--docs" },
@@ -94,8 +96,12 @@ export const docs = defineComponentDocs({
         action: "The integrated button. See the `action` table.",
         className: "Extra classes for the root element.",
         classNames: "Extra classes per part. See the `classNames` table.",
-        loadingLabel: "Accessible label of the spinner.",
-        infoLabel: "Accessible name of the info button.",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
+        id: "Id of the field's control. Generated when missing; the ids of the label, helper text and info derive from it.",
+        onBlur: "Called when focus leaves the field.",
         ref: 'Reaches the `<input>` element. Other native input props (`value`, `onChange`, `placeholder`, `name`, `autoComplete`, `maxLength`…) are passed to it; `type` is not, the input is always `type="text"`.',
       },
       action: {
@@ -122,6 +128,9 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Keyboard:
+        "Tab moves through the info button, the input and the action; Escape closes the tooltip, and Enter or Space presses the action.",
+      Rtl: "In a right-to-left container the action sits at the left of the text and the info button at the left of the label.",
       States:
         "Every state side by side: required with info, helper text, error with and without a message, loading and disabled.",
       WithAction:
@@ -190,8 +199,12 @@ export const docs = defineComponentDocs({
         action: "El botón integrado. Ver la tabla `action`.",
         className: "Clases extra para la raíz.",
         classNames: "Clases extra por parte. Ver la tabla `classNames`.",
-        loadingLabel: "Etiqueta accesible del spinner.",
-        infoLabel: "Nombre accesible del botón de información.",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
+        id: "Id del control del field. Se genera si falta; los ids del label, el texto de ayuda y la info se derivan de él.",
+        onBlur: "Se llama cuando el foco sale del field.",
         ref: 'Apunta al elemento `<input>`. El resto de props nativas (`value`, `onChange`, `placeholder`, `name`, `autoComplete`, `maxLength`…) llegan a él; `type` no, el input es siempre `type="text"`.',
       },
       action: {
@@ -218,6 +231,9 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Keyboard:
+        "Tab recorre el botón de info, el input y la acción; Escape cierra el tooltip, y Enter o Espacio pulsan la acción.",
+      Rtl: "En un contenedor de derecha a izquierda, la acción queda a la izquierda del texto y el botón de info a la izquierda del label.",
       States:
         "Todos los estados lado a lado: obligatorio con información, texto de ayuda, error con y sin mensaje, cargando y deshabilitado.",
       WithAction:

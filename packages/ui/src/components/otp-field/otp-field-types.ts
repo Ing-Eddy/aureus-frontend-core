@@ -1,5 +1,10 @@
 import type { FocusEvent, ReactNode, Ref } from "react";
-import type { FieldActionProps, FieldBaseProps, FieldClassNames } from "@/internal/types";
+import type {
+  FieldActionProps,
+  FieldBaseProps,
+  FieldClassNames,
+  FieldTexts,
+} from "@/internal/types";
 import type { OtpCharset } from "./utils";
 
 /** Extra parts of an OTP field that accept classes. */
@@ -24,7 +29,7 @@ export interface OtpReveal {
  * Props of `OtpField`. Every option is independent and opt-in, and there are no default texts: a
  * text that is not passed is not shown.
  */
-export interface OtpFieldProps extends Omit<FieldBaseProps, "classNames"> {
+export interface OtpFieldBaseProps extends Omit<FieldBaseProps, "classNames"> {
   /** Number of characters (boxes). Required. */
   length: number;
   /** Controlled value. */
@@ -73,3 +78,9 @@ export interface OtpFieldProps extends Omit<FieldBaseProps, "classNames"> {
   /** Extra classes per part. */
   classNames?: OtpFieldClassNames;
 }
+
+/**
+ * Props of `OtpField`. `loading` requires `loadingLabel` and `info` requires `infoLabel`; no text
+ * is generated.
+ */
+export type OtpFieldProps = OtpFieldBaseProps & FieldTexts;

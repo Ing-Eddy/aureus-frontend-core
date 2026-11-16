@@ -1,7 +1,8 @@
-import { type ReactNode, useEffect } from "react";
-import { isDev } from "@/internal/utils/constants";
+import type { ReactNode } from "react";
+import { fieldTextChecks, useMissingTexts } from "@/internal/hooks";
+import type { FieldStatusInternal } from "@/internal/types";
 
-export interface RadioGroupWarningSources {
+export interface RadioGroupWarningSources extends FieldStatusInternal {
   label?: ReactNode;
   "aria-label"?: string;
   "aria-labelledby"?: string;
@@ -24,9 +25,8 @@ export function radioGroupProblems(props: RadioGroupWarningSources): string[] {
 
 /** Development warnings for untyped usage. No text is ever generated. */
 export function useRadioGroupWarnings(componentName: string, props: RadioGroupWarningSources) {
-  const key = radioGroupProblems(props).join("|");
-  useEffect(() => {
-    if (!isDev || !key) return;
-    for (const problem of key.split("|")) console.warn(`${componentName}: ${problem}.`);
-  }, [componentName, key]);
+  useMissingTexts(componentName, [
+    ...radioGroupProblems(props).map((problem) => [true, problem] as const),
+    ...fieldTextChecks(props),
+  ]);
 }

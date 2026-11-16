@@ -3,7 +3,6 @@ import {
   fieldStepperSplitButtonClassName,
   fieldStepperStackedButtonClassName,
   fieldStepperStackedClassName,
-  fieldStrings,
 } from "@/internal/utils/constants";
 import { cn } from "@/shadcn/lib/utils";
 import { usePressAndHold } from "./hooks";
@@ -16,7 +15,7 @@ interface StepButtonProps {
   controls: string;
   disabled: boolean;
   onStep: (direction: StepDirection) => void;
-  label: string;
+  label: string | undefined;
   className: string;
   icon: React.ReactNode;
 }
@@ -55,8 +54,12 @@ export interface FieldStepperProps {
   canDecrement: boolean;
   /** The field is disabled or loading. */
   disabled?: boolean;
-  incrementLabel?: string;
-  decrementLabel?: string;
+  /**
+   * Accessible names of the buttons, from the field's props. The public types require them while
+   * the stepper is shown; they are only `undefined` in untyped code, which gets a warning.
+   */
+  incrementLabel: string | undefined;
+  decrementLabel: string | undefined;
   className?: string;
 }
 
@@ -67,8 +70,8 @@ export function FieldStepperStacked({
   canIncrement,
   canDecrement,
   disabled = false,
-  incrementLabel = fieldStrings.increase,
-  decrementLabel = fieldStrings.decrease,
+  incrementLabel,
+  decrementLabel,
   className,
 }: FieldStepperProps) {
   return (
@@ -112,8 +115,8 @@ export function FieldStepperSplitButton({
   onStep,
   canStep,
   disabled = false,
-  incrementLabel = fieldStrings.increase,
-  decrementLabel = fieldStrings.decrease,
+  incrementLabel,
+  decrementLabel,
   className,
 }: FieldStepperSplitButtonProps) {
   const increment = direction === "increment";

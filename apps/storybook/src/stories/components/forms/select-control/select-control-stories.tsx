@@ -195,6 +195,7 @@ export const DisabledVsLoading: Story = {
     <>
       <SelectControl name="country" label="Country" options={countries} />
       <SelectControl
+        loadingLabel="Loading"
         name="currency"
         label="Currency (loading)"
         options={currencies}

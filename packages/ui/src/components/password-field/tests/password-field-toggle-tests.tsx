@@ -7,7 +7,13 @@ const input = (container: HTMLElement) => container.querySelector("input") as HT
 
 describe("PasswordField toggle", () => {
   it("starts hidden", () => {
-    const { container } = render(<PasswordField label="Password" />);
+    const { container } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+      />,
+    );
     expect(input(container).type).toBe("password");
     const toggle = screen.getByRole("button", { name: "Show password" });
     expect(toggle.getAttribute("aria-pressed")).toBe("false");
@@ -15,7 +21,13 @@ describe("PasswordField toggle", () => {
   });
 
   it("shows the password when pressed", async () => {
-    const { container } = render(<PasswordField label="Password" />);
+    const { container } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+      />,
+    );
     await userEvent.click(screen.getByRole("button", { name: "Show password" }));
 
     expect(input(container).type).toBe("text");
@@ -28,7 +40,14 @@ describe("PasswordField toggle", () => {
   });
 
   it("keeps focus and the caret in the input when pressed with a pointer", async () => {
-    const { container } = render(<PasswordField label="Password" defaultValue="secret" />);
+    const { container } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        defaultValue="secret"
+      />,
+    );
     const field = input(container);
     field.focus();
     field.setSelectionRange(3, 3);
@@ -41,7 +60,13 @@ describe("PasswordField toggle", () => {
   });
 
   it("keeps focus on the toggle when used from the keyboard", async () => {
-    const { container } = render(<PasswordField label="Password" />);
+    const { container } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+      />,
+    );
     const toggle = screen.getByRole("button", { name: "Show password" });
     toggle.focus();
     await userEvent.keyboard(" ");
@@ -50,21 +75,42 @@ describe("PasswordField toggle", () => {
   });
 
   it("can be uncontrolled with defaultVisible", () => {
-    const { container } = render(<PasswordField label="Password" defaultVisible />);
+    const { container } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        defaultVisible
+      />,
+    );
     expect(input(container).type).toBe("text");
   });
 
   it("can be controlled with visible and onVisibleChange", async () => {
     const onVisibleChange = vi.fn();
     const { container, rerender } = render(
-      <PasswordField label="Password" visible={false} onVisibleChange={onVisibleChange} />,
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        visible={false}
+        onVisibleChange={onVisibleChange}
+      />,
     );
     await userEvent.click(screen.getByRole("button", { name: "Show password" }));
     expect(onVisibleChange).toHaveBeenCalledWith(true);
     // Controlled: nothing changes until the parent passes the new value.
     expect(input(container).type).toBe("password");
 
-    rerender(<PasswordField label="Password" visible onVisibleChange={onVisibleChange} />);
+    rerender(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        visible
+        onVisibleChange={onVisibleChange}
+      />,
+    );
     expect(input(container).type).toBe("text");
   });
 
@@ -78,7 +124,13 @@ describe("PasswordField toggle", () => {
           typeAtSubmit = input(container).type;
         }}
       >
-        <PasswordField label="Password" defaultVisible onVisibleChange={onVisibleChange} />
+        <PasswordField
+          showPasswordLabel="Show password"
+          hidePasswordLabel="Hide password"
+          label="Password"
+          defaultVisible
+          onVisibleChange={onVisibleChange}
+        />
       </form>,
     );
     expect(input(container).type).toBe("text");

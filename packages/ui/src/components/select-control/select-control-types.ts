@@ -1,8 +1,5 @@
 import type { SelectFieldProps } from "@/components/select-field";
-import type { ControlBaseProps } from "@/internal/types";
-
-/** `Omit` that keeps a union a union, so the feature texts stay required. */
-type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+import type { ControlBaseProps, DistributiveOmit } from "@/internal/types";
 
 /**
  * Props of `SelectControl`: the field `name` and binding options, plus every `SelectField` prop

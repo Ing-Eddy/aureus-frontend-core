@@ -35,6 +35,9 @@ export const docs = defineComponentDocs({
       "aria-label": { type: "string" },
       className: { type: "string" },
       classNames: { type: "CheckboxGroupFieldClassNames" },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
+      id: { type: "string" },
       ref: { type: "Ref<HTMLDivElement>" },
     },
     CheckboxGroupOption: {
@@ -54,6 +57,7 @@ export const docs = defineComponentDocs({
     "Cards",
     "Keyboard",
     "States",
+    "Rtl",
     "Responsive",
   ],
   keyboard: ["Tab / Shift + Tab", "Space"],
@@ -121,6 +125,11 @@ export const docs = defineComponentDocs({
         className: "Extra classes for the root.",
         classNames:
           "Extra classes per part: `options`, `option`, `checkbox`, `optionLabel`, `selectAll` plus the family's parts.",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
+        id: "Id of the field's control. Generated when missing; the ids of the label, helper text and info derive from it.",
         ref: "Reaches the group container.",
       },
       CheckboxGroupOption: {
@@ -132,6 +141,7 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Rtl: "In a right-to-left container each box sits at the right of its option.",
       Basic: "The minimum: a label and the options.",
       WithDescriptions: "Each option with a description; one is disabled.",
       SelectAll: "A parent box over the options: mixed while only some are checked.",
@@ -214,6 +224,11 @@ export const docs = defineComponentDocs({
         className: "Clases extra para la raíz.",
         classNames:
           "Clases extra por parte: `options`, `option`, `checkbox`, `optionLabel`, `selectAll` y las partes de la familia.",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
+        id: "Id del control del field. Se genera si falta; los ids del label, el texto de ayuda y la info se derivan de él.",
         ref: "Llega al contenedor del grupo.",
       },
       CheckboxGroupOption: {
@@ -226,6 +241,7 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Rtl: "En un contenedor de derecha a izquierda, cada casilla queda a la derecha de su opción.",
       Basic: "Lo mínimo: un label y las opciones.",
       WithDescriptions: "Cada opción con descripción; una está deshabilitada.",
       SelectAll:

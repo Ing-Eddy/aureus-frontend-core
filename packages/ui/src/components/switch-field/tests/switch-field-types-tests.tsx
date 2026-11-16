@@ -25,7 +25,20 @@ const typeChecks: ReactElement[] = [
   <SwitchField key="icons" switchLabel="A" thumbIcons={{ off: "x" }} />,
 ];
 
+// The texts of the loading state and the info tooltip. Only constructed, never rendered.
+const textChecks = [
+  // The spinner is decorative, so `loading` needs no text.
+  <SwitchField key="loading" switchLabel="A" loading />,
+  <SwitchField key="info-ok" switchLabel="A" info="Help" infoLabel="Más información" />,
+  // @ts-expect-error `info` needs `infoLabel`.
+  <SwitchField key="info" switchLabel="A" info="Help" />,
+];
+
 describe("SwitchField types", () => {
+  it("require the texts of loading and info", () => {
+    expect(textChecks).toHaveLength(3);
+  });
+
   it("renders every valid combination", () => {
     const { container } = render(<div>{typeChecks.slice(0, 2)}</div>);
     expect(container.querySelectorAll("[role=switch]")).toHaveLength(2);

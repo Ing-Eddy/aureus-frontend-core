@@ -53,7 +53,13 @@ describe("CheckboxGroupControl in a form", () => {
   it("leaves disabled values out and keeps loading values", async () => {
     const { onSubmit } = renderInForm(
       <>
-        <CheckboxGroupControl name="channels" label="Channels" options={channels} loading />
+        <CheckboxGroupControl
+          loadingLabel="Loading"
+          name="channels"
+          label="Channels"
+          options={channels}
+          loading
+        />
         <CheckboxGroupControl
           name="permissions"
           label="Permissions"

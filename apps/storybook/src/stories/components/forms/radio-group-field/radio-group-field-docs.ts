@@ -34,6 +34,9 @@ export const docs = defineComponentDocs({
       "aria-label": { type: "string" },
       className: { type: "string" },
       classNames: { type: "RadioGroupFieldClassNames" },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
+      id: { type: "string" },
       ref: { type: "Ref<HTMLDivElement>" },
     },
     RadioGroupOption: {
@@ -54,6 +57,7 @@ export const docs = defineComponentDocs({
     "Deselectable",
     "Keyboard",
     "States",
+    "Rtl",
     "Responsive",
   ],
   keyboard: ["Tab / Shift + Tab", "Arrow Down / Arrow Right", "Arrow Up / Arrow Left", "Space"],
@@ -124,6 +128,11 @@ export const docs = defineComponentDocs({
         className: "Extra classes for the root.",
         classNames:
           "Extra classes per part: `options`, `option`, `radio`, `optionLabel`, `other` plus the family's parts.",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
+        id: "Id of the field's control. Generated when missing; the ids of the label, helper text and info derive from it.",
         ref: "Reaches the radiogroup element.",
       },
       RadioGroupOption: {
@@ -136,6 +145,7 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Rtl: "In a right-to-left container each radio sits at the right of its option, and in a horizontal group ArrowLeft moves to the next option.",
       Basic: "The minimum: a label and the options; nothing is chosen at first.",
       WithDescriptions: "Each option with a description; one is disabled.",
       Horizontal: "Short options in a wrapping row; Left/Right arrows move.",
@@ -151,9 +161,10 @@ export const docs = defineComponentDocs({
     keyboard: {
       "Tab / Shift + Tab":
         "Enters the group on the checked radio (or the first enabled one) and leaves it: the group is one tab stop.",
-      "Arrow Down / Arrow Right": "Moves to the next enabled radio and checks it, wrapping around.",
+      "Arrow Down / Arrow Right":
+        "Moves to the next enabled radio and checks it, wrapping around. In a right-to-left page, Arrow Left moves forward in a horizontal group.",
       "Arrow Up / Arrow Left":
-        "Moves to the previous enabled radio and checks it, wrapping around.",
+        "Moves to the previous enabled radio and checks it, wrapping around. In a right-to-left page, Arrow Right moves back in a horizontal group.",
       Space: "Checks the focused radio (unchecks it with `deselectable`).",
     },
     aria: [
@@ -220,6 +231,11 @@ export const docs = defineComponentDocs({
         className: "Clases extra para la raíz.",
         classNames:
           "Clases extra por parte: `options`, `option`, `radio`, `optionLabel`, `other` y las partes de la familia.",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
+        id: "Id del control del field. Se genera si falta; los ids del label, el texto de ayuda y la info se derivan de él.",
         ref: "Llega al elemento radiogroup.",
       },
       RadioGroupOption: {
@@ -232,6 +248,7 @@ export const docs = defineComponentDocs({
       },
     },
     stories: {
+      Rtl: "En un contenedor de derecha a izquierda, cada radio queda a la derecha de su opción y, en un grupo horizontal, ArrowLeft pasa a la opción siguiente.",
       Basic: "Lo mínimo: un label y las opciones; al principio no hay nada elegido.",
       WithDescriptions: "Cada opción con descripción; una está deshabilitada.",
       Horizontal: "Opciones cortas en una fila que salta de línea; se mueve con Izquierda/Derecha.",
@@ -250,9 +267,9 @@ export const docs = defineComponentDocs({
       "Tab / Shift + Tab":
         "Entra en el grupo por el radio marcado (o el primero habilitado) y sale de él: el grupo es una sola parada de Tab.",
       "Arrow Down / Arrow Right":
-        "Pasa al siguiente radio habilitado y lo marca, dando la vuelta al final.",
+        "Pasa al siguiente radio habilitado y lo marca, dando la vuelta al final. En una página de derecha a izquierda, en un grupo horizontal, avanza con Arrow Left.",
       "Arrow Up / Arrow Left":
-        "Pasa al radio habilitado anterior y lo marca, dando la vuelta al principio.",
+        "Pasa al radio habilitado anterior y lo marca, dando la vuelta al principio. En una página de derecha a izquierda, en un grupo horizontal, retrocede con Arrow Right.",
       Space: "Marca el radio enfocado (lo desmarca con `deselectable`).",
     },
     aria: [

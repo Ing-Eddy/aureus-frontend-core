@@ -66,6 +66,10 @@ export function OtpField(props: OtpFieldProps) {
     reveal,
     rawValue,
     sanitizedValue: sanitizedRaw,
+    loading,
+    loadingLabel,
+    info,
+    infoLabel,
   });
 
   const [current, setCurrent] = useControllableState<string>({
@@ -189,6 +193,7 @@ export function OtpField(props: OtpFieldProps) {
         {action ? (
           <FieldAction
             {...action}
+            componentName="OtpField"
             disabled={locked || action.disabled}
             className={cn(classNames?.action, action.className)}
           />

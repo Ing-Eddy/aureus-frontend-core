@@ -5,6 +5,7 @@ import { CheckIcon, XIcon } from "lucide-react";
 import { type ComponentType, type MouseEvent, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import { infoTexts } from "../story-args";
 import { docs } from "./switch-field-docs";
 
 /** Flat, story-only args; the render builds the value and async props from the modes. */
@@ -13,6 +14,7 @@ interface PlaygroundArgs extends ActionArgs {
   switchLabel: string;
   helperText: string;
   info: string;
+  infoLabel: string;
   errorMessage: string;
   stateOn: string;
   stateOff: string;
@@ -47,7 +49,7 @@ function PlaygroundRender(args: PlaygroundArgs) {
     label: text(base.label),
     switchLabel: text(base.switchLabel),
     helperText: text(base.helperText),
-    info: text(base.info),
+    ...infoTexts(base.info, base.infoLabel),
     errorMessage: text(base.errorMessage),
     stateLabels:
       base.stateOn && base.stateOff ? { on: base.stateOn, off: base.stateOff } : undefined,
@@ -96,6 +98,7 @@ const meta = {
     switchLabel: "Email notifications",
     helperText: "",
     info: "",
+    infoLabel: "More information",
     errorMessage: "",
     stateOn: "",
     stateOff: "",
@@ -118,6 +121,7 @@ const meta = {
     switchLabel: { control: "text", ...content },
     helperText: { control: "text", ...content },
     info: { control: "text", ...content },
+    infoLabel: { control: "text", ...content },
     errorMessage: { control: "text", ...content },
     stateOn: { control: "text", name: "stateLabels.on", ...layout },
     stateOff: { control: "text", name: "stateLabels.off", ...layout },
@@ -165,6 +169,7 @@ export const Basic: Story = {
 export const LabelAndText: Story = {
   render: () => (
     <SwitchField
+      infoLabel="More information"
       label="Notifications"
       switchLabel="Weekly digest by email"
       helperText="Sent on Mondays."
@@ -336,6 +341,7 @@ export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
       <SwitchField
+        infoLabel="More information"
         label="Consent"
         switchLabel="Share anonymous usage data"
         required

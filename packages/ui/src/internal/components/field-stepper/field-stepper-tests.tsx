@@ -20,6 +20,8 @@ describe("FieldStepper", () => {
           onStep={onStep}
           canIncrement
           canDecrement
+          incrementLabel="Increase"
+          decrementLabel="Decrease"
           {...props}
         />
       </>,
@@ -85,7 +87,14 @@ describe("FieldStepper", () => {
 
   it("disables each button at its limit, and both when the field is disabled", () => {
     const { rerender } = render(
-      <FieldStepperStacked controls="x" onStep={vi.fn()} canIncrement={false} canDecrement />,
+      <FieldStepperStacked
+        controls="x"
+        onStep={vi.fn()}
+        canIncrement={false}
+        canDecrement
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+      />,
     );
     expect((screen.getByRole("button", { name: "Increase" }) as HTMLButtonElement).disabled).toBe(
       true,
@@ -94,7 +103,15 @@ describe("FieldStepper", () => {
       false,
     );
     rerender(
-      <FieldStepperStacked controls="x" onStep={vi.fn()} canIncrement canDecrement disabled />,
+      <FieldStepperStacked
+        controls="x"
+        onStep={vi.fn()}
+        canIncrement
+        canDecrement
+        disabled
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+      />,
     );
     expect((screen.getByRole("button", { name: "Decrease" }) as HTMLButtonElement).disabled).toBe(
       true,
@@ -109,6 +126,7 @@ describe("FieldStepper", () => {
           controls="x"
           onStep={vi.fn()}
           canStep
+          incrementLabel="Más"
           decrementLabel="Menos"
         />
         <FieldStepperSplitButton
@@ -117,6 +135,7 @@ describe("FieldStepper", () => {
           onStep={vi.fn()}
           canStep
           incrementLabel="Más"
+          decrementLabel="Menos"
         />
       </>,
     );

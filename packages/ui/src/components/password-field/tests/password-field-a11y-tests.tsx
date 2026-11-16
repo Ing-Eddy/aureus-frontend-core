@@ -6,7 +6,13 @@ import { PasswordField } from "../password-field";
 
 describe("PasswordField accessibility", () => {
   it("points the toggle at the input with aria-controls", () => {
-    const { container } = render(<PasswordField label="Password" />);
+    const { container } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+      />,
+    );
     const input = container.querySelector("input") as HTMLInputElement;
     expect(input.id).toBeTruthy();
     expect(
@@ -15,7 +21,14 @@ describe("PasswordField accessibility", () => {
   });
 
   it("uses the consumer's id for both the input and aria-controls", () => {
-    const { container } = render(<PasswordField label="Password" id="pwd" />);
+    const { container } = render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        id="pwd"
+      />,
+    );
     expect(container.querySelector("input")?.id).toBe("pwd");
     expect(
       screen.getByRole("button", { name: "Show password" }).getAttribute("aria-controls"),
@@ -35,7 +48,13 @@ describe("PasswordField accessibility", () => {
   });
 
   it("has no tooltip on the toggle", () => {
-    render(<PasswordField label="Password" />);
+    render(
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+      />,
+    );
     // Tooltip triggers carry a Radix `data-state`; the toggle is a plain button.
     expect(screen.getByRole("button", { name: "Show password" }).hasAttribute("data-state")).toBe(
       false,
@@ -45,7 +64,15 @@ describe("PasswordField accessibility", () => {
   it("keeps the shared field contract: label, aria-required, helper and info", () => {
     const { container } = render(
       <TooltipProvider>
-        <PasswordField label="Password" required helperText="At least 8" info="Use a passphrase" />
+        <PasswordField
+          infoLabel="More information"
+          showPasswordLabel="Show password"
+          hidePasswordLabel="Hide password"
+          label="Password"
+          required
+          helperText="At least 8"
+          info="Use a passphrase"
+        />
       </TooltipProvider>,
     );
     const input = container.querySelector("input") as HTMLInputElement;

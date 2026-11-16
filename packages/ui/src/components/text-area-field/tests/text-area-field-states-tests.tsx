@@ -11,6 +11,9 @@ function Controlled() {
   const [value, setValue] = useState("");
   return (
     <TextAreaField
+      countLabel={(count, max) =>
+        max === undefined ? `${count} characters` : `${max - count} characters remaining`
+      }
       label="Bio"
       showCount
       maxLength={50}
@@ -25,6 +28,9 @@ describe("TextAreaField states and props", () => {
     const onChange = vi.fn();
     const { container } = render(
       <TextAreaField
+        countLabel={(count, max) =>
+          max === undefined ? `${count} characters` : `${max - count} characters remaining`
+        }
         label="Bio"
         defaultValue="Hello"
         showCount
@@ -64,6 +70,9 @@ describe("TextAreaField states and props", () => {
   it("merges classNames for the footer and the textarea", () => {
     const { container } = render(
       <TextAreaField
+        countLabel={(count, max) =>
+          max === undefined ? `${count} characters` : `${max - count} characters remaining`
+        }
         label="Bio"
         showCount
         classNames={{ footer: "footer-x", input: "input-x", action: "action-x" }}

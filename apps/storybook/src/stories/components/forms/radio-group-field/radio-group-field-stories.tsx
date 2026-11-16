@@ -3,6 +3,7 @@ import { billing, frequencies, plans, shipping, sources } from "@fixtures/radio-
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ComponentType, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import { infoTexts, loadingTexts } from "../story-args";
 import { docs } from "./radio-group-field-docs";
 
 /** Flat, story-only args; the render builds `otherOption` from its texts. */
@@ -10,6 +11,7 @@ interface PlaygroundArgs {
   label: string;
   helperText: string;
   info: string;
+  infoLabel: string;
   errorMessage: string;
   otherLabel: string;
   otherInputLabel: string;
@@ -20,6 +22,7 @@ interface PlaygroundArgs {
   deselectable: boolean;
   required: boolean;
   loading: boolean;
+  loadingLabel: string;
   disabled: boolean;
   error: boolean;
   onValueChange: (value: string | null) => void;
@@ -63,7 +66,7 @@ const meta = {
     <RadioGroupField
       label={text(args.label)}
       helperText={text(args.helperText)}
-      info={text(args.info)}
+      {...infoTexts(args.info, args.infoLabel)}
       errorMessage={text(args.errorMessage)}
       options={plans}
       otherOption={
@@ -77,7 +80,7 @@ const meta = {
       radioPosition={args.radioPosition}
       deselectable={args.deselectable}
       required={args.required}
-      loading={args.loading}
+      {...loadingTexts(args.loading, args.loadingLabel)}
       disabled={args.disabled}
       error={args.error}
       onValueChange={args.onValueChange}
@@ -87,6 +90,7 @@ const meta = {
     label: "Plan",
     helperText: "",
     info: "",
+    infoLabel: "More information",
     errorMessage: "",
     otherLabel: "",
     otherInputLabel: "",
@@ -96,6 +100,7 @@ const meta = {
     deselectable: false,
     required: false,
     loading: false,
+    loadingLabel: "Loading",
     disabled: false,
     error: false,
     onValueChange: fn(),
@@ -104,6 +109,7 @@ const meta = {
     label: { control: "text", ...content },
     helperText: { control: "text", ...content },
     info: { control: "text", ...content },
+    infoLabel: { control: "text", ...content },
     errorMessage: { control: "text", ...content },
     otherLabel: { control: "text", name: "otherOption.label", ...behavior },
     otherInputLabel: { control: "text", name: "otherOption.inputLabel", ...behavior },
@@ -114,6 +120,7 @@ const meta = {
     radioPosition: { control: "inline-radio", options: ["start", "end"], ...layout },
     required: { control: "boolean", ...state },
     loading: { control: "boolean", ...state },
+    loadingLabel: { control: "text", ...content },
     disabled: { control: "boolean", ...state },
     error: { control: "boolean", ...state },
     onValueChange: { table: { category: "Events" } },
@@ -313,6 +320,7 @@ export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-8">
       <RadioGroupField
+        infoLabel="More information"
         label="Shipping"
         options={shipping}
         required
@@ -325,7 +333,13 @@ export const States: Story = {
         error
         errorMessage="Choose a plan."
       />
-      <RadioGroupField label="Billing (loading)" options={billing} loading defaultValue="yearly" />
+      <RadioGroupField
+        loadingLabel="Loading"
+        label="Billing (loading)"
+        options={billing}
+        loading
+        defaultValue="yearly"
+      />
       <RadioGroupField
         label="Billing (disabled)"
         options={billing}
@@ -348,6 +362,32 @@ export const States: Story = {
     );
     await expect(canvas.getByRole("radiogroup", { name: "Billing (loading)" })).toHaveAttribute(
       "aria-busy",
+      "true",
+    );
+  },
+};
+
+/** Right to left: each radio moves to the inline start, on the right of its option. */
+export const Rtl: Story = {
+  render: () => (
+    <div dir="rtl">
+      <RadioGroupField label="Plan" options={plans} orientation="horizontal" />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const first = plans[0] as { label: string };
+    const text = canvas.getByText(first.label);
+    const row = text.closest("[data-slot=radio-row]") as HTMLElement;
+    const radio = row.querySelector("[data-slot=radio-box-slot]") as HTMLElement;
+    await expect(radio.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+      text.getBoundingClientRect().left,
+    );
+    // In a horizontal group, arrow keys follow the reading direction: ArrowLeft moves to the next option.
+    await userEvent.click(canvas.getByRole("radio", { name: first.label }));
+    const second = plans[1] as { label: string };
+    await pressArrow("ArrowLeft", canvas.getByRole("radio", { name: second.label }));
+    await expect(canvas.getByRole("radio", { name: second.label })).toHaveAttribute(
+      "aria-checked",
       "true",
     );
   },

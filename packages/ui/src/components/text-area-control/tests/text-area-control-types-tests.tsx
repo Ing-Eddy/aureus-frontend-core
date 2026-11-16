@@ -5,7 +5,17 @@ import { TextAreaControl } from "../text-area-control";
 // Each element is only constructed, never rendered.
 const typeChecks = [
   // `name` is a plain string; text-area props pass through.
-  <TextAreaControl key="name" name="bio" label="Bio" minRows={4} showCount actionShortcut />,
+  <TextAreaControl
+    countLabel={(count, max) =>
+      max === undefined ? `${count} characters` : `${max - count} characters remaining`
+    }
+    key="name"
+    name="bio"
+    label="Bio"
+    minRows={4}
+    showCount
+    actionShortcut
+  />,
   // @ts-expect-error The form binding comes from the FormProvider context.
   <TextAreaControl key="control" name="bio" control={{}} />,
   // @ts-expect-error Validation lives in the form's schema.

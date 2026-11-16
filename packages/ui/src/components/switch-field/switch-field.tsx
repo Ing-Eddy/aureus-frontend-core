@@ -138,6 +138,7 @@ export function SwitchField<V extends SwitchValue = boolean>(
   const end = action ? (
     <FieldAction
       {...action}
+      componentName="SwitchField"
       disabled={locked || action.disabled}
       className={cn(classNames?.action, action.className)}
     />

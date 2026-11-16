@@ -1,7 +1,8 @@
-import { type ReactNode, useEffect } from "react";
-import { isDev } from "@/internal/utils/constants";
+import type { ReactNode } from "react";
+import { fieldTextChecks, useMissingTexts } from "@/internal/hooks";
+import type { FieldStatusInternal } from "@/internal/types";
 
-export interface CheckboxGroupNameSources {
+export interface CheckboxGroupNameSources extends FieldStatusInternal {
   label?: ReactNode;
   "aria-label"?: string;
   "aria-labelledby"?: string;
@@ -12,13 +13,16 @@ export function hasGroupName(props: CheckboxGroupNameSources) {
   return Boolean(props.label || props["aria-label"] || props["aria-labelledby"]);
 }
 
-/** Development warning for a group without an accessible name. No text is generated for it. */
+/**
+ * Development warnings for a field without an accessible name, and for `loading` or `info`
+ * without their texts. No text is ever generated.
+ */
 export function useCheckboxGroupWarnings(componentName: string, props: CheckboxGroupNameSources) {
-  const named = hasGroupName(props);
-  useEffect(() => {
-    if (!isDev || named) return;
-    console.warn(
-      `${componentName}: the group has no accessible name. Pass \`label\`, \`aria-label\` or \`aria-labelledby\`.`,
-    );
-  }, [componentName, named]);
+  useMissingTexts(componentName, [
+    [
+      !hasGroupName(props),
+      "the group has no accessible name. Pass `label`, `aria-label` or `aria-labelledby`",
+    ],
+    ...fieldTextChecks(props),
+  ]);
 }

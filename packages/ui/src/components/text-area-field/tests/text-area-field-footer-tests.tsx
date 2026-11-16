@@ -8,7 +8,7 @@ const footer = (container: HTMLElement) =>
   container.querySelector("[data-slot=input-group-addon][data-align=block-end]");
 
 const renderField = (props: Partial<TextAreaFieldProps> = {}) =>
-  render(<TextAreaField label="Comment" {...props} />);
+  render(<TextAreaField {...({ label: "Comment", ...props } as TextAreaFieldProps)} />);
 
 describe("TextAreaField footer bar", () => {
   it("is not rendered when there is nothing to show", () => {
@@ -19,6 +19,7 @@ describe("TextAreaField footer bar", () => {
   it("shows the spinner, the counter and the action, in that order", () => {
     const { container } = renderField({
       loading: true,
+      loadingLabel: "Loading",
       showCount: true,
       maxLength: 10,
       action: { children: "Post" },
@@ -31,7 +32,11 @@ describe("TextAreaField footer bar", () => {
   });
 
   it("disables the action while loading or disabled, but not the field alone", () => {
-    const { unmount } = renderField({ loading: true, action: { children: "Post" } });
+    const { unmount } = renderField({
+      loading: true,
+      loadingLabel: "Loading",
+      action: { children: "Post" },
+    });
     expect((screen.getByRole("button", { name: "Post" }) as HTMLButtonElement).disabled).toBe(true);
     unmount();
     renderField({ action: { children: "Post", disabled: true } });

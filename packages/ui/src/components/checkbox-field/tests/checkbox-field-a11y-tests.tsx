@@ -45,6 +45,7 @@ describe("CheckboxField accessibility", () => {
   it("describes the box with helper and info, and marks it invalid", () => {
     renderField(
       <CheckboxField
+        infoLabel="More information"
         checkboxLabel="I accept"
         helperText="Required to continue"
         info="Read them first"

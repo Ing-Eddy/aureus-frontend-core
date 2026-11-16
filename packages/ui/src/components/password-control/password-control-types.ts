@@ -1,5 +1,5 @@
 import type { PasswordFieldProps } from "@/components/password-field";
-import type { ControlBaseProps } from "@/internal/types";
+import type { ControlBaseProps, DistributiveOmit } from "@/internal/types";
 
 /**
  * Props of `PasswordControl`: the field `name` and binding options, plus the same visual and
@@ -7,7 +7,7 @@ import type { ControlBaseProps } from "@/internal/types";
  * surrounding form.
  */
 export type PasswordControlProps = ControlBaseProps &
-  Omit<
+  DistributiveOmit<
     PasswordFieldProps,
     "name" | "value" | "defaultValue" | "error" | "errorMessage" | "disabled"
   >;

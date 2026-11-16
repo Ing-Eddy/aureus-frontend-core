@@ -41,11 +41,17 @@ When `required` is true, a red asterisk SHALL be shown right after the label tex
 - **THEN** a red asterisk is visible next to "Email", the asterisk is `aria-hidden`, the input has `aria-required="true"`, and the input has no `required` attribute
 
 ### Requirement: Loading state
-When `loading` is true, the input SHALL be disabled and a spinner MUST be shown inside the input frame, at its inline-end side. The spinner MUST have the `status` role and an accessible label ("Loading" by default, overridable). The input MUST expose `aria-busy="true"`, and the integrated action button, if any, MUST be disabled. For a control, loading MUST NOT remove the field's value from the form submission.
+When `loading` is true, the input SHALL be disabled and a spinner MUST be shown inside the input frame, at its inline-end side. The spinner MUST have the `status` role, and its accessible label MUST be the `loadingLabel` text; there is no default label. The props' TypeScript types MUST require `loadingLabel` whenever `loading` is passed, and a development warning MUST name it when it is missing at runtime.
+
+The input MUST expose `aria-busy="true"`, and the integrated action button, if any, MUST be disabled. For a control, loading MUST NOT remove the field's value from the form submission.
 
 #### Scenario: Loading text field
-- **WHEN** a `TextField` is rendered with `loading`
-- **THEN** the input is disabled and has `aria-busy="true"`, a status element labelled "Loading" is visible inside the frame, and the action button is disabled
+- **WHEN** a `TextField` is rendered with `loading` and `loadingLabel="Cargando"`
+- **THEN** the input is disabled and has `aria-busy="true"`, a status element labelled "Cargando" is visible inside the frame, and the action button is disabled
+
+#### Scenario: Loading without its label does not type-check
+- **WHEN** a developer writes `<TextField label="Nombre" loading />` without `loadingLabel`
+- **THEN** TypeScript reports an error
 
 #### Scenario: Loading control keeps its value
 - **WHEN** a form is submitted while a `TextControl` with value "abc" is `loading`
@@ -59,15 +65,23 @@ When `disabled` is true, the input and the integrated action button SHALL be dis
 - **THEN** the submitted data has no value for "nickname"
 
 ### Requirement: Info tooltip
-When `info` is given, an info icon button SHALL be shown on the same row as the label, at the far inline-end side of that row (the far right in left-to-right layouts). Hovering it, focusing it or tapping it MUST show the `info` content in a tooltip, and pressing Escape MUST close it. The button MUST have an accessible name ("More information" by default, overridable). The `info` content MUST also be part of the input's accessible description, so screen-reader users hear it when they focus the input.
+When `info` is given, an info icon button SHALL be shown on the same row as the label, at the far inline-end side of that row (the far right in left-to-right layouts).
+
+- **Tooltip:** hovering, focusing or tapping the button MUST show the `info` content in a tooltip, and pressing Escape MUST close it.
+- **Button name:** the button's accessible name MUST be the `infoLabel` text; there is no default name. The props' TypeScript types MUST require `infoLabel` whenever `info` is passed, and a development warning MUST name it when it is missing at runtime.
+- **Description:** the `info` content MUST also be part of the input's accessible description, so screen-reader users hear it when they focus the input.
 
 #### Scenario: Tap opens the tooltip on touch devices
-- **WHEN** a user taps the info button of a field whose `info` is "Shown to other users"
+- **WHEN** a user taps the info button, named by `infoLabel="Más información"`, of a field whose `info` is "Shown to other users"
 - **THEN** a tooltip with "Shown to other users" appears, and pressing Escape closes it
 
 #### Scenario: Info is announced with the input
 - **WHEN** a screen-reader user focuses the input of that field
 - **THEN** its accessible description includes "Shown to other users"
+
+#### Scenario: Info without its label does not type-check
+- **WHEN** a developer writes `<TextField label="Usuario" info="Visible" />` without `infoLabel`
+- **THEN** TypeScript reports an error
 
 ### Requirement: Helper text
 When `helperText` is given, it SHALL be shown below the input and MUST be part of the input's accessible description.
@@ -156,7 +170,7 @@ Rendering a control outside a `FormProvider` MUST throw an error that names the 
 ### Requirement: Password visibility toggle
 A password field SHALL always render one show/hide toggle button inside the input frame, at its inline-end side, in the same place and with the same size as an integrated action. The toggle has no tooltip. It MUST:
 - have an eye icon while the password is hidden and an eye-off icon while it is visible;
-- have the accessible name "Show password" while hidden and "Hide password" while visible, both overridable;
+- be named by `showPasswordLabel` while hidden and by `hidePasswordLabel` while visible. There are no default names: both props are always required by the props' TypeScript types, and a development warning names a missing one at runtime;
 - expose `aria-pressed` with the current visibility and `aria-controls` pointing at the input.
 
 Pressing the toggle MUST switch the input between `type="password"` and `type="text"`. The toggle MUST be disabled whenever the field is disabled or loading.
@@ -166,8 +180,8 @@ When the toggle is pressed with a pointer (mouse or touch), focus MUST stay in t
 When the form that contains the input is submitted, the password MUST become hidden again. The input MUST always have spell-check, auto-correct and auto-capitalize turned off, so a visible password is never sent to a spell checker.
 
 #### Scenario: Showing the password with a tap
-- **WHEN** a user types "secret" in a `PasswordField`, places the caret after "sec" and taps the toggle
-- **THEN** the input becomes `type="text"`, the toggle is named "Hide password" with `aria-pressed="true"`, and the input still has focus with the caret after "sec"
+- **WHEN** a user types "secret" in a `PasswordField` with `showPasswordLabel="Mostrar contraseña"` and `hidePasswordLabel="Ocultar contraseña"`, places the caret after "sec" and taps the toggle
+- **THEN** the input becomes `type="text"`, the toggle is named "Ocultar contraseña" with `aria-pressed="true"`, and the input still has focus with the caret after "sec"
 
 #### Scenario: Keyboard use
 - **WHEN** a keyboard user tabs to the toggle and presses Space
@@ -175,11 +189,15 @@ When the form that contains the input is submitted, the password MUST become hid
 
 #### Scenario: Hidden again on submit
 - **WHEN** the password is visible and the form containing the field is submitted
-- **THEN** the input is `type="password"` again and the toggle is named "Show password"
+- **THEN** the input is `type="password"` again and the toggle is named by `showPasswordLabel`
 
 #### Scenario: Toggle unavailable while loading
 - **WHEN** a `PasswordField` is `loading`
 - **THEN** the input and the toggle are disabled and the spinner is shown before the toggle
+
+#### Scenario: Toggle texts are required
+- **WHEN** a developer writes `<PasswordField label="Contraseña" />` without the toggle labels
+- **THEN** TypeScript reports an error
 
 ### Requirement: Password field
 `PasswordField` SHALL be importable from `@aureus-core/ui/components/password-field`.
@@ -258,14 +276,14 @@ When `showCount` is true, a multi-line field SHALL show how many characters it c
 - hidden from assistive technology.
 
 For assistive technology instead:
-- The input's accessible description MUST include the remaining characters ("380 characters remaining" by default, overridable with `countLabel`), or the count when there is no `maxLength`.
+- The input's accessible description MUST include the text returned by `countLabel(count, maxLength)`. There is no default text: the props' TypeScript types MUST require `countLabel` whenever `showCount` is on, and a development warning MUST name it when it is missing at runtime.
 - A polite live region MUST announce that text only after the user pauses typing (about one second), not on every keystroke.
 
 The count MUST follow the value in controlled, uncontrolled and form-bound use.
 
 #### Scenario: Count with a limit
-- **WHEN** a `TextAreaField` with `maxLength={500}` and `showCount` contains 120 characters
-- **THEN** "120/500" is shown, and the input's accessible description includes "380 characters remaining"
+- **WHEN** a `TextAreaField` with `maxLength={500}`, `showCount` and a `countLabel` that returns "Quedan N caracteres" (N being the remaining characters) contains 120 characters
+- **THEN** "120/500" is shown, and the input's accessible description includes "Quedan 380 caracteres"
 
 #### Scenario: Limit reached
 - **WHEN** the field reaches 500 characters
@@ -273,7 +291,11 @@ The count MUST follow the value in controlled, uncontrolled and form-bound use.
 
 #### Scenario: Announced after a pause
 - **WHEN** a screen-reader user types five characters quickly and then stops
-- **THEN** the remaining characters are announced once, after the pause
+- **THEN** the counter text is announced once, after the pause
+
+#### Scenario: Counter text is required
+- **WHEN** a developer writes `<TextAreaField label="Bio" showCount />` without `countLabel`
+- **THEN** TypeScript reports an error
 
 ### Requirement: Action keyboard shortcut
 When `actionShortcut` is true and the field has an action, pressing Ctrl+Enter or Cmd+Enter inside the text area SHALL press the action exactly as a click would, and MUST NOT insert a new line. A disabled action MUST NOT be pressed. Enter without a modifier MUST still insert a new line. The action MUST expose the shortcut with `aria-keyshortcuts`. Without an action the shortcut does nothing.
@@ -367,11 +389,19 @@ While the user types with `grouping` on, separators MUST be inserted live, and t
 - **THEN** it shows "1.234,50"
 
 ### Requirement: Negative numbers
-Negative values SHALL be allowed unless `allowNegative` is false; with it false, the minus sign cannot be typed or pasted. `negativeFormat="parentheses"` MUST show a negative value as "(1,234.50)" while the field is not focused, and as "-1,234.50" while it is edited. `negativeColor` MUST show negative values in the destructive color. `aria-valuetext` MUST describe negatives in words, for example "minus $1,234.50", never with parentheses.
+Negative values SHALL be allowed unless `allowNegative` is false; with it false, the minus sign cannot be typed or pasted.
+
+- **`negativeFormat="parentheses"`:** MUST show a negative value as "(1,234.50)" while the field is not focused, and as "-1,234.50" while it is edited.
+- **`negativeColor`:** MUST show negative values in the destructive color.
+- **`aria-valuetext`:** MUST describe a negative value with the number formatted by `Intl` for the field's `locale` (with its minus sign and any currency or affixes), never with parentheses and never with a fixed word in one language.
 
 #### Scenario: Accounting parentheses
 - **WHEN** a blurred `NumberField` with `negativeFormat="parentheses"`, `grouping` and `decimals={2}` holds `-1234.5` and `padDecimals` is on
 - **THEN** it shows "(1,234.50)", and on focus it shows "-1,234.50"
+
+#### Scenario: Negative value text
+- **WHEN** a `NumberField` with `currency="USD"` holds `-1234.5`
+- **THEN** its `aria-valuetext` is the `Intl`-formatted value with a minus sign (such as "-$1,234.50"), without parentheses or words
 
 ### Requirement: Stepper buttons
 Unless `stepper` is false, a number field SHALL render its own increment and decrement buttons, never the browser's native spinner.
@@ -384,7 +414,7 @@ Unless `stepper` is false, a number field SHALL render its own increment and dec
   - a press steps by `step`, and holding a button repeats the step until it is released;
   - each button is disabled when the value is at the limit in its direction, and both are disabled while the field is disabled or loading.
 - **Accessibility:**
-  - the buttons MUST have accessible names ("Increase" and "Decrease" by default, overridable) and `aria-controls` pointing at the input;
+  - the buttons MUST be named by `incrementLabel` and `decrementLabel`, and have `aria-controls` pointing at the input. There are no default names: the props' TypeScript types MUST require both unless `stepper={false}`, and a development warning MUST name a missing one at runtime;
   - they are removed from the Tab order, because the keyboard steps from the input itself.
 - **Look:** the buttons are separated from the text by a thin divider.
 
@@ -399,6 +429,10 @@ Unless `stepper` is false, a number field SHALL render its own increment and dec
 #### Scenario: Limits disable buttons
 - **WHEN** a `NumberField` with `max={10}` has value `10`
 - **THEN** the increase button is disabled and the decrease button is enabled
+
+#### Scenario: Stepper texts are required
+- **WHEN** a developer writes `<NumberField label="Cantidad" />` without `incrementLabel` and `decrementLabel`
+- **THEN** TypeScript reports an error, and `<NumberField label="Cantidad" stepper={false} />` type-checks
 
 ### Requirement: Number keyboard and wheel
 The input SHALL be a `spinbutton`, with `aria-valuenow`, `aria-valuemin`, `aria-valuemax` and `aria-valuetext`. It MUST support these keys:
@@ -426,11 +460,12 @@ The input MUST use the `decimal` input mode (`numeric` when only non-negative in
 - **`shorthand`** turns `k`, `m` and `b` suffixes into thousands, millions and billions on commit.
 - **`expressions`:**
   - evaluates arithmetic (`+ - * /`, parentheses, unary minus, an optional leading `=`) on commit, without executing code;
-  - an invalid expression puts the field in the error state with the message "Invalid expression" (overridable) and keeps the text for correction;
+  - an invalid expression puts the field in the error state with the `invalidExpressionLabel` message and keeps the text for correction;
   - a valid expression is remembered for the component's lifetime:
     - the field shows and reports the result;
     - when focused again while its value still equals that result, the input shows the expression for editing;
-    - while remembered, the input's accessible description includes "Calculated from <expression>" (overridable);
+    - while remembered, the input's accessible description includes the text returned by `calculatedFromLabel(expression)`;
+  - there are no default texts: the props' TypeScript types MUST require `invalidExpressionLabel` and `calculatedFromLabel` whenever `expressions` is on, and a development warning MUST name a missing one at runtime;
   - the expression is forgotten when the value changes by any other means: a plain number typed and committed, the keyboard, the step buttons, the wheel, or a new value from outside;
   - it is also forgotten when the component unmounts.
 
@@ -455,8 +490,12 @@ The input MUST use the `decimal` input mode (`numeric` when only non-negative in
 - **THEN** the value is `7`, and focusing again shows "7", not the expression
 
 #### Scenario: Invalid expression
-- **WHEN** a `NumberField` with `expressions` commits "=3+*2"
-- **THEN** the field is in the error state with "Invalid expression", its value is unchanged and the text is kept
+- **WHEN** a `NumberField` with `expressions` and `invalidExpressionLabel="Expresión no válida"` commits "=3+*2"
+- **THEN** the field is in the error state with "Expresión no válida", its value is unchanged and the text is kept
+
+#### Scenario: Expression texts are required
+- **WHEN** a developer writes `<NumberField label="Total" expressions stepper={false} />` without the expression texts
+- **THEN** TypeScript reports an error
 
 ### Requirement: Number field
 `NumberField` SHALL be importable from `@aureus-core/ui/components/number-field`. It MUST accept the shared field props, an `action`, every number prop described above, and the remaining native input props (`name`, `placeholder`, `onBlur`, `onFocus`, `aria-*`…), except `type`, `inputMode`, `min`, `max` and `step`, which it defines itself.
@@ -1267,3 +1306,217 @@ The visual boxes and separators MUST be hidden from assistive technology, so the
 #### Scenario: Submitted value
 - **WHEN** a user types `123456` and submits
 - **THEN** the submitted data contains `code: "123456"`
+
+### Requirement: No default texts across the family
+No field or control of the family, and none of the shared internal pieces they render, SHALL show a user-facing text that does not come from its props. This covers visible texts and accessible names, descriptions and announcements.
+
+- **Feature texts:** each text a feature needs MUST be required by the props' TypeScript types whenever that feature is enabled, and a development warning MUST name it when it is missing at runtime.
+- **Optional visible messages:** when omitted, they MUST render nothing.
+- **Exemption:** developer-facing messages (development warnings and errors such as a control used outside its `FormProvider`) are exempt.
+- **Guard test:** an automated check over the library source MUST fail when a component or shared internal contains a hard-coded user-facing text.
+
+#### Scenario: Omitted optional message
+- **WHEN** a field renders without an optional message prop (for example a select without `emptyMessage` and no options)
+- **THEN** no text is shown in its place
+
+#### Scenario: Guard against hard-coded texts
+- **WHEN** a contributor adds `aria-label="Close"` inside a component of the family
+- **THEN** the guard test fails and names the file
+
+### Requirement: Consistent development warnings across the family
+Development warnings of every field and control SHALL use one format: they MUST start with the name of the component that received the prop (`<Component>: …`), MUST only be emitted in development, and MUST be emitted once per problem.
+
+- **Accessible name:** every field MUST warn when its interactive element gets no accessible name from any of the props that can name it. The warning MUST say "has no accessible name" and list those props. This covers text, password, text area, number and select fields as well as the families that already warn.
+- **Unknown values:** every field with options MUST word the unknown-value warning as `<Component>: the value "<value>" matches no option; it is kept.`
+- **Actions:** the field action's warnings MUST start with the name of the field that renders it. A standalone action keeps a generic prefix.
+
+#### Scenario: Text field without accessible name
+- **WHEN** a `TextField` renders in development without `label`, `aria-label` or `aria-labelledby`
+- **THEN** a development warning starting with `TextField:` says that the input has no accessible name
+
+#### Scenario: Unknown select value
+- **WHEN** a `SelectField` receives the value "pe", which matches no option
+- **THEN** the development warning reads `SelectField: the value "pe" matches no option; it is kept.`, once
+
+#### Scenario: Icon-only action without name inside a field
+- **WHEN** a `NumberField` renders an icon-only `action` without an accessible name
+- **THEN** the development warning starts with `NumberField:`
+
+### Requirement: Right-to-left layout across the family
+Every field and control SHALL follow the direction of the page it is rendered in, without a prop.
+
+- **Mirrored layout:** in a right-to-left page, the parts at the inline end (the action, the info button, the select chevron, the stacked step buttons, the password toggle) MUST sit on the left, and choice controls (checkboxes, radios, switches) MUST sit on the inline start, on the right of their text.
+- **Reading order of keys:** in a horizontal radio group, ArrowLeft MUST move to the next option in a right-to-left page. No primitive may force a left-to-right direction on its root.
+- **Left-to-right content:** numbers and one-time codes keep their left-to-right order.
+- **Stories:** every field family MUST have an `Rtl` story that asserts the computed layout.
+
+#### Scenario: Radio group in a right-to-left page
+- **WHEN** a horizontal `RadioGroupField` renders inside an element with `dir="rtl"` and the user presses ArrowLeft on the first option
+- **THEN** each radio is on the right of its label, and the second option is checked
+
+#### Scenario: Number field in a right-to-left page
+- **WHEN** a `NumberField` holding `-1234.5` with `grouping` renders inside `dir="rtl"`
+- **THEN** its step buttons are on the left of the input, and the input still shows "-1,234.5" left to right
+
+### Requirement: File value with new and existing items
+A file field SHALL hold a list of file items. Each item is either new (a file picked in this session, not yet sent) or existing (a file the backend already stores, described by the backend's own data). Every item MUST have an id that stays stable while the field is mounted.
+
+- **Existing items:** the field MUST show them through `getFileInfo(data)`, which returns at least a name and optionally a URL, a size and a type. An existing item with a URL MUST show its name as a link that opens the URL.
+- **Single or multiple:**
+  - without `multiple`, the value MUST be one item or `null`, and picking a file MUST replace the current one;
+  - with `multiple`, the value MUST be an array, and picking files MUST append them in order.
+- **Controlled and uncontrolled:** the field MUST work with `value`/`onValueChange` and with `defaultValue`. Every change (add, remove, replace, reorder, upload completed) MUST call `onValueChange` with the whole new value.
+- **Removing:** removing an item MUST take it out of the value whether it is new or existing.
+
+#### Scenario: Update form with stored files
+- **WHEN** a multiple `FileField` gets two existing items whose data have a URL, and the user removes one and picks a new file
+- **THEN** the value is the remaining existing item followed by one new item, and the remaining item's name links to its URL
+
+#### Scenario: Single file replaced
+- **WHEN** a `FileField` without `multiple` holds an existing item and the user picks a file
+- **THEN** the value is one new item with that file
+
+### Requirement: File helpers for submitting
+The file field module SHALL export helpers that work with the value outside React:
+
+- **`diffFiles(initial, current)`:** MUST return the files of the new items (`added`), the data of the existing items still present (`kept`), and the data of the initial existing items no longer present (`removed`). Items are compared by id.
+- **`toFormData(items, field, formData?)`:** MUST append the file of every new item under `field` to the given or a new `FormData`, and return it.
+- **`fileToBase64(file)`:** MUST resolve to the file's data URL.
+- **`hasPendingUploads(items)`:** MUST be true while any new item remains in a field that uploads immediately. The consumer uses it in a schema to block the submit.
+- **`isNewFile(item)` and `isExistingFile(item)`:** MUST narrow the item's type.
+
+#### Scenario: Changes of an update form
+- **WHEN** the initial value has existing items A and B, and the current value has B and a new file `photo.png`
+- **THEN** `diffFiles` returns `added: [photo.png]`, `kept: [B's data]` and `removed: [A's data]`
+
+### Requirement: File restrictions and rejections
+A file field SHALL accept `accept` (MIME types, wildcards such as `image/*`, and extensions), `maxSize`, `minSize`, `maxFiles` and `maxTotalSize`. Each is independent and opt-in.
+
+- **Rejected files:** a file that breaks a restriction MUST NOT enter the value. The field MUST call `onReject` with every rejected file and its reasons (`type`, `size-max`, `size-min`, `count`, `total-size`).
+- **Count limits:** with `maxFiles`, the files beyond the limit MUST be rejected with `count`, in the order they were picked. The files that fit are added.
+- **Messages:** `rejectionMessage(rejection)` (optional) MUST be shown for each rejection of the last attempt as an alert. Without it, nothing is shown.
+- **Picker filter:** `accept` MUST also be set on the native input, so the system picker filters files. Dropped and pasted files are checked as well.
+
+#### Scenario: File too large
+- **WHEN** a `FileField` with `maxSize={1048576}` and `rejectionMessage={(r) => \`${r.file.name} supera 1 MB\`}` gets a 2 MB file
+- **THEN** the value does not change, `onReject` receives the file with the reason `size-max`, and "photo.png supera 1 MB" is announced as an alert
+
+#### Scenario: Beyond the limit
+- **WHEN** a multiple `FileField` with `maxFiles={2}` holding one item gets three files
+- **THEN** the first file is added and the other two are rejected with `count`
+
+### Requirement: File appearances and dropzone
+A file field SHALL offer `appearance`:
+
+- **`list`** (the default): a row per item with an icon (or a thumbnail for images), the name, the size and the item's actions;
+- **`grid`:** a tile per item with a thumbnail or an icon, the name and the actions. The tiles wrap and fill the available width;
+- **`single`:** one large preview (the image, or an icon and the name) with replace and remove actions. It is only valid without `multiple`.
+
+Other rules:
+
+- **Choosing files:** a button, named by `chooseLabel`, opens the system picker. It MUST always be present while more files can be added, and MUST be the field's focusable entry point.
+- **`dropzone`** (opt-in) MUST add an area, showing `dropzoneText`, that accepts dropped files and highlights while files are dragged over it. It MUST NOT be the only way to add files, and it is not focusable.
+- **Previews:** an image preview MUST be released when its item leaves the value or the field unmounts.
+- **Sizes:** they MUST be formatted with `Intl` for `locale` (bytes, kilobytes or megabytes, as the value requires). An existing item without a size MUST show no size.
+- **Disabled or loading:** the button, the dropzone and every item action MUST be disabled.
+
+#### Scenario: Dropping files
+- **WHEN** a multiple `FileField` with `dropzone` gets two files dropped on its area
+- **THEN** both are added to the value in order
+
+#### Scenario: Thumbnail released
+- **WHEN** an image item is removed from a `grid` field
+- **THEN** its preview URL is released
+
+### Requirement: Immediate file upload
+With `upload(file, { signal, onProgress })`, a file field SHALL upload each accepted new file as soon as it is added.
+
+- **Progress:** while uploading, the item MUST show a progress bar named by `uploadProgressLabel(name)` that follows the values passed to `onProgress` (0 to 100), and a cancel action named by `cancelUploadLabel(name)`.
+- **Completion:** when `upload` resolves, the item MUST become an existing item with the resolved data, in the same position and with the same id.
+- **Failure:** when `upload` rejects, the item MUST stay new and show `uploadErrorText(name)` and a retry action named by `retryUploadLabel(name)`. `onUploadError(file, error)` MUST be called.
+- **Cancel and unmount:** cancelling MUST abort the upload through `signal` and remove the item. Unmounting MUST abort every pending upload.
+- **Without `upload`:** files stay new until the consumer sends them.
+
+#### Scenario: Upload completes
+- **WHEN** a `FileField` with `upload` gets `contract.pdf`, reports 50 % progress, and resolves with `{ id: 7, url: "/files/7" }`
+- **THEN** the progress bar shows 50 while pending, and the item then becomes an existing item with that data, in the same position
+
+#### Scenario: Pending uploads block the submit
+- **WHEN** a `FileControl` with `upload` is validated by a schema with `.refine((v) => !hasPendingUploads(v), "Espera a que terminen las subidas.")` and is submitted while a file is uploading
+- **THEN** the submit is blocked and "Espera a que terminen las subidas." is shown below the field
+
+### Requirement: File reordering, paste, camera and transform
+Each of these extras SHALL be opt-in and independent.
+
+- **`reorderable`** (only with `multiple`) MUST let users change the order of the items:
+  - **Keyboard:** each item has a move handle named by `moveLabel(name)`. Space or Enter grabs the item, the arrow keys move it, Space or Enter drops it, and Escape returns it to its original position. Each move is announced with `moveAnnouncement(name, position, total)`.
+  - **Pointer:** dragging the handle moves the item, with touch included.
+  - **Value:** the new order MUST be reported through `onValueChange`.
+- **`pasteable`** MUST add the files pasted while focus is inside the field, with the same restrictions as picked files.
+- **`capture`** (`"user"` or `"environment"`) MUST be set on the native input, so mobile browsers open the camera.
+- **`transform(file)`** MUST be applied to each accepted file before it is added (and before it is uploaded). If it rejects, the file is reported through `onReject` and not added.
+
+#### Scenario: Reordering with the keyboard
+- **WHEN** a user focuses the move handle of the first of three items, presses Space, ArrowDown and Space
+- **THEN** the item is second in the value, and the announcement says it moved to position 2 of 3
+
+#### Scenario: Pasting an image
+- **WHEN** a user pastes an image while focus is inside a `FileField` with `pasteable`
+- **THEN** the image is added as a new item
+
+### Requirement: File field texts
+A file field SHALL ship no texts of its own. The texts a feature needs MUST be required by the props' TypeScript types while the feature is on, and a development warning MUST name a missing one at runtime:
+
+| Feature | Requires |
+| --- | --- |
+| always | `chooseLabel`, `removeLabel(name)` |
+| `dropzone` | `dropzoneText` |
+| `appearance="single"` | `replaceLabel(name)` |
+| `upload` | `uploadProgressLabel(name)`, `cancelUploadLabel(name)`, `retryUploadLabel(name)`, `uploadErrorText(name)` |
+| `reorderable` | `moveLabel(name)`, `moveAnnouncement(name, position, total)` |
+| `loading` / `info` | `loadingLabel` / `infoLabel` |
+
+Optional texts render nothing when they are omitted: `rejectionMessage`, `addedAnnouncement(count)` and `removedAnnouncement(name)`.
+
+#### Scenario: Dropzone without its text
+- **WHEN** a developer writes `<FileField chooseLabel="Elegir" removeLabel={(n) => n} dropzone />` without `dropzoneText`
+- **THEN** TypeScript reports an error
+
+### Requirement: File field accessibility
+- **Choose button:** the choose button MUST be the native file input itself, visually hidden but focusable and presented by a label that looks like a button. Focusing it MUST show a visible focus ring on that label, and Enter, Space and a click MUST open the system picker. Its accessible name (`chooseLabel` followed by the field's label), description (helper, info, error), `aria-required` and `aria-invalid` MUST be on it. A `button` cannot carry `aria-required`, so the native input is used instead.
+- **Group name:** the field's label MUST name the group of items.
+- **Actions:** every item action (open, remove, replace, cancel, retry, move) MUST be a button or link with a name that includes the file's name.
+- **Announcements:** additions, removals, rejections and upload failures MUST be announced through live regions with the developer's texts.
+- **Touch and motion:** every target MUST be at least 24×24 CSS pixels, transitions MUST respect reduced motion, and the layout MUST follow the page's direction.
+
+#### Scenario: Choose button
+- **WHEN** a `FileField` with `label="Contrato"`, `required` and `helperText="PDF, hasta 10 MB"` renders with `chooseLabel="Elegir archivo"`
+- **THEN** the file input's accessible name is "Elegir archivo Contrato", its description contains "PDF, hasta 10 MB", and it has `aria-required="true"`
+
+### Requirement: File field
+`FileField` SHALL be exported from `@aureus-core/ui/components/file-field`, together with its public types and the file helpers.
+
+- **Shared props:** it supports `label`, `required`, `info`, `helperText`, `error`, `errorMessage`, `loading`, `disabled`, `className`, `classNames`, `action`, `aria-label` and `aria-labelledby`.
+- **`ref`:** reaches the choose button (the native file input).
+- **`onBlur`:** called when focus leaves the field.
+- **Native submission:** with `name`, the native input MUST carry the new items' files, so a native form submission includes them.
+
+#### Scenario: Native submission
+- **WHEN** a `FileField` with `name="docs"` holds two new items inside a plain `<form>`
+- **THEN** `new FormData(form).getAll("docs")` returns both files
+
+### Requirement: File control bound to the form context
+`FileControl` SHALL be exported from `@aureus-core/ui/components/file-control`. It MUST read the form from the surrounding `FormProvider` and take only `name`, `disabled` and `shouldUnregister`, plus the field's props except `value`, `defaultValue`, `error` and `errorMessage`.
+
+- **Stored value:** the form MUST store the file items. A missing form value MUST behave as `[]` with `multiple` and `null` without it.
+- **Validation:** the schema's message MUST be shown as the helper text.
+- **Focus on error:** `shouldFocusError` MUST focus the choose button (the native file input).
+- **Parity:** with the same props, the control MUST render the same markup as `FileField`.
+
+#### Scenario: Required file
+- **WHEN** a form with `contract: z.array(z.any()).min(1, "Adjunta el contrato.")` is submitted with no file
+- **THEN** "Adjunta el contrato." is shown below the field, and the file input has `aria-invalid="true"` and receives focus
+
+#### Scenario: Edit form defaults
+- **WHEN** a form's `defaultValues` has an existing item for `photo` and the user submits without changes
+- **THEN** the submitted data contains that same existing item

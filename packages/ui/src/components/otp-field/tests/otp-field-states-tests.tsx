@@ -7,7 +7,15 @@ import { input, renderField, typeInto } from "./helpers";
 describe("OtpField states", () => {
   it("does not take input while loading, with a spinner and aria-busy", async () => {
     const onValueChange = vi.fn();
-    renderField(<OtpField label="Code" length={4} loading onValueChange={onValueChange} />);
+    renderField(
+      <OtpField
+        loadingLabel="Loading"
+        label="Code"
+        length={4}
+        loading
+        onValueChange={onValueChange}
+      />,
+    );
     await typeInto(input("Code"), "12");
     expect(onValueChange).not.toHaveBeenCalled();
     expect(input("Code").getAttribute("aria-busy")).toBe("true");

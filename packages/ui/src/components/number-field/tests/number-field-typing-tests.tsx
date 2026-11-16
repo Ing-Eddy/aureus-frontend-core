@@ -10,7 +10,13 @@ function Controlled() {
   const [value, setValue] = useState<number | null>(5);
   return (
     <>
-      <NumberField label="Amount" value={value} onValueChange={setValue} />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        value={value}
+        onValueChange={setValue}
+      />
       <output>{String(value)}</output>
     </>
   );
@@ -19,14 +25,30 @@ function Controlled() {
 describe("NumberField typing", () => {
   it("groups live while typing and reports numbers", async () => {
     const onValueChange = vi.fn();
-    render(<NumberField label="Amount" grouping onValueChange={onValueChange} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        grouping
+        onValueChange={onValueChange}
+      />,
+    );
     await userEvent.type(input(), "1234567");
     expect(input().value).toBe("1,234,567");
     expect(onValueChange).toHaveBeenLastCalledWith(1234567);
   });
 
   it("keeps the caret after the same digit when grouping changes", async () => {
-    render(<NumberField label="Amount" grouping defaultValue={1234} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        grouping
+        defaultValue={1234}
+      />,
+    );
     const field = input();
     await userEvent.click(field);
     field.setSelectionRange(3, 3); // "1,2|34"
@@ -36,7 +58,15 @@ describe("NumberField typing", () => {
   });
 
   it("deletes the digit before a group separator with Backspace", async () => {
-    render(<NumberField label="Amount" grouping defaultValue={1234} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        grouping
+        defaultValue={1234}
+      />,
+    );
     const field = input();
     await userEvent.click(field);
     field.setSelectionRange(2, 2); // "1,|234"
@@ -45,7 +75,15 @@ describe("NumberField typing", () => {
   });
 
   it("caps decimals and pads on blur", async () => {
-    render(<NumberField label="Amount" decimals={2} padDecimals />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        decimals={2}
+        padDecimals
+      />,
+    );
     await userEvent.type(input(), "12.3456");
     expect(input().value).toBe("12.34");
     await userEvent.type(input(), "{Backspace}");
@@ -55,7 +93,14 @@ describe("NumberField typing", () => {
 
   it("keeps every decimal without a decimals limit", async () => {
     const onValueChange = vi.fn();
-    render(<NumberField label="Amount" onValueChange={onValueChange} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        onValueChange={onValueChange}
+      />,
+    );
     await userEvent.type(input(), "1.005");
     await userEvent.tab();
     expect(onValueChange).toHaveBeenLastCalledWith(1.005);
@@ -63,7 +108,18 @@ describe("NumberField typing", () => {
 
   it("rounds a computed value to decimals on commit", async () => {
     const onValueChange = vi.fn();
-    render(<NumberField label="Amount" decimals={2} expressions onValueChange={onValueChange} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        invalidExpressionLabel="Invalid expression"
+        calculatedFromLabel={(expression) => `Calculated from ${expression}`}
+        label="Amount"
+        decimals={2}
+        expressions
+        onValueChange={onValueChange}
+      />,
+    );
     await userEvent.type(input(), "=10/3");
     await userEvent.tab();
     expect(onValueChange).toHaveBeenLastCalledWith(3.33);
@@ -71,7 +127,14 @@ describe("NumberField typing", () => {
 
   it("warns in development beyond the exact range", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    render(<NumberField label="Amount" decimals={2} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        decimals={2}
+      />,
+    );
     await userEvent.type(input(), "999999999999999");
     await userEvent.tab();
     expect(warn).toHaveBeenCalledWith(expect.stringContaining("beyond the range"));
@@ -79,13 +142,28 @@ describe("NumberField typing", () => {
   });
 
   it("blocks the minus sign when negatives are not allowed", async () => {
-    render(<NumberField label="Amount" allowNegative={false} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        allowNegative={false}
+      />,
+    );
     await userEvent.type(input(), "-12");
     expect(input().value).toBe("12");
   });
 
   it("parses pasted formatted amounts and ignores garbage", () => {
-    render(<NumberField label="Amount" grouping decimals={2} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        grouping
+        decimals={2}
+      />,
+    );
     fireEvent.paste(input(), { clipboardData: { getData: () => "$1,234.567" } });
     expect(input().value).toBe("1,234.57");
     fireEvent.paste(input(), { clipboardData: { getData: () => "hello" } });
@@ -94,7 +172,14 @@ describe("NumberField typing", () => {
 
   it("reads accounting parentheses on paste", () => {
     const onValueChange = vi.fn();
-    render(<NumberField label="Amount" onValueChange={onValueChange} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        onValueChange={onValueChange}
+      />,
+    );
     fireEvent.paste(input(), { clipboardData: { getData: () => "(500)" } });
     expect(onValueChange).toHaveBeenLastCalledWith(-500);
   });
@@ -103,7 +188,13 @@ describe("NumberField typing", () => {
     const onSubmit = vi.fn((event: { preventDefault: () => void }) => event.preventDefault());
     render(
       <form onSubmit={onSubmit}>
-        <NumberField label="Amount" decimals={2} padDecimals />
+        <NumberField
+          incrementLabel="Increase"
+          decrementLabel="Decrease"
+          label="Amount"
+          decimals={2}
+          padDecimals
+        />
       </form>,
     );
     await userEvent.type(input(), "12.5{Enter}");
@@ -114,7 +205,14 @@ describe("NumberField typing", () => {
   });
 
   it("reverts to the last committed text with Escape", async () => {
-    render(<NumberField label="Amount" defaultValue={120} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        defaultValue={120}
+      />,
+    );
     await userEvent.click(input());
     await userEvent.clear(input());
     await userEvent.type(input(), "999");
@@ -124,7 +222,15 @@ describe("NumberField typing", () => {
 
   it("reports null when cleared", async () => {
     const onValueChange = vi.fn();
-    render(<NumberField label="Amount" defaultValue={5} onValueChange={onValueChange} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        defaultValue={5}
+        onValueChange={onValueChange}
+      />,
+    );
     await userEvent.clear(input());
     expect(onValueChange).toHaveBeenLastCalledWith(null);
   });

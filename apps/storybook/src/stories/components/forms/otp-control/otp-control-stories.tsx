@@ -7,6 +7,7 @@ import { type ComponentType, type ReactNode, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { z } from "zod";
+import { loadingTexts } from "../story-args";
 import { docs } from "./otp-control-docs";
 
 const schema = z.object({
@@ -62,6 +63,7 @@ type StoryArgs = {
   submitOnComplete: boolean;
   required?: boolean;
   loading?: boolean;
+  loadingLabel?: string;
   disabled?: boolean;
   onValueChange: (value: string) => void;
 };
@@ -77,9 +79,12 @@ const meta = {
       </DemoForm>
     ),
   ],
-  render: (args) => <OtpControl {...args} />,
+  render: ({ loading, loadingLabel, ...args }) => (
+    <OtpControl {...args} {...loadingTexts(Boolean(loading), loadingLabel ?? "")} />
+  ),
   args: {
     name: "code",
+    loadingLabel: "Loading",
     label: "Verification code",
     helperText: "We sent it by SMS.",
     length: 6,
@@ -94,6 +99,7 @@ const meta = {
     submitOnComplete: { control: "boolean", table: { category: "Behavior" } },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     onValueChange: { table: { category: "Events" } },
   },
@@ -151,6 +157,7 @@ export const DisabledVsLoading: Story = {
     <>
       <OtpControl name="code" label="Verification code" length={6} />
       <OtpControl
+        loadingLabel="Loading"
         name="pin"
         label="PIN (loading)"
         length={4}

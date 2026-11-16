@@ -9,6 +9,8 @@ describe("NumberField extras", () => {
   it("shows parentheses and red when blurred, a minus while editing", async () => {
     render(
       <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
         label="Balance"
         defaultValue={-1234.5}
         grouping
@@ -27,20 +29,36 @@ describe("NumberField extras", () => {
   it("expands shorthand on commit only when enabled", async () => {
     const onValueChange = vi.fn();
     const { unmount } = render(
-      <NumberField label="Amount" shorthand onValueChange={onValueChange} />,
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Amount"
+        shorthand
+        onValueChange={onValueChange}
+      />,
     );
     await userEvent.type(input(), "1.5k");
     await userEvent.tab();
     expect(onValueChange).toHaveBeenLastCalledWith(1500);
     unmount();
-    render(<NumberField label="Amount" />);
+    render(<NumberField incrementLabel="Increase" decrementLabel="Decrease" label="Amount" />);
     await userEvent.type(input(), "1.5k");
     expect(input().value).toBe("1.5");
   });
 
   it("remembers an expression: shows the result, and the expression again on focus", async () => {
     const onValueChange = vi.fn();
-    render(<NumberField label="Total" expressions onValueChange={onValueChange} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        invalidExpressionLabel="Invalid expression"
+        calculatedFromLabel={(expression) => `Calculated from ${expression}`}
+        label="Total"
+        expressions
+        onValueChange={onValueChange}
+      />,
+    );
     await userEvent.type(input(), "=3+3");
     await userEvent.tab();
     expect(input().value).toBe("6");
@@ -59,7 +77,16 @@ describe("NumberField extras", () => {
   });
 
   it("forgets the expression after a step", async () => {
-    render(<NumberField label="Total" expressions />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        invalidExpressionLabel="Invalid expression"
+        calculatedFromLabel={(expression) => `Calculated from ${expression}`}
+        label="Total"
+        expressions
+      />,
+    );
     await userEvent.type(input(), "=3+3");
     await userEvent.tab();
     await userEvent.click(input());
@@ -73,23 +100,73 @@ describe("NumberField extras", () => {
 
   it("forgets the expression when the value changes from outside", async () => {
     const { rerender } = render(
-      <NumberField label="Total" expressions value={null} onValueChange={() => {}} />,
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        invalidExpressionLabel="Invalid expression"
+        calculatedFromLabel={(expression) => `Calculated from ${expression}`}
+        label="Total"
+        expressions
+        value={null}
+        onValueChange={() => {}}
+      />,
     );
     // Controlled: simulate the parent accepting 6, then replacing it with 10.
     await userEvent.type(input(), "=3+3");
     await userEvent.tab();
-    rerender(<NumberField label="Total" expressions value={6} onValueChange={() => {}} />);
-    rerender(<NumberField label="Total" expressions value={10} onValueChange={() => {}} />);
+    rerender(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        invalidExpressionLabel="Invalid expression"
+        calculatedFromLabel={(expression) => `Calculated from ${expression}`}
+        label="Total"
+        expressions
+        value={6}
+        onValueChange={() => {}}
+      />,
+    );
+    rerender(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        invalidExpressionLabel="Invalid expression"
+        calculatedFromLabel={(expression) => `Calculated from ${expression}`}
+        label="Total"
+        expressions
+        value={10}
+        onValueChange={() => {}}
+      />,
+    );
     await userEvent.click(input());
     expect(input().value).toBe("10");
   });
 
   it("loses the expression on unmount", async () => {
-    const { unmount } = render(<NumberField label="Total" expressions />);
+    const { unmount } = render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        invalidExpressionLabel="Invalid expression"
+        calculatedFromLabel={(expression) => `Calculated from ${expression}`}
+        label="Total"
+        expressions
+      />,
+    );
     await userEvent.type(input(), "=2*2");
     await userEvent.tab();
     unmount();
-    render(<NumberField label="Total" expressions defaultValue={4} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        invalidExpressionLabel="Invalid expression"
+        calculatedFromLabel={(expression) => `Calculated from ${expression}`}
+        label="Total"
+        expressions
+        defaultValue={4}
+      />,
+    );
     await userEvent.click(input());
     expect(input().value).toBe("4");
   });
@@ -97,7 +174,16 @@ describe("NumberField extras", () => {
   it("shows an error for an invalid expression and keeps the text", async () => {
     const onValueChange = vi.fn();
     render(
-      <NumberField label="Total" expressions defaultValue={5} onValueChange={onValueChange} />,
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        invalidExpressionLabel="Invalid expression"
+        calculatedFromLabel={(expression) => `Calculated from ${expression}`}
+        label="Total"
+        expressions
+        defaultValue={5}
+        onValueChange={onValueChange}
+      />,
     );
     await userEvent.clear(input());
     onValueChange.mockClear();
@@ -110,7 +196,15 @@ describe("NumberField extras", () => {
   });
 
   it("selects the whole text on focus when asked", async () => {
-    render(<NumberField label="Total" defaultValue={1234} selectOnFocus />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Total"
+        defaultValue={1234}
+        selectOnFocus
+      />,
+    );
     await userEvent.click(input());
     expect([input().selectionStart, input().selectionEnd]).toEqual([0, 4]);
   });

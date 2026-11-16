@@ -10,6 +10,7 @@ describe("CheckboxGroupField states", () => {
     const onValueChange = vi.fn();
     renderField(
       <CheckboxGroupField
+        loadingLabel="Loading"
         label="Channels"
         options={channels}
         loading

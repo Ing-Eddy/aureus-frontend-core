@@ -1,10 +1,9 @@
 import { useId, useMemo, useRef, useState } from "react";
 import { FieldAction, FieldCounter, FieldLoading, FieldShell } from "@/internal/components";
-import { useFieldA11y } from "@/internal/hooks";
+import { fieldTextChecks, inputNameCheck, useFieldA11y, useMissingTexts } from "@/internal/hooks";
 import {
   fieldFooterClassName,
   fieldFrameClassName,
-  fieldStrings,
   textareaClassName,
 } from "@/internal/utils/constants";
 import { mergeRefs } from "@/internal/utils/helpers";
@@ -16,38 +15,45 @@ import type { TextAreaFieldProps } from "./text-area-field-types";
 /**
  * A multi-line text input with the same label, required mark, info tooltip, helper text, error,
  * loading and disabled states as every field. It grows with its content (and can be resized),
- * and keeps its spinner, counter and action in a footer bar attached to the bottom edge.
+ * and keeps its spinner, counter and action in a footer bar attached to the bottom edge. It
+ * ships no default texts.
  */
-export function TextAreaField({
-  label,
-  required,
-  loading,
-  disabled,
-  info,
-  helperText,
-  error,
-  errorMessage,
-  className,
-  classNames,
-  loadingLabel,
-  infoLabel,
-  action,
-  minRows = 3,
-  maxRows = 10,
-  resize = true,
-  showCount,
-  countLabel,
-  actionShortcut,
-  id,
-  "aria-describedby": describedBy,
-  ref,
-  value,
-  defaultValue,
-  maxLength,
-  onChange,
-  onKeyDown,
-  ...textareaProps
-}: TextAreaFieldProps) {
+export function TextAreaField(props: TextAreaFieldProps) {
+  const {
+    label,
+    required,
+    loading,
+    disabled,
+    info,
+    helperText,
+    error,
+    errorMessage,
+    className,
+    classNames,
+    loadingLabel,
+    infoLabel,
+    action,
+    minRows = 3,
+    maxRows = 10,
+    resize = true,
+    showCount,
+    countLabel,
+    actionShortcut,
+    id,
+    "aria-describedby": describedBy,
+    ref,
+    value,
+    defaultValue,
+    maxLength,
+    onChange,
+    onKeyDown,
+    ...textareaProps
+  } = props;
+  useMissingTexts("TextAreaField", [
+    inputNameCheck(props, "text area"),
+    ...fieldTextChecks(props),
+    [showCount && !countLabel, "`showCount` needs `countLabel`"],
+  ]);
   const counterId = useId();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const mergedRef = useMemo(() => mergeRefs(textareaRef, ref), [ref]);
@@ -61,10 +67,7 @@ export function TextAreaField({
   // The counter follows `value` when controlled, and the typed text otherwise.
   const [typedLength, setTypedLength] = useState(() => String(defaultValue ?? "").length);
   const length = value !== undefined ? String(value).length : typedLength;
-  const announcement =
-    maxLength !== undefined
-      ? (countLabel ?? fieldStrings.charactersRemaining)(Math.max(maxLength - length, 0))
-      : fieldStrings.characters(length);
+  const announcement = countLabel ? countLabel(length, maxLength) : "";
 
   const a11y = useFieldA11y({
     id,
@@ -130,6 +133,7 @@ export function TextAreaField({
             {action ? (
               <FieldAction
                 {...action}
+                componentName="TextAreaField"
                 ref={mergedActionRef}
                 aria-keyshortcuts={
                   actionShortcut ? actionShortcutKeys : action["aria-keyshortcuts"]

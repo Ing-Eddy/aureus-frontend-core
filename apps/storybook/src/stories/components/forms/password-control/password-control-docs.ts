@@ -25,17 +25,19 @@ export const docs = defineComponentDocs({
       visible: { type: "boolean" },
       defaultVisible: { type: "boolean", default: "false" },
       onVisibleChange: { type: "(visible: boolean) => void" },
-      showPasswordLabel: { type: "string", default: '"Show password"' },
-      hidePasswordLabel: { type: "string", default: '"Hide password"' },
+      showPasswordLabel: { type: "string", required: true },
+      hidePasswordLabel: { type: "string", required: true },
       autoComplete: { type: "string", default: '"current-password"' },
       className: { type: "string" },
       classNames: { type: "FieldClassNames" },
       onChange: { type: "(event: ChangeEvent<HTMLInputElement>) => void" },
       onBlur: { type: "(event: FocusEvent<HTMLInputElement>) => void" },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
       ref: { type: "Ref<HTMLInputElement>" },
     },
   },
-  stories: ["WithSchema", "HidesOnSubmit", "Parity"],
+  stories: ["WithSchema", "DisabledVsLoading", "HidesOnSubmit", "Parity"],
   keyboard: ["Tab", "Shift + Tab", "Enter", "Space"],
   links: [
     { label: "Guide: Fields & controls", href: "?path=/docs/guides-fields-controls--docs" },
@@ -78,20 +80,28 @@ export const docs = defineComponentDocs({
         defaultVisible: "Initial visibility when uncontrolled. Hidden by default.",
         onVisibleChange:
           "Called when the toggle is pressed, and with `false` when the form is submitted.",
-        showPasswordLabel: "Accessible name of the toggle while hidden.",
-        hidePasswordLabel: "Accessible name of the toggle while shown.",
+        showPasswordLabel:
+          'Accessible name of the toggle while the password is hidden, such as "Show password" in your language. Always required: the toggle is always shown.',
+        hidePasswordLabel:
+          'Accessible name of the toggle while the password is shown, such as "Hide password" in your language. Always required.',
         autoComplete:
           "`current-password` by default; use `new-password` for sign-up and confirmation fields.",
         className: "Extra classes for the root element.",
         classNames: "Extra classes per part, as in Password Field.",
         onChange: "Called after react-hook-form handles the change.",
         onBlur: "Called after react-hook-form handles the blur.",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
         ref: "Reaches the `<input>`, merged with react-hook-form's own ref (so `setFocus` keeps working).",
       },
     },
     stories: {
       WithSchema:
         "A password and its confirmation validated by a zod schema. Submitting two different values shows the mismatch message on the confirmation, and focus moves to the first invalid field.",
+      DisabledVsLoading:
+        "A loading field keeps its value in the submitted data, and a disabled field is left out: the loading confirmation is sent and the disabled old password is not.",
       HidesOnSubmit:
         "Show the password and submit: the value is sent, and the field is a password field again.",
       Parity:
@@ -146,20 +156,28 @@ export const docs = defineComponentDocs({
         defaultVisible: "Visibilidad inicial en modo no controlado. Oculta por defecto.",
         onVisibleChange:
           "Se llama al pulsar el botón, y con `false` cuando se envía el formulario.",
-        showPasswordLabel: "Nombre accesible del botón mientras está oculta.",
-        hidePasswordLabel: "Nombre accesible del botón mientras se muestra.",
+        showPasswordLabel:
+          'Nombre accesible del botón mientras la contraseña está oculta, como "Mostrar contraseña". Siempre obligatorio: el botón siempre se muestra.',
+        hidePasswordLabel:
+          'Nombre accesible del botón mientras la contraseña se muestra, como "Ocultar contraseña". Siempre obligatorio.',
         autoComplete:
           "`current-password` por defecto; usa `new-password` en campos de registro y de confirmación.",
         className: "Clases extra para la raíz.",
         classNames: "Clases extra por parte, como en Password Field.",
         onChange: "Se llama después de que react-hook-form procese el cambio.",
         onBlur: "Se llama después de que react-hook-form procese el blur.",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
         ref: "Apunta al `<input>`, combinado con el ref propio de react-hook-form (así `setFocus` sigue funcionando).",
       },
     },
     stories: {
       WithSchema:
         "Una contraseña y su confirmación validadas con un schema de zod. Al enviar dos valores distintos, la confirmación muestra el mensaje de que no coinciden y el foco pasa al primer campo inválido.",
+      DisabledVsLoading:
+        "Un campo en carga conserva su valor en los datos enviados y uno deshabilitado se queda fuera: la confirmación en carga se envía y la contraseña antigua deshabilitada no.",
       HidesOnSubmit:
         "Muestra la contraseña y envía: el valor se envía y el campo vuelve a ser de contraseña.",
       Parity:

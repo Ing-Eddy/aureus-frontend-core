@@ -1,15 +1,16 @@
 import { TextAreaField, type TextAreaFieldProps } from "@aureus-core/ui/components/text-area-field";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { type ComponentType, useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import type { StoryArgs } from "../story-args";
 import { docs } from "./text-area-field-docs";
 
-type TextAreaFieldStoryArgs = TextAreaFieldProps & ActionArgs;
+type TextAreaFieldStoryArgs = StoryArgs<TextAreaFieldProps> & ActionArgs;
 
 const meta = {
   title: "components/Forms/Text Area Field",
-  component: TextAreaField,
+  component: TextAreaField as unknown as ComponentType<TextAreaFieldStoryArgs>,
   parameters: { aureusDocs: docs },
   decorators: [
     (Story) => (
@@ -20,15 +21,17 @@ const meta = {
   ],
   render: (args) => {
     const [props, action] = splitActionArgs(args);
-    return <TextAreaField {...props} action={action} />;
+    return <TextAreaField {...(props as TextAreaFieldProps)} action={action} />;
   },
   args: {
     label: "Comment",
     placeholder: "Write a comment…",
     helperText: "Be kind and specific.",
     info: "Comments are visible to everyone in the project.",
+    infoLabel: "More information",
     required: false,
     loading: false,
+    loadingLabel: "Loading",
     disabled: false,
     error: false,
     errorMessage: "",
@@ -36,6 +39,8 @@ const meta = {
     maxRows: 6,
     resize: true,
     showCount: true,
+    countLabel: (count: number, max?: number) =>
+      max === undefined ? `${count} characters` : `${max - count} characters remaining`,
     maxLength: 280,
     actionShortcut: true,
     onChange: fn(),
@@ -50,6 +55,7 @@ const meta = {
     placeholder: { control: "text", table: { category: "Content" } },
     helperText: { control: "text", table: { category: "Content" } },
     info: { control: "text", table: { category: "Content" } },
+    infoLabel: { control: "text", table: { category: "Content" } },
     errorMessage: { control: "text", table: { category: "Content" } },
     classNames: { control: "object", table: { category: "Appearance" } },
     className: { control: "text", table: { category: "Appearance" } },
@@ -57,6 +63,7 @@ const meta = {
     maxRows: { control: { type: "number", min: 1, max: 40 }, table: { category: "Appearance" } },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     error: { control: "boolean", table: { category: "State" } },
     resize: { control: "boolean", table: { category: "Behavior" } },
@@ -92,7 +99,12 @@ export const Playground: Story = {
 export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
-      <TextAreaField label="Description" required info="Shown on the project page." />
+      <TextAreaField
+        infoLabel="More information"
+        label="Description"
+        required
+        info="Shown on the project page."
+      />
       <TextAreaField label="Notes" helperText="Only your team sees them." minRows={2} />
       <TextAreaField
         label="Summary"
@@ -103,6 +115,7 @@ export const States: Story = {
         minRows={2}
       />
       <TextAreaField
+        loadingLabel="Loading"
         label="Release notes"
         defaultValue="Generating from the changelog…"
         loading
@@ -197,6 +210,9 @@ function Composer() {
         ))}
       </ul>
       <TextAreaField
+        countLabel={(count, max) =>
+          max === undefined ? `${count} characters` : `${max - count} characters remaining`
+        }
         label="Add a comment"
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
@@ -242,6 +258,46 @@ export const NoResize: Story = {
   play: async ({ canvas }) => {
     const field = canvas.getByRole("textbox", { name: "Feedback" });
     await expect(getComputedStyle(field).resize).toBe("none");
+  },
+};
+
+const onPost = fn();
+
+/** Keyboard only: Enter adds a line, Ctrl + Enter presses the action. */
+export const Keyboard: Story = {
+  render: () => (
+    <TextAreaField label="Reply" actionShortcut action={{ children: "Post", onClick: onPost }} />
+  ),
+  play: async ({ canvas }) => {
+    onPost.mockClear();
+    const field = canvas.getByRole("textbox", { name: "Reply" });
+    await userEvent.click(field);
+    await userEvent.keyboard("First line{Enter}Second line");
+    await expect(field).toHaveValue("First line\nSecond line");
+    await expect(onPost).not.toHaveBeenCalled();
+    await userEvent.keyboard("{Control>}{Enter}{/Control}");
+    await expect(onPost).toHaveBeenCalledTimes(1);
+    await expect(canvas.getByRole("button", { name: "Post" })).toHaveAttribute("aria-keyshortcuts");
+  },
+};
+
+/** Right to left: the footer bar runs from the right; the action ends it on the left. */
+export const Rtl: Story = {
+  render: () => (
+    <div dir="rtl">
+      <TextAreaField
+        label="Reply"
+        showCount
+        maxLength={140}
+        countLabel={(count, max) => `${(max ?? 0) - count} characters remaining`}
+        action={{ children: "Post" }}
+      />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const counter = canvasElement.querySelector("[data-slot=field-counter]") as HTMLElement;
+    const action = canvas.getByRole("button", { name: "Post" }).getBoundingClientRect();
+    await expect(action.right).toBeLessThanOrEqual(counter.getBoundingClientRect().left);
   },
 };
 

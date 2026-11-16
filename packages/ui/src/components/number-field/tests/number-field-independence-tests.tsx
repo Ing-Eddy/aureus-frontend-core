@@ -6,7 +6,16 @@ import type { NumberFieldProps } from "../number-field-types";
 
 const input = () => screen.getByRole("spinbutton") as HTMLInputElement;
 const renderField = (props: Partial<NumberFieldProps>) =>
-  render(<NumberField label="Amount" {...props} />);
+  render(
+    <NumberField
+      {...({
+        incrementLabel: "Increase",
+        decrementLabel: "Decrease",
+        label: "Amount",
+        ...props,
+      } as NumberFieldProps)}
+    />,
+  );
 
 describe("NumberField props are independent", () => {
   it("is plain with no props", async () => {

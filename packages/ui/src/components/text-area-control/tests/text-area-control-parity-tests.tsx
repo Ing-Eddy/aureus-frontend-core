@@ -1,42 +1,11 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
 import { TextAreaField } from "@/components/text-area-field";
-import { TooltipProvider } from "@/shadcn/ui/tooltip";
+import { fieldMarkup, normalizedMarkup } from "@/internal/testing";
 import { TextAreaControl } from "../text-area-control";
 import type { TextAreaControlProps } from "../text-area-control-types";
 import { renderInForm } from "./render-in-form";
-
-/** Serializes an element with its attributes sorted, so DOM insertion order does not matter. */
-function canonical(node: Element): string {
-  const attributes = [...node.attributes]
-    .map((attribute) => `${attribute.name}="${attribute.value}"`)
-    .sort()
-    .join(" ");
-  const children = [...node.childNodes]
-    .map((child) =>
-      child.nodeType === Node.ELEMENT_NODE ? canonical(child as Element) : child.textContent,
-    )
-    .join("");
-  return `<${node.tagName.toLowerCase()} ${attributes}>${children}</${node.tagName.toLowerCase()}>`;
-}
-
-/**
- * Field markup with generated ids replaced. The textarea id and the counter id both come from
- * `useId`, so every `«…»`/`_r_…_`-style id is normalized, not only the textarea's.
- */
-function normalizedMarkup(container: HTMLElement) {
-  const field = container.querySelector("[data-slot=field]");
-  if (!field) throw new Error("no field rendered");
-  let markup = canonical(field);
-  const ids = [...field.querySelectorAll("[id]")].map((element) => element.id);
-  ids.sort((a, b) => b.length - a.length);
-  ids.forEach((id, index) => {
-    markup = markup.split(id).join(`ID${index}`);
-  });
-  return markup;
-}
 
 const noop = () => {};
 
@@ -44,19 +13,14 @@ const visualProps = {
   label: "Bio",
   required: true,
   info: "Shown on your profile",
+  infoLabel: "More information",
   helperText: "Tell us about you.",
   showCount: true,
+  countLabel: (count: number, max?: number) => `${count}/${max}`,
   maxLength: 500,
   action: { children: "Preview" },
   classNames: { label: "uppercase" },
 } satisfies Omit<TextAreaControlProps, "name">;
-
-function fieldMarkup(element: ReactElement) {
-  const { container, unmount } = render(<TooltipProvider>{element}</TooltipProvider>);
-  const markup = normalizedMarkup(container);
-  unmount();
-  return markup;
-}
 
 describe("TextAreaField and TextAreaControl render the same markup", () => {
   it("in the default state", () => {

@@ -24,7 +24,10 @@ export interface FieldClassNames {
   footer?: string;
 }
 
-/** Props shared by every field and control. */
+/**
+ * Props shared by every field and control. The loading state and the info tooltip, whose texts
+ * are required when used, live in `FieldTexts`.
+ */
 export interface FieldBaseProps {
   /** Text shown above the input. It becomes the input's accessible name. */
   label?: ReactNode;
@@ -33,15 +36,8 @@ export interface FieldBaseProps {
    * the field: it adds no validation rule and no native `required` attribute.
    */
   required?: boolean;
-  /** Disables the input and the action and shows a spinner inside the input frame. */
-  loading?: boolean;
   /** Disables the input and the action and dims the label. */
   disabled?: boolean;
-  /**
-   * Content of the info tooltip. Shows an info button at the far end of the label row and adds
-   * the content to the input's accessible description.
-   */
-  info?: ReactNode;
   /** Text shown below the input. It is part of the input's accessible description. */
   helperText?: ReactNode;
   /** Shows the error state: destructive input frame, label and helper text, and `aria-invalid`. */
@@ -52,8 +48,4 @@ export interface FieldBaseProps {
   className?: string;
   /** Extra classes for each part of the field. */
   classNames?: FieldClassNames;
-  /** Accessible label of the loading spinner. Defaults to "Loading". */
-  loadingLabel?: string;
-  /** Accessible name of the info button. Defaults to "More information". */
-  infoLabel?: string;
 }

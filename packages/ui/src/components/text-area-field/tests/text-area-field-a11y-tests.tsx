@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { TooltipProvider } from "@/shadcn/ui/tooltip";
 import { TextAreaField } from "../text-area-field";
 
@@ -15,6 +15,10 @@ describe("TextAreaField accessibility", () => {
     render(
       <TooltipProvider>
         <TextAreaField
+          infoLabel="More information"
+          countLabel={(count, max) =>
+            max === undefined ? `${count} characters` : `${max - count} characters remaining`
+          }
           label="Comment"
           aria-describedby="external"
           showCount
@@ -34,18 +38,32 @@ describe("TextAreaField accessibility", () => {
     ]);
   });
 
-  it("uses countLabel and the plain count without maxLength", () => {
+  it("gives countLabel the count and maxLength, with or without a limit", () => {
+    const countLabel = vi.fn((count: number, max?: number) =>
+      max === undefined ? `${count} caracteres` : `Quedan ${max - count}`,
+    );
     const { unmount } = render(
       <TextAreaField
         label="Comment"
         showCount
         maxLength={10}
-        countLabel={(remaining) => `Quedan ${remaining}`}
+        defaultValue="abc"
+        countLabel={countLabel}
       />,
     );
-    expect(document.body.textContent).toContain("Quedan 10");
+    expect(countLabel).toHaveBeenLastCalledWith(3, 10);
+    expect(document.body.textContent).toContain("Quedan 7");
     unmount();
-    render(<TextAreaField label="Comment" showCount defaultValue="abc" />);
+    render(
+      <TextAreaField
+        countLabel={(count, max) =>
+          max === undefined ? `${count} characters` : `${max - count} characters remaining`
+        }
+        label="Comment"
+        showCount
+        defaultValue="abc"
+      />,
+    );
     expect(document.body.textContent).toContain("3 characters");
   });
 

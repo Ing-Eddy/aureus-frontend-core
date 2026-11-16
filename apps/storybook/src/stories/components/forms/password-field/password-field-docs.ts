@@ -22,17 +22,19 @@ export const docs = defineComponentDocs({
       visible: { type: "boolean" },
       defaultVisible: { type: "boolean", default: "false" },
       onVisibleChange: { type: "(visible: boolean) => void" },
-      showPasswordLabel: { type: "string", default: '"Show password"' },
-      hidePasswordLabel: { type: "string", default: '"Hide password"' },
+      showPasswordLabel: { type: "string", required: true },
+      hidePasswordLabel: { type: "string", required: true },
       autoComplete: { type: "string", default: '"current-password"' },
       className: { type: "string" },
       classNames: { type: "FieldClassNames" },
-      loadingLabel: { type: "string", default: '"Loading"' },
-      infoLabel: { type: "string", default: '"More information"' },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
+      id: { type: "string" },
+      onBlur: { type: "(event: FocusEvent) => void" },
       ref: { type: "Ref<HTMLInputElement>" },
     },
   },
-  stories: ["States", "ControlledVisibility", "NewPassword", "Responsive"],
+  stories: ["States", "ControlledVisibility", "NewPassword", "Keyboard", "Rtl", "Responsive"],
   keyboard: ["Tab", "Shift + Tab", "Enter", "Space", "Escape"],
   links: [
     { label: "Guide: Fields & controls", href: "?path=/docs/guides-fields-controls--docs" },
@@ -76,19 +78,28 @@ export const docs = defineComponentDocs({
         defaultVisible: "Initial visibility when uncontrolled. Hidden by default.",
         onVisibleChange:
           "Called with the new visibility when the toggle is pressed, and with `false` when the surrounding form is submitted.",
-        showPasswordLabel: "Accessible name of the toggle while the password is hidden.",
-        hidePasswordLabel: "Accessible name of the toggle while the password is shown.",
+        showPasswordLabel:
+          'Accessible name of the toggle while the password is hidden, such as "Show password" in your language. Always required: the toggle is always shown.',
+        hidePasswordLabel:
+          'Accessible name of the toggle while the password is shown, such as "Hide password" in your language. Always required.',
         autoComplete:
           "Browser and password manager hint. Use `new-password` on sign-up and change-password forms.",
         className: "Extra classes for the root element.",
         classNames:
           "Extra classes per part, as in Text Field (`root`, `header`, `label`, `requiredMark`, `info`, `control`, `input`, `helper`, `action` for the toggle).",
-        loadingLabel: "Accessible label of the spinner.",
-        infoLabel: "Accessible name of the info button.",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
+        id: "Id of the field's control. Generated when missing; the ids of the label, helper text and info derive from it.",
+        onBlur: "Called when focus leaves the field.",
         ref: "Reaches the `<input>` element. Other native input props (`value`, `onChange`, `name`, `placeholder`, `maxLength`…) are passed to it; `type` and `action` are not accepted.",
       },
     },
     stories: {
+      Keyboard:
+        "Tab reaches the visibility toggle after the input; Space or Enter shows or hides the password, and focus stays on the toggle.",
+      Rtl: "In a right-to-left container the visibility toggle sits at the left of the text.",
       States:
         "Required with info, helper text, error with a message, loading and disabled. While loading or disabled, the toggle is disabled too.",
       ControlledVisibility:
@@ -106,7 +117,7 @@ export const docs = defineComponentDocs({
       Escape: "Closes the open info tooltip.",
     },
     aria: [
-      'The toggle is a button with `aria-pressed` (true while the password is shown), `aria-controls` pointing at the input, and the accessible name "Show password" or "Hide password".',
+      "The toggle is a button with `aria-pressed` (true while the password is shown), `aria-controls` pointing at the input, and `showPasswordLabel` or `hidePasswordLabel` as its accessible name.",
       "It has no tooltip on purpose: the eye icon is universal and the accessible name already says what it does.",
       "Clicking or tapping the toggle keeps focus and the caret in the input, so the user can keep typing.",
       "Submitting the surrounding form hides the password again before the submit is processed, so browsers and password managers see a password field.",
@@ -152,19 +163,28 @@ export const docs = defineComponentDocs({
         defaultVisible: "Visibilidad inicial en modo no controlado. Oculta por defecto.",
         onVisibleChange:
           "Se llama con la nueva visibilidad al pulsar el botón, y con `false` cuando se envía el formulario que lo contiene.",
-        showPasswordLabel: "Nombre accesible del botón mientras la contraseña está oculta.",
-        hidePasswordLabel: "Nombre accesible del botón mientras la contraseña se muestra.",
+        showPasswordLabel:
+          'Nombre accesible del botón mientras la contraseña está oculta, como "Mostrar contraseña". Siempre obligatorio: el botón siempre se muestra.',
+        hidePasswordLabel:
+          'Nombre accesible del botón mientras la contraseña se muestra, como "Ocultar contraseña". Siempre obligatorio.',
         autoComplete:
           "Pista para el navegador y los gestores de contraseñas. Usa `new-password` en formularios de registro y de cambio de contraseña.",
         className: "Clases extra para la raíz.",
         classNames:
           "Clases extra por parte, como en Text Field (`root`, `header`, `label`, `requiredMark`, `info`, `control`, `input`, `helper`, `action` para el botón).",
-        loadingLabel: "Etiqueta accesible del spinner.",
-        infoLabel: "Nombre accesible del botón de información.",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
+        id: "Id del control del field. Se genera si falta; los ids del label, el texto de ayuda y la info se derivan de él.",
+        onBlur: "Se llama cuando el foco sale del field.",
         ref: "Apunta al elemento `<input>`. El resto de props nativas (`value`, `onChange`, `name`, `placeholder`, `maxLength`…) llegan a él; no acepta `type` ni `action`.",
       },
     },
     stories: {
+      Keyboard:
+        "Tab llega al botón de visibilidad después del input; Espacio o Enter muestran u ocultan la contraseña, y el foco se queda en el botón.",
+      Rtl: "En un contenedor de derecha a izquierda, el botón de visibilidad queda a la izquierda del texto.",
       States:
         "Obligatorio con información, texto de ayuda, error con mensaje, cargando y deshabilitado. Mientras carga o está deshabilitado, el botón también se deshabilita.",
       ControlledVisibility:
@@ -182,7 +202,7 @@ export const docs = defineComponentDocs({
       Escape: "Cierra el tooltip de información abierto.",
     },
     aria: [
-      'El botón tiene `aria-pressed` (true mientras la contraseña se muestra), `aria-controls` apuntando al input y el nombre accesible "Show password" o "Hide password".',
+      "El botón tiene `aria-pressed` (true mientras la contraseña se muestra), `aria-controls` apuntando al input y `showPasswordLabel` o `hidePasswordLabel` como nombre accesible.",
       "No tiene tooltip a propósito: el icono del ojo es universal y el nombre accesible ya dice lo que hace.",
       "Al pulsar el botón con clic o tap, el foco y el cursor se quedan en el input, para que el usuario siga escribiendo.",
       "Al enviar el formulario que lo contiene, la contraseña se vuelve a ocultar antes de procesar el envío, así navegadores y gestores de contraseñas ven un campo de contraseña.",

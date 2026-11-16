@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
-import type { FieldActionProps, FieldBaseProps } from "@/internal/types";
+import type { FieldActionProps, FieldBaseProps, FieldTexts } from "@/internal/types";
 
 /**
  * Number-specific options. Every one is optional and independent: none changes another one's
@@ -50,17 +50,11 @@ export interface NumberFieldOptions {
   /** Shows negative values in the destructive color. Defaults to `false`. */
   negativeColor?: boolean;
 
-  /** Shows the step buttons. Defaults to `true`. */
-  stepper?: boolean;
   /**
    * `"stacked"` (▲▼ at the end, the default) or `"split"` (− at the start, + at the end).
    * Stacked buttons switch to split on touch screens.
    */
   stepperLayout?: "stacked" | "split";
-  /** Accessible name of the increase button. Defaults to "Increase". */
-  incrementLabel?: string;
-  /** Accessible name of the decrease button. Defaults to "Decrease". */
-  decrementLabel?: string;
 
   /** Selects the whole text on focus. Defaults to `false`. */
   selectOnFocus?: boolean;
@@ -68,24 +62,67 @@ export interface NumberFieldOptions {
   wheel?: boolean;
   /** `k`, `m` and `b` suffixes expand on commit ("1.5k" → 1500). Defaults to `false`. */
   shorthand?: boolean;
-  /**
-   * Arithmetic is evaluated on commit ("=120*3+5" → 365). The expression is remembered while the
-   * field is mounted and shown again on focus. Defaults to `false`.
-   */
-  expressions?: boolean;
-  /** Error message for an expression that cannot be evaluated. Defaults to "Invalid expression". */
-  invalidExpressionLabel?: string;
-  /** Description of a value that comes from an expression. Defaults to "Calculated from …". */
-  calculatedFromLabel?: (expression: string) => string;
-  /** How a negative value is spoken in `aria-valuetext`. Defaults to "minus". */
-  minusLabel?: string;
 }
 
 /**
+ * The step buttons, shown unless `stepper={false}`. While they are shown, their accessible names
+ * are required; no text is generated.
+ */
+export type NumberStepperTexts =
+  | {
+      /** Shows the step buttons. Defaults to `true`. */
+      stepper: false;
+      /** Only allowed while the step buttons are shown. */
+      incrementLabel?: never;
+      /** Only allowed while the step buttons are shown. */
+      decrementLabel?: never;
+    }
+  | {
+      /** Shows the step buttons. Defaults to `true`. */
+      stepper?: boolean;
+      /** Accessible name of the increase button, in the developer's language. */
+      incrementLabel: string;
+      /** Accessible name of the decrease button, in the developer's language. */
+      decrementLabel: string;
+    };
+
+/** Remembered expressions. Turning them on requires their two texts; no text is generated. */
+export type NumberExpressionTexts =
+  | {
+      /**
+       * Arithmetic is evaluated on commit ("=120*3+5" → 365). The expression is remembered while
+       * the field is mounted and shown again on focus. Defaults to `false`.
+       */
+      expressions?: false;
+      /** Only allowed together with `expressions`. */
+      invalidExpressionLabel?: never;
+      /** Only allowed together with `expressions`. */
+      calculatedFromLabel?: never;
+    }
+  | {
+      /**
+       * Arithmetic is evaluated on commit ("=120*3+5" → 365). The expression is remembered while
+       * the field is mounted and shown again on focus. Defaults to `false`.
+       */
+      expressions: boolean;
+      /** Error message for an expression that cannot be evaluated. Required with `expressions`. */
+      invalidExpressionLabel: string;
+      /**
+       * Part of the accessible description of a value that comes from an expression, for example
+       * `(expression) => "Calculado a partir de " + expression`. Required with `expressions`.
+       */
+      calculatedFromLabel: (expression: string) => string;
+    };
+
+/**
  * Props of `NumberField`: the shared field props, an optional `action`, the number options, and
- * the remaining native `<input>` props (`name`, `placeholder`, `onBlur`, `ref`…).
+ * the remaining native `<input>` props (`name`, `placeholder`, `onBlur`, `ref`…). `loading`,
+ * `info`, the step buttons and `expressions` require their texts; no text is generated.
  */
 export type NumberFieldProps = FieldBaseProps &
+  FieldTexts &
+  NumberStepperTexts &
+  NumberExpressionTexts &
   Omit<
     ComponentProps<"input">,
     | "type"

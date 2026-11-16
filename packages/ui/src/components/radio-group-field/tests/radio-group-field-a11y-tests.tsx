@@ -10,6 +10,7 @@ describe("RadioGroupField accessibility", () => {
   it("is a radiogroup named and described, with its required and invalid state", () => {
     renderField(
       <RadioGroupField
+        infoLabel="More information"
         id="plan"
         label="Plan"
         options={plans}

@@ -47,7 +47,12 @@ describe("CheckboxControl in a form", () => {
   it("leaves disabled values out and keeps loading values", async () => {
     const { onSubmit } = renderInForm(
       <>
-        <CheckboxControl name="newsletter" checkboxLabel="Weekly digest" loading />
+        <CheckboxControl
+          loadingLabel="Loading"
+          name="newsletter"
+          checkboxLabel="Weekly digest"
+          loading
+        />
         <CheckboxControl name="terms" checkboxLabel="Terms" disabled />
       </>,
       { ...defaults, newsletter: true, terms: true },

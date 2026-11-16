@@ -7,6 +7,8 @@ describe("NumberField accessibility", () => {
   it("is a spinbutton with its value, range and readable text", () => {
     render(
       <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
         label="Amount"
         currency="USD"
         grouping
@@ -24,34 +26,61 @@ describe("NumberField accessibility", () => {
     expect(field.getAttribute("aria-valuetext")).toBe("$1,234.50");
   });
 
-  it("speaks negatives with a word, never parentheses", () => {
+  it("speaks negatives with the formatted minus sign, never parentheses or words", () => {
     render(
       <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
         label="Balance"
         currency="USD"
         negativeFormat="parentheses"
         defaultValue={-20}
       />,
     );
-    expect(screen.getByRole("spinbutton").getAttribute("aria-valuetext")).toBe("minus $20");
+    expect(screen.getByRole("spinbutton").getAttribute("aria-valuetext")).toBe("-$20");
+  });
+
+  it("formats the negative value text with grouping and decimals", () => {
+    render(
+      <NumberField
+        label="Balance"
+        stepper={false}
+        currency="USD"
+        grouping
+        decimals={2}
+        padDecimals
+        defaultValue={-1234.5}
+      />,
+    );
+    expect(screen.getByRole("spinbutton").getAttribute("aria-valuetext")).toBe("-$1,234.50");
   });
 
   it("has no value text when empty", () => {
-    render(<NumberField label="Amount" />);
+    render(<NumberField incrementLabel="Increase" decrementLabel="Decrease" label="Amount" />);
     const field = screen.getByRole("spinbutton");
     expect(field.hasAttribute("aria-valuenow")).toBe(false);
     expect(field.hasAttribute("aria-valuetext")).toBe(false);
   });
 
   it("sets the input mode, direction and no autocomplete", () => {
-    const { unmount } = render(<NumberField label="Amount" />);
+    const { unmount } = render(
+      <NumberField incrementLabel="Increase" decrementLabel="Decrease" label="Amount" />,
+    );
     let field = screen.getByRole("spinbutton");
     expect(field.getAttribute("inputmode")).toBe("decimal");
     expect(field.getAttribute("dir")).toBe("ltr");
     expect(field.getAttribute("autocomplete")).toBe("off");
     expect(field.getAttribute("type")).toBe("text");
     unmount();
-    render(<NumberField label="Qty" decimals={0} allowNegative={false} />);
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        decimals={0}
+        allowNegative={false}
+      />,
+    );
     field = screen.getByRole("spinbutton");
     expect(field.getAttribute("inputmode")).toBe("numeric");
   });
@@ -60,6 +89,9 @@ describe("NumberField accessibility", () => {
     render(
       <TooltipProvider>
         <NumberField
+          infoLabel="More information"
+          incrementLabel="Increase"
+          decrementLabel="Decrease"
           label="Amount"
           required
           helperText="Before taxes."

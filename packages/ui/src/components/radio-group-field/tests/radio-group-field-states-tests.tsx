@@ -9,7 +9,13 @@ describe("RadioGroupField states", () => {
   it("locks every radio while loading, with a spinner, aria-busy and aria-disabled", async () => {
     const onValueChange = vi.fn();
     renderField(
-      <RadioGroupField label="Plan" options={plans} loading onValueChange={onValueChange} />,
+      <RadioGroupField
+        loadingLabel="Loading"
+        label="Plan"
+        options={plans}
+        loading
+        onValueChange={onValueChange}
+      />,
     );
     expect(screen.getAllByRole("radio").every((r) => (r as HTMLButtonElement).disabled)).toBe(true);
     await userEvent.click(radio("Pro"));

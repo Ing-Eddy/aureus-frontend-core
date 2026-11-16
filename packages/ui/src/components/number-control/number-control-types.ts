@@ -1,5 +1,5 @@
 import type { NumberFieldProps } from "@/components/number-field";
-import type { ControlBaseProps } from "@/internal/types";
+import type { ControlBaseProps, DistributiveOmit } from "@/internal/types";
 
 /**
  * Props of `NumberControl`: the field `name` and binding options, plus every `NumberField` prop
@@ -7,4 +7,7 @@ import type { ControlBaseProps } from "@/internal/types";
  * `number | null`.
  */
 export type NumberControlProps = ControlBaseProps &
-  Omit<NumberFieldProps, "name" | "value" | "defaultValue" | "error" | "errorMessage" | "disabled">;
+  DistributiveOmit<
+    NumberFieldProps,
+    "name" | "value" | "defaultValue" | "error" | "errorMessage" | "disabled"
+  >;

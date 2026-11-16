@@ -20,7 +20,7 @@ function Controlled() {
 
 describe("TextField states", () => {
   it("disables the input, sets aria-busy and shows a status while loading", () => {
-    render(<TextField label="Coupon" loading />);
+    render(<TextField loadingLabel="Loading" label="Coupon" loading />);
     const input = screen.getByRole("textbox", { name: "Coupon" }) as HTMLInputElement;
     expect(input.disabled).toBe(true);
     expect(input.getAttribute("aria-busy")).toBe("true");

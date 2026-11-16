@@ -3,14 +3,15 @@ import { TextField } from "@aureus-core/ui/components/text-field";
 import { Button } from "@aureus-core/ui/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type ComponentType, type ReactNode, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { z } from "zod";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import type { StoryArgs } from "../story-args";
 import { docs } from "./text-control-docs";
 
-type TextControlStoryArgs = TextControlProps & ActionArgs;
+type TextControlStoryArgs = StoryArgs<TextControlProps> & ActionArgs;
 
 const schema = z.object({
   username: z.string().min(3, "Use at least 3 characters."),
@@ -58,7 +59,7 @@ function DemoForm({ children }: { children: ReactNode }) {
 
 const meta = {
   title: "components/Forms/Text Control",
-  component: TextControl,
+  component: TextControl as unknown as ComponentType<TextControlStoryArgs>,
   parameters: { aureusDocs: docs },
   decorators: [
     (Story) => (
@@ -69,7 +70,7 @@ const meta = {
   ],
   render: (args) => {
     const [props, action] = splitActionArgs(args);
-    return <TextControl {...props} action={action} />;
+    return <TextControl {...(props as TextControlProps)} action={action} />;
   },
   args: {
     name: "username",
@@ -77,8 +78,10 @@ const meta = {
     placeholder: "ada",
     helperText: "Visible to other members.",
     info: "Use letters, numbers and dashes.",
+    infoLabel: "More information",
     required: true,
     loading: false,
+    loadingLabel: "Loading",
     disabled: false,
     onChange: fn(),
     onBlur: fn(),
@@ -90,10 +93,12 @@ const meta = {
     placeholder: { control: "text", table: { category: "Content" } },
     helperText: { control: "text", table: { category: "Content" } },
     info: { control: "text", table: { category: "Content" } },
+    infoLabel: { control: "text", table: { category: "Content" } },
     classNames: { control: "object", table: { category: "Appearance" } },
     className: { control: "text", table: { category: "Appearance" } },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     shouldUnregister: { control: "boolean", table: { category: "Behavior" } },
     ...actionArgTypes,
@@ -131,7 +136,12 @@ export const WithSchema: Story = {
         helperText="Visible to other members."
       />
       <TextControl name="email" label="Email" required autoComplete="email" />
-      <TextControl name="nickname" label="Nickname" info="Only your team sees it." />
+      <TextControl
+        infoLabel="More information"
+        name="nickname"
+        label="Nickname"
+        info="Only your team sees it."
+      />
     </>
   ),
   play: async ({ canvas }) => {
@@ -171,7 +181,13 @@ export const DisabledVsLoading: Story = {
     <>
       <TextControl name="username" label="Username" />
       <TextControl name="email" label="Email" />
-      <TextControl name="coupon" label="Coupon (loading)" loading helperText="Still submitted." />
+      <TextControl
+        loadingLabel="Loading"
+        name="coupon"
+        label="Coupon (loading)"
+        loading
+        helperText="Still submitted."
+      />
       <TextControl name="nickname" label="Nickname (disabled)" disabled helperText="Left out." />
     </>
   ),
@@ -193,6 +209,7 @@ const shared = {
   label: "Username",
   required: true,
   info: "Use letters, numbers and dashes.",
+  infoLabel: "More information",
   helperText: "Visible to other members.",
   action: { children: "Check", tooltip: "Check availability" },
 };

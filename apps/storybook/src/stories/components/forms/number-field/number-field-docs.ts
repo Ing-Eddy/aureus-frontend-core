@@ -33,15 +33,14 @@ export const docs = defineComponentDocs({
       negativeColor: { type: "boolean", default: "false" },
       stepper: { type: "boolean", default: "true" },
       stepperLayout: { type: '"stacked" | "split"', default: '"stacked"' },
-      incrementLabel: { type: "string", default: '"Increase"' },
-      decrementLabel: { type: "string", default: '"Decrease"' },
+      incrementLabel: { type: "string" },
+      decrementLabel: { type: "string" },
       selectOnFocus: { type: "boolean", default: "false" },
       wheel: { type: "boolean", default: "false" },
       shorthand: { type: "boolean", default: "false" },
       expressions: { type: "boolean", default: "false" },
-      invalidExpressionLabel: { type: "string", default: '"Invalid expression"' },
+      invalidExpressionLabel: { type: "string" },
       calculatedFromLabel: { type: "(expression: string) => string" },
-      minusLabel: { type: "string", default: '"minus"' },
       label: { type: "ReactNode" },
       required: { type: "boolean", default: "false" },
       loading: { type: "boolean", default: "false" },
@@ -53,6 +52,10 @@ export const docs = defineComponentDocs({
       action: { type: "FieldActionProps" },
       className: { type: "string" },
       classNames: { type: "FieldClassNames" },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
+      id: { type: "string" },
+      onBlur: { type: "(event: FocusEvent) => void" },
       ref: { type: "Ref<HTMLInputElement>" },
     },
   },
@@ -68,6 +71,7 @@ export const docs = defineComponentDocs({
     "LiveFormatting",
     "Paste",
     "States",
+    "Rtl",
     "Responsive",
   ],
   keyboard: [
@@ -135,17 +139,20 @@ export const docs = defineComponentDocs({
         stepper: "Shows the step buttons.",
         stepperLayout:
           "`stacked` puts ▲▼ at the end; `split` puts − at the start and + at the end. Stacked switches to split on touch screens.",
-        incrementLabel: "Accessible name of the increase button.",
-        decrementLabel: "Accessible name of the decrease button.",
+        incrementLabel:
+          "Accessible name of the increase button, in your language. Required unless `stepper={false}`; there is no default.",
+        decrementLabel:
+          "Accessible name of the decrease button, in your language. Required unless `stepper={false}`; there is no default.",
         selectOnFocus: "Selects the whole text on focus, to overwrite it quickly.",
         wheel:
           "The mouse wheel steps the value while the field has focus (the page does not scroll).",
         shorthand: "On commit, `k`, `m` and `b` expand: 1.5k → 1500, 2m → 2000000.",
         expressions:
           "On commit, arithmetic is evaluated: `=120*3+5` → 365. The expression is remembered while the field is mounted and shown again on focus for editing.",
-        invalidExpressionLabel: "Error shown when an expression cannot be evaluated.",
-        calculatedFromLabel: "Screen-reader description of a value that comes from an expression.",
-        minusLabel: "Word used for negatives in `aria-valuetext`.",
+        invalidExpressionLabel:
+          "Error message for an expression that cannot be evaluated. Required with `expressions`; there is no default.",
+        calculatedFromLabel:
+          "Part of the input's accessible description while its value comes from an expression. Required with `expressions`; there is no default.",
         label: "Text above the field; the input's accessible name.",
         required: "Red asterisk and `aria-required`. It adds no validation rule.",
         loading: "Disables the input and buttons and shows a spinner.",
@@ -157,10 +164,17 @@ export const docs = defineComponentDocs({
         action: "A button in the frame, before the step buttons, as in Text Field.",
         className: "Extra classes for the root element.",
         classNames: "Extra classes per part, as in Text Field (`input` targets the number).",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
+        id: "Id of the field's control. Generated when missing; the ids of the label, helper text and info derive from it.",
+        onBlur: "Called when focus leaves the field.",
         ref: "Reaches the `<input>`. Other native props (`name`, `placeholder`, `onBlur`…) are passed to it.",
       },
     },
     stories: {
+      Rtl: "In a right-to-left container the step buttons sit at the left, and the digits keep their left-to-right order.",
       Basic:
         "No formatting props: digits as typed (122345), stacked step buttons and keyboard stepping.",
       Grouping:
@@ -195,10 +209,10 @@ export const docs = defineComponentDocs({
       Tab: "Moves to the next control. The step buttons are skipped: the keyboard already steps.",
     },
     aria: [
-      'The input is a `spinbutton` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax` and a readable `aria-valuetext`, such as "minus $1,234.50" (never parentheses).',
+      'The input is a `spinbutton` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax` and a readable `aria-valuetext`: the number formatted for the locale with its minus sign, such as "-$1,234.50" (never parentheses or words), which screen readers speak in their own language.',
       "Step buttons have accessible names and `aria-controls`, are skipped by Tab (the WAI-ARIA spinbutton pattern), and keep focus in the input when pressed. Holding a button repeats the step.",
       "Stacked arrows are smaller than 24×24 px, so on touch screens the layout switches to split buttons that meet WCAG 2.5.8.",
-      'A value that comes from an expression adds "Calculated from …" to the input\'s description.',
+      "A value that comes from an expression adds the text of `calculatedFromLabel` to the input's description.",
       "The number is always rendered left-to-right and uses the numeric or decimal mobile keyboard.",
     ],
     theming: [
@@ -254,18 +268,20 @@ export const docs = defineComponentDocs({
         stepper: "Muestra los botones de paso.",
         stepperLayout:
           "`stacked` pone ▲▼ al final; `split` pone − al inicio y + al final. En pantallas táctiles, stacked pasa a split.",
-        incrementLabel: "Nombre accesible del botón de sumar.",
-        decrementLabel: "Nombre accesible del botón de restar.",
+        incrementLabel:
+          "Nombre accesible del botón de aumentar, en tu idioma. Obligatorio salvo con `stepper={false}`; no hay valor por defecto.",
+        decrementLabel:
+          "Nombre accesible del botón de disminuir, en tu idioma. Obligatorio salvo con `stepper={false}`; no hay valor por defecto.",
         selectOnFocus: "Selecciona todo el texto al enfocar, para sobrescribirlo rápido.",
         wheel:
           "La rueda del ratón cambia el valor mientras el campo tiene el foco (la página no se desplaza).",
         shorthand: "Al confirmar, `k`, `m` y `b` se expanden: 1.5k → 1500, 2m → 2000000.",
         expressions:
           "Al confirmar se calcula la operación: `=120*3+5` → 365. La expresión se recuerda mientras el campo está montado y vuelve a mostrarse al enfocarlo para editarla.",
-        invalidExpressionLabel: "Error que se muestra cuando una expresión no se puede calcular.",
+        invalidExpressionLabel:
+          "Mensaje de error para una expresión que no se puede evaluar. Obligatorio con `expressions`; no hay valor por defecto.",
         calculatedFromLabel:
-          "Descripción para lectores de pantalla de un valor que viene de una expresión.",
-        minusLabel: "Palabra usada para los negativos en `aria-valuetext`.",
+          "Parte de la descripción accesible del input mientras su valor viene de una expresión. Obligatorio con `expressions`; no hay valor por defecto.",
         label: "Texto sobre el campo; el nombre accesible del input.",
         required: "Asterisco rojo y `aria-required`. No añade ninguna regla de validación.",
         loading: "Deshabilita el input y los botones y muestra un spinner.",
@@ -277,10 +293,17 @@ export const docs = defineComponentDocs({
         action: "Un botón en el marco, antes de los botones de paso, como en Text Field.",
         className: "Clases extra para la raíz.",
         classNames: "Clases extra por parte, como en Text Field (`input` apunta al número).",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
+        id: "Id del control del field. Se genera si falta; los ids del label, el texto de ayuda y la info se derivan de él.",
+        onBlur: "Se llama cuando el foco sale del field.",
         ref: "Apunta al `<input>`. El resto de props nativas (`name`, `placeholder`, `onBlur`…) llegan a él.",
       },
     },
     stories: {
+      Rtl: "En un contenedor de derecha a izquierda, los botones de paso quedan a la izquierda y los dígitos mantienen su orden de izquierda a derecha.",
       Basic:
         "Sin props de formato: dígitos tal como se escriben (122345), botones de paso apilados y pasos con el teclado.",
       Grouping:
@@ -316,10 +339,10 @@ export const docs = defineComponentDocs({
       Tab: "Pasa al siguiente control. Los botones de paso se saltan: el teclado ya cambia el valor.",
     },
     aria: [
-      'El input es un `spinbutton` con `aria-valuenow`, `aria-valuemin`, `aria-valuemax` y un `aria-valuetext` legible, como "minus $1,234.50" (nunca con paréntesis).',
+      'El input es un `spinbutton` con `aria-valuenow`, `aria-valuemin`, `aria-valuemax` y un `aria-valuetext` legible: el número formateado según el locale con su signo menos, como "-$1,234.50" (nunca con paréntesis ni palabras), que los lectores de pantalla leen en su propio idioma.',
       "Los botones de paso tienen nombre accesible y `aria-controls`, se saltan con Tab (patrón spinbutton de WAI-ARIA) y dejan el foco en el input al pulsarlos. Mantenerlos pulsados repite el paso.",
       "Las flechas apiladas miden menos de 24×24 px, así que en pantallas táctiles la disposición pasa a botones split que cumplen WCAG 2.5.8.",
-      'Un valor que viene de una expresión añade "Calculated from …" a la descripción del input.',
+      "Un valor que viene de una expresión añade el texto de `calculatedFromLabel` a la descripción del input.",
       "El número siempre se muestra de izquierda a derecha y usa el teclado numérico o decimal del móvil.",
     ],
     theming: [

@@ -28,6 +28,7 @@ Available families:
 | Radio group | `RadioGroupField` | `RadioGroupControl` | No frame: one radio per option, or segments |
 | Switch | `SwitchField` | `SwitchControl` | No frame: an optional `action` at the end of the row |
 | OTP | `OtpField` | `OtpControl` | Boxes over one input; optional show/hide toggle and `action` |
+| File | `FileField` | `FileControl` | The choose button (the native file input); optional dropzone and `action` |
 
 Every family shares the same view, so all fields look alike.
 
@@ -41,6 +42,7 @@ import { SearchIcon } from "lucide-react";
   label="Search"
   helperText="At least 3 characters"
   loading={isSearching}
+  loadingLabel="Searching"
   action={{ children: <SearchIcon />, "aria-label": "Search", tooltip: "Run search", onClick: search }}
 />;
 ```
@@ -93,12 +95,12 @@ Every field and control accepts these props:
 | ----------------------------- | -------------------------------------------------------------------------------------------------- |
 | `label`                       | Text above the input, and its accessible name.                                                     |
 | `required`                    | Red asterisk and `aria-required`. It adds no validation rule.                                      |
-| `info`                        | Info button at the far end of the label row, with a tooltip that also opens on tap.                |
+| `info` / `infoLabel`          | Info button at the far end of the label row, with a tooltip that also opens on tap. `infoLabel` names the button and is required with `info`. |
 | `helperText`                  | Text below the input, part of its accessible description.                                          |
 | `loading` / `disabled`        | See above.                                                                                         |
 | `action`                      | One button inside the input frame: text or icon, `tooltip`, and any button prop.                   |
 | `className` / `classNames`    | Extra classes for the root, or per part: `root`, `header`, `label`, `requiredMark`, `info`, `control`, `input`, `helper`, `action`. |
-| `loadingLabel` / `infoLabel`  | Accessible names of the spinner and the info button ("Loading", "More information").               |
+| `loadingLabel`                | Accessible name of the spinner, required with `loading`. There is no default text.                 |
 
 A field also takes `error` and `errorMessage`; a control gets both from the form.
 
@@ -107,10 +109,13 @@ A field also takes `error` and `errorMessage`; a control gets both from the form
 ```tsx
 import { PasswordControl } from "@aureus-core/ui/components/password-control";
 
-<PasswordControl name="password" label="Password" required />
-<PasswordControl name="confirm" label="Repeat password" autoComplete="new-password" />
+const toggle = { showPasswordLabel: "Show password", hidePasswordLabel: "Hide password" };
+
+<PasswordControl {...toggle} name="password" label="Password" required />
+<PasswordControl {...toggle} name="confirm" label="Repeat password" autoComplete="new-password" />
 ```
 
+- **The toggle's names are yours.** `showPasswordLabel` and `hidePasswordLabel` are always required, because the toggle is always shown.
 - **The toggle is built in.** It shows or hides the password, has `aria-pressed` and keeps focus and the caret in the input when clicked. Submitting the form hides the password again. There is no `action` prop.
 - **Controlled visibility.** Pass `visible` and `onVisibleChange` to drive several fields at once, for example from a "Show passwords" checkbox. `defaultVisible` sets the initial state when uncontrolled.
 - **Autocomplete.** The default is `current-password` (sign-in). Use `new-password` on sign-up and change-password forms, so password managers offer to generate one.
@@ -127,6 +132,7 @@ import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
   maxRows={8}
   maxLength={280}
   showCount
+  countLabel={(count, max) => `${(max ?? 0) - count} characters remaining`}
   actionShortcut
   action={{ children: "Post", variant: "default", onClick: post }}
 />;
@@ -134,7 +140,7 @@ import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
 
 - **Live height.** The field grows with its content from `minRows` to `maxRows` lines, then scrolls. Users can also drag it taller or shorter; the height they choose becomes the new minimum. `resize={false}` removes the handle.
 - **Footer bar.** The spinner, the counter and the `action` live in a bar along the bottom edge of the frame, so the button follows any height change and never covers the text. The bar only appears when it has something to show.
-- **Counter.** `showCount` shows "count/maxLength" (or the count alone) and turns red at the limit. Screen readers get the remaining characters in the field's description, announced once the user pauses typing.
+- **Counter.** `showCount` shows "count/maxLength" (or the count alone) and turns red at the limit. It requires `countLabel(count, maxLength?)`, the text screen readers get in the field's description, announced once the user pauses typing. You decide whether it says what remains or what was typed.
 - **Shortcut.** `actionShortcut` lets Ctrl+Enter (Cmd+Enter on macOS) press the action; Enter alone still adds a new line.
 
 ## Number
@@ -143,18 +149,21 @@ import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
 import { NumberControl } from "@aureus-core/ui/components/number-control";
 import { NumberField } from "@aureus-core/ui/components/number-field";
 
-<NumberField label="Quantity" min={0} />                                     // 122345
-<NumberField label="Units" grouping />                                       // 123,345
-<NumberField label="Budget" currency="USD" decimals={0} grouping />          // $ 12,000
+const steps = { incrementLabel: "Increase", decrementLabel: "Decrease" };
+
+<NumberField {...steps} label="Quantity" min={0} />                          // 122345
+<NumberField {...steps} label="Units" grouping />                            // 123,345
+<NumberField {...steps} label="Budget" currency="USD" decimals={0} grouping /> // $ 12,000
 <NumberField label="Rate" suffix="%" decimals={3} stepper={false} />         // 4.125 %
-<NumberControl name="amount" label="Amount" currency="USD" decimals={2} padDecimals grouping />
+<NumberControl {...steps} name="amount" label="Amount" currency="USD" decimals={2} padDecimals grouping />
 ```
 
 - **Every prop is independent and opt-in.** Without props the field shows digits as typed. `grouping`, `decimals`, `padDecimals`, `currency`, `prefix`, `suffix`, `align` and the negative format never change each other's defaults: `currency` only adds a symbol. The implementation decides which combination is right.
 - **The value is `number | null`.** The control stores a number in the form, so schemas such as `z.number()` work directly.
-- **Step buttons.** `stepperLayout="stacked"` (▲▼ at the end) or `"split"` (− and + on each side); on touch screens stacked becomes split automatically. `stepper={false}` hides them. Holding a button repeats the step.
+- **Step buttons.** `stepperLayout="stacked"` (▲▼ at the end) or `"split"` (− and + on each side); on touch screens stacked becomes split automatically. `stepper={false}` hides them. While they are shown, `incrementLabel` and `decrementLabel` are required. Holding a button repeats the step.
 - **Keyboard.** Arrows step by `step`, Shift or Page Up/Down by `largeStep`, Home/End go to `min`/`max`, Enter commits, Escape restores the last committed value.
-- **Conveniences, all off by default.** `selectOnFocus`, `wheel`, `shorthand` (1.5k → 1500) and `expressions` (`=120*3` → 360). An expression is remembered while the field is mounted: the field shows the result, and the expression again when focused, so it can be edited.
+- **Conveniences, all off by default.** `selectOnFocus`, `wheel`, `shorthand` (1.5k → 1500) and `expressions` (`=120*3` → 360). An expression is remembered while the field is mounted: the field shows the result, and the expression again when focused, so it can be edited. `expressions` requires `invalidExpressionLabel` and `calculatedFromLabel(expression)`.
+- **Negatives for screen readers.** `aria-valuetext` is the number formatted for the locale with its minus sign ("-$1,234.50"), never parentheses or a word, so screen readers speak it in their own language.
 
 ## Select
 
@@ -264,21 +273,73 @@ import { OtpField } from "@aureus-core/ui/components/otp-field";
 - **The value is a `string`;** `onComplete(code)` fires when the last box is filled, and `submitOnComplete` (opt-in) submits the form.
 - **Opt-in extras.** `charset` (also sets the mobile keyboard), `uppercase`, `groups` with a `separator`, `masked` with an optional `reveal` (both texts required). Codes keep a left-to-right order in RTL.
 
+## File
+
+```tsx
+import { FileControl } from "@aureus-core/ui/components/file-control";
+import { diffFiles, toExistingFiles, toFormData } from "@aureus-core/ui/components/file-field";
+
+// Update form: the backend returns { id, url, filename, bytes } for each stored file.
+const form = useForm({ defaultValues: { attachments: toExistingFiles(stored, (file) => file.id) } });
+
+<FileControl
+  name="attachments"
+  label="Attachments"
+  multiple
+  accept="image/*,.pdf"
+  maxSize={10_000_000}
+  dropzone
+  dropzoneText="Drag files here"
+  chooseLabel="Choose files"
+  removeLabel={(name) => `Remove ${name}`}
+  getFileInfo={(file: Stored) => ({ name: file.filename, url: file.url, size: file.bytes })}
+/>;
+
+// On submit: send only what changed.
+const { removed } = diffFiles(form.formState.defaultValues?.attachments, values.attachments);
+const body = toFormData(values.attachments, "files");
+body.append("removed", JSON.stringify(removed.map((file) => file.id)));
+```
+
+- **One value for create and update forms.** Each item is `new` (a `File` picked now) or `existing` (your backend's data, of any type, shown through `getFileInfo`). Put the stored files in `defaultValues` with `toExistingFiles`; `diffFiles` returns the files to upload, the stored files kept and the stored files removed.
+- **Send files as `FormData`.** `toFormData` appends the new files under a field name. Base64 (`fileToBase64`) is about a third larger and reads each file into memory: use it only when the backend requires it.
+- **Immediate upload (opt-in).** `upload(file, { signal, onProgress })` uploads each file as soon as it is picked and resolves with your backend's data; the item then becomes `existing`, in place. Progress, cancel and retry are built in. To block the submit while uploads are pending, refine the schema with `hasPendingUploads`: `z.array(…).refine((files) => !hasPendingUploads(files), "…")`.
+- **Opt-in extras, each independent.** Restrictions (`accept`, sizes, `maxFiles`), `appearance="grid"` or `"single"`, a `dropzone`, `reorderable`, `pasteable`, `capture` (camera on mobile) and `transform` (compress or resize before adding).
+- **The focusable control is the native file input,** presented as a button, so it carries the name, the description and `aria-required`. Rejected files are reported through `onReject` and, with `rejectionMessage`, announced in your words.
+- **Validate on the server.** `accept` and the sizes guide people and the picker; they are not a security control.
+
 ## Messages are the developer's
 
-Select is the first family that ships **no texts of its own**, neither visible nor accessible. The developer writes every text for the situation where it appears.
+No field or control ships **texts of its own**, neither visible nor accessible. The developer writes every text, in their language, for the situation where it appears. Only developer messages are in English: development warnings and errors such as a control used outside its `FormProvider`.
 
-- **Visible messages are optional.** `placeholder`, `emptyMessage`, `noResultsMessage`, `optionsLoadingMessage` and `maxSelectedMessage` render nothing when they are omitted: there is no fallback text in another language.
-- **The texts a feature needs are required when the feature is enabled.** TypeScript rejects the props without them, and plain JavaScript gets a development warning that names the missing prop:
+- **Visible messages are optional.** `placeholder`, `helperText`, `errorMessage`, `emptyMessage`, `noResultsMessage`, `optionsLoadingMessage` and `maxSelectedMessage` render nothing when they are omitted: there is no fallback text in another language.
+- **The texts a feature needs are required when the feature is enabled.** TypeScript rejects the props without them (a runtime boolean such as `loading={isSaving}` counts as enabled), and plain JavaScript gets a development warning that names the missing prop:
 
-| Feature | Requires |
-| ------- | -------- |
-| `searchable` | `searchLabel` |
-| `clearable` | `clearLabel` |
-| `multiple` + `multipleDisplay="chips"` | `removeChipLabel(option)` |
-| `multiple` + `multipleDisplay="summary"` | `renderSummary(selected)` |
-| `selectAll` | `selectAll.label` |
-| `creatable` | `createLabel(query)` and `onCreate(query)` |
+| Family | Feature | Requires |
+| ------ | ------- | -------- |
+| Every field (Switch: only `info`) | `loading` | `loadingLabel` |
+| Every field | `info` | `infoLabel` |
+| Every field | no `label` | `aria-label` or `aria-labelledby` (a warning only) |
+| Password | always (the toggle is always shown) | `showPasswordLabel` and `hidePasswordLabel` |
+| Text area | `showCount` | `countLabel(count, maxLength?)` |
+| Number | step buttons (shown unless `stepper={false}`) | `incrementLabel` and `decrementLabel` |
+| Number | `expressions` | `invalidExpressionLabel` and `calculatedFromLabel(expression)` |
+| Select | `searchable` | `searchLabel` |
+| Select | `clearable` | `clearLabel` |
+| Select | `multiple` + `multipleDisplay="chips"` | `removeChipLabel(option)` |
+| Select | `multiple` + `multipleDisplay="summary"` | `renderSummary(selected)` |
+| Select | `selectAll` | `selectAll.label` |
+| Select | `creatable` | `createLabel(query)` and `onCreate(query)` |
+| Radio group | `otherOption` | `otherOption.label` and `otherOption.inputLabel` |
+| Switch | `stateLabels` / `thumbIcons` | both `on` and `off` |
+| OTP | `masked` + `reveal` | `reveal.showLabel` and `reveal.hideLabel` |
+| File | always | `chooseLabel`, `removeLabel(name)` and `getFileInfo(data)` |
+| File | `dropzone` | `dropzoneText` |
+| File | `appearance="single"` | `replaceLabel(name)` |
+| File | `upload` | `uploadProgressLabel`, `cancelUploadLabel`, `retryUploadLabel` and `uploadErrorText` (each from the file's name) |
+| File | `reorderable` | `moveLabel(name)` and `moveAnnouncement(name, position, total)` |
+
+The Switch's loading spinner is decorative (`aria-busy` announces the state), so it needs no text. A test over the library source fails when a component ships a hard-coded text.
 
 ## Providers
 
@@ -311,6 +372,7 @@ Familias disponibles:
 | Grupo de radios | `RadioGroupField` | `RadioGroupControl` | Sin marco: un radio por opción, o segmentos |
 | Switch | `SwitchField` | `SwitchControl` | Sin marco: una `action` opcional al final de la fila |
 | OTP | `OtpField` | `OtpControl` | Casillas sobre un input; botón mostrar/ocultar y `action` opcionales |
+| Archivo | `FileField` | `FileControl` | El botón de elegir (el input de archivos nativo); zona de arrastre y `action` opcionales |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -324,6 +386,7 @@ import { SearchIcon } from "lucide-react";
   label="Buscar"
   helperText="Mínimo 3 caracteres"
   loading={isSearching}
+  loadingLabel="Buscando"
   action={{ children: <SearchIcon />, "aria-label": "Buscar", tooltip: "Lanzar búsqueda", onClick: search }}
 />;
 ```
@@ -376,12 +439,12 @@ Todos los fields y controls aceptan estas props:
 | ----------------------------- | -------------------------------------------------------------------------------------------------- |
 | `label`                       | Texto sobre el input, y su nombre accesible.                                                       |
 | `required`                    | Asterisco rojo y `aria-required`. No añade ninguna regla de validación.                            |
-| `info`                        | Botón de información al extremo de la fila del label, con un tooltip que también se abre con tap.  |
+| `info` / `infoLabel`          | Botón de información al extremo de la fila del label, con un tooltip que también se abre con tap. `infoLabel` da nombre al botón y es obligatorio con `info`. |
 | `helperText`                  | Texto bajo el input, parte de su descripción accesible.                                            |
 | `loading` / `disabled`        | Ver arriba.                                                                                        |
 | `action`                      | Un botón dentro del marco del input: texto o icono, `tooltip` y cualquier prop de botón.           |
 | `className` / `classNames`    | Clases extra para la raíz, o por parte: `root`, `header`, `label`, `requiredMark`, `info`, `control`, `input`, `helper`, `action`. |
-| `loadingLabel` / `infoLabel`  | Nombres accesibles del spinner y del botón de información ("Loading", "More information").         |
+| `loadingLabel`                | Nombre accesible del spinner, obligatorio con `loading`. No hay texto por defecto.                 |
 
 Un field también recibe `error` y `errorMessage`; un control los obtiene del formulario.
 
@@ -390,10 +453,13 @@ Un field también recibe `error` y `errorMessage`; un control los obtiene del fo
 ```tsx
 import { PasswordControl } from "@aureus-core/ui/components/password-control";
 
-<PasswordControl name="password" label="Contraseña" required />
-<PasswordControl name="confirm" label="Repetir contraseña" autoComplete="new-password" />
+const toggle = { showPasswordLabel: "Mostrar contraseña", hidePasswordLabel: "Ocultar contraseña" };
+
+<PasswordControl {...toggle} name="password" label="Contraseña" required />
+<PasswordControl {...toggle} name="confirm" label="Repetir contraseña" autoComplete="new-password" />
 ```
 
+- **Los nombres del botón son tuyos.** `showPasswordLabel` y `hidePasswordLabel` son siempre obligatorios, porque el botón siempre se muestra.
 - **El botón viene incluido.** Muestra u oculta la contraseña, tiene `aria-pressed` y deja el foco y el cursor en el input al pulsarlo. Al enviar el formulario, la contraseña se vuelve a ocultar. No hay prop `action`.
 - **Visibilidad controlada.** Pasa `visible` y `onVisibleChange` para manejar varios campos a la vez, por ejemplo desde un checkbox "Mostrar contraseñas". `defaultVisible` fija el estado inicial en modo no controlado.
 - **Autocompletado.** Por defecto es `current-password` (acceso). Usa `new-password` en formularios de registro y de cambio de contraseña, para que los gestores de contraseñas ofrezcan generar una.
@@ -410,6 +476,7 @@ import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
   maxRows={8}
   maxLength={280}
   showCount
+  countLabel={(count, max) => `Quedan ${(max ?? 0) - count} caracteres`}
   actionShortcut
   action={{ children: "Publicar", variant: "default", onClick: publicar }}
 />;
@@ -417,7 +484,7 @@ import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
 
 - **Altura en vivo.** El campo crece con su contenido de `minRows` a `maxRows` líneas y luego hace scroll. El usuario también puede arrastrarlo para hacerlo más alto o más bajo; la altura que elige pasa a ser el nuevo mínimo. `resize={false}` quita el asa.
 - **Barra inferior.** El spinner, el contador y la `action` van en una barra pegada al borde de abajo del marco, así el botón acompaña cualquier cambio de altura y nunca tapa el texto. La barra solo aparece cuando tiene algo que mostrar.
-- **Contador.** `showCount` muestra "cuenta/maxLength" (o solo la cuenta) y se pone en rojo al llegar al límite. Los lectores de pantalla reciben los caracteres restantes en la descripción del campo, anunciados cuando el usuario deja de escribir.
+- **Contador.** `showCount` muestra "cuenta/maxLength" (o solo la cuenta) y se pone en rojo al llegar al límite. Exige `countLabel(count, maxLength?)`, el texto que reciben los lectores de pantalla en la descripción del campo, anunciado cuando el usuario deja de escribir. Tú decides si dice lo que queda o lo escrito.
 - **Atajo.** `actionShortcut` permite pulsar la acción con Ctrl+Enter (Cmd+Enter en macOS); Enter solo sigue haciendo un salto de línea.
 
 ## Número
@@ -426,18 +493,21 @@ import { TextAreaField } from "@aureus-core/ui/components/text-area-field";
 import { NumberControl } from "@aureus-core/ui/components/number-control";
 import { NumberField } from "@aureus-core/ui/components/number-field";
 
-<NumberField label="Cantidad" min={0} />                                     // 122345
-<NumberField label="Unidades" grouping />                                    // 123,345
-<NumberField label="Presupuesto" currency="USD" decimals={0} grouping />     // $ 12,000
+const pasos = { incrementLabel: "Aumentar", decrementLabel: "Disminuir" };
+
+<NumberField {...pasos} label="Cantidad" min={0} />                          // 122345
+<NumberField {...pasos} label="Unidades" grouping />                         // 123,345
+<NumberField {...pasos} label="Presupuesto" currency="USD" decimals={0} grouping /> // $ 12,000
 <NumberField label="Tasa" suffix="%" decimals={3} stepper={false} />         // 4.125 %
-<NumberControl name="amount" label="Importe" currency="USD" decimals={2} padDecimals grouping />
+<NumberControl {...pasos} name="amount" label="Importe" currency="USD" decimals={2} padDecimals grouping />
 ```
 
 - **Cada prop es independiente y opcional.** Sin props, el campo muestra los dígitos tal como se escriben. `grouping`, `decimals`, `padDecimals`, `currency`, `prefix`, `suffix`, `align` y el formato de negativos nunca cambian los valores por defecto de las demás: `currency` solo añade un símbolo. La implementación decide qué combinación es la correcta.
 - **El valor es `number | null`.** El control guarda un número en el formulario, así schemas como `z.number()` funcionan directamente.
-- **Botones de paso.** `stepperLayout="stacked"` (▲▼ al final) o `"split"` (− y + a cada lado); en pantallas táctiles, el apilado pasa a split automáticamente. `stepper={false}` los oculta. Mantener pulsado un botón repite el paso.
+- **Botones de paso.** `stepperLayout="stacked"` (▲▼ al final) o `"split"` (− y + a cada lado); en pantallas táctiles, el apilado pasa a split automáticamente. `stepper={false}` los oculta. Mientras se muestran, `incrementLabel` y `decrementLabel` son obligatorios. Mantener pulsado un botón repite el paso.
 - **Teclado.** Las flechas suman `step`, Shift o Re Pág/Av Pág suman `largeStep`, Inicio/Fin van a `min`/`max`, Enter confirma y Escape restaura el último valor confirmado.
-- **Comodidades, todas desactivadas por defecto.** `selectOnFocus`, `wheel`, `shorthand` (1.5k → 1500) y `expressions` (`=120*3` → 360). Una expresión se recuerda mientras el campo está montado: se ve el resultado y, al enfocarlo, vuelve la expresión para editarla.
+- **Comodidades, todas desactivadas por defecto.** `selectOnFocus`, `wheel`, `shorthand` (1.5k → 1500) y `expressions` (`=120*3` → 360). Una expresión se recuerda mientras el campo está montado: se ve el resultado y, al enfocarlo, vuelve la expresión para editarla. `expressions` exige `invalidExpressionLabel` y `calculatedFromLabel(expression)`.
+- **Negativos para lectores de pantalla.** `aria-valuetext` es el número formateado según el locale con su signo menos ("-$1,234.50"), nunca con paréntesis ni con una palabra, así los lectores de pantalla lo leen en su propio idioma.
 
 ## Select
 
@@ -547,21 +617,73 @@ import { OtpField } from "@aureus-core/ui/components/otp-field";
 - **El valor es un `string`;** `onComplete(code)` se llama al llenar la última casilla, y `submitOnComplete` (opcional) envía el formulario.
 - **Extras opcionales.** `charset` (también ajusta el teclado móvil), `uppercase`, `groups` con un `separator`, `masked` con un `reveal` opcional (los dos textos obligatorios). Los códigos mantienen el orden de izquierda a derecha en RTL.
 
+## Archivo
+
+```tsx
+import { FileControl } from "@aureus-core/ui/components/file-control";
+import { diffFiles, toExistingFiles, toFormData } from "@aureus-core/ui/components/file-field";
+
+// Formulario de edición: el backend devuelve { id, url, filename, bytes } por cada archivo guardado.
+const form = useForm({ defaultValues: { adjuntos: toExistingFiles(guardados, (archivo) => archivo.id) } });
+
+<FileControl
+  name="adjuntos"
+  label="Adjuntos"
+  multiple
+  accept="image/*,.pdf"
+  maxSize={10_000_000}
+  dropzone
+  dropzoneText="Arrastra archivos aquí"
+  chooseLabel="Elegir archivos"
+  removeLabel={(nombre) => `Quitar ${nombre}`}
+  getFileInfo={(archivo: Guardado) => ({ name: archivo.filename, url: archivo.url, size: archivo.bytes })}
+/>;
+
+// Al enviar: manda solo lo que cambió.
+const { removed } = diffFiles(form.formState.defaultValues?.adjuntos, values.adjuntos);
+const body = toFormData(values.adjuntos, "files");
+body.append("removed", JSON.stringify(removed.map((archivo) => archivo.id)));
+```
+
+- **Un solo valor para crear y editar.** Cada elemento es `new` (un `File` elegido ahora) o `existing` (los datos de tu backend, de cualquier tipo, mostrados con `getFileInfo`). Pon los archivos guardados en `defaultValues` con `toExistingFiles`; `diffFiles` devuelve los archivos que subir, los guardados que se mantienen y los guardados que se quitaron.
+- **Envía los archivos como `FormData`.** `toFormData` añade los archivos nuevos con un nombre de campo. Base64 (`fileToBase64`) ocupa un tercio más y carga cada archivo en memoria: úsalo solo si el backend lo exige.
+- **Subida inmediata (opcional).** `upload(file, { signal, onProgress })` sube cada archivo en cuanto se elige y resuelve con los datos de tu backend; el elemento pasa a ser `existing`, en su sitio. Progreso, cancelar y reintentar vienen incluidos. Para bloquear el envío mientras haya subidas pendientes, refina el schema con `hasPendingUploads`: `z.array(…).refine((files) => !hasPendingUploads(files), "…")`.
+- **Extras opcionales e independientes.** Restricciones (`accept`, tamaños, `maxFiles`), `appearance="grid"` o `"single"`, `dropzone`, `reorderable`, `pasteable`, `capture` (cámara en el móvil) y `transform` (comprimir o redimensionar antes de añadir).
+- **El control enfocable es el input de archivos nativo,** presentado como un botón, así que lleva el nombre, la descripción y `aria-required`. Los archivos rechazados llegan a `onReject` y, con `rejectionMessage`, se anuncian con tus palabras.
+- **Valida en el servidor.** `accept` y los tamaños guían a las personas y al selector; no son un control de seguridad.
+
 ## Los mensajes son del desarrollador
 
-Select es la primera familia que **no trae textos propios**, ni visibles ni accesibles. El desarrollador escribe cada texto para la situación en que aparece.
+Ningún field ni control **trae textos propios**, ni visibles ni accesibles. El desarrollador escribe cada texto, en su idioma, para la situación en que aparece. Solo los mensajes para desarrolladores están en inglés: los avisos en desarrollo y errores como el de un control usado fuera de su `FormProvider`.
 
-- **Los mensajes visibles son opcionales.** `placeholder`, `emptyMessage`, `noResultsMessage`, `optionsLoadingMessage` y `maxSelectedMessage` no muestran nada si se omiten: no hay texto de reserva en otro idioma.
-- **Los textos que necesita una función son obligatorios al activarla.** TypeScript rechaza las props sin ellos, y en JavaScript sin tipos aparece un aviso en desarrollo con el nombre de la prop que falta:
+- **Los mensajes visibles son opcionales.** `placeholder`, `helperText`, `errorMessage`, `emptyMessage`, `noResultsMessage`, `optionsLoadingMessage` y `maxSelectedMessage` no muestran nada si se omiten: no hay texto de reserva en otro idioma.
+- **Los textos que necesita una función son obligatorios al activarla.** TypeScript rechaza las props sin ellos (un booleano en tiempo de ejecución, como `loading={isSaving}`, cuenta como activado), y en JavaScript sin tipos aparece un aviso en desarrollo con el nombre de la prop que falta:
 
-| Función | Exige |
-| ------- | ----- |
-| `searchable` | `searchLabel` |
-| `clearable` | `clearLabel` |
-| `multiple` + `multipleDisplay="chips"` | `removeChipLabel(option)` |
-| `multiple` + `multipleDisplay="summary"` | `renderSummary(selected)` |
-| `selectAll` | `selectAll.label` |
-| `creatable` | `createLabel(query)` y `onCreate(query)` |
+| Familia | Función | Exige |
+| ------- | ------- | ----- |
+| Todos los fields (Switch: solo `info`) | `loading` | `loadingLabel` |
+| Todos los fields | `info` | `infoLabel` |
+| Todos los fields | sin `label` | `aria-label` o `aria-labelledby` (solo un aviso) |
+| Contraseña | siempre (el botón siempre se muestra) | `showPasswordLabel` y `hidePasswordLabel` |
+| Texto multilínea | `showCount` | `countLabel(count, maxLength?)` |
+| Número | botones de paso (salvo con `stepper={false}`) | `incrementLabel` y `decrementLabel` |
+| Número | `expressions` | `invalidExpressionLabel` y `calculatedFromLabel(expression)` |
+| Select | `searchable` | `searchLabel` |
+| Select | `clearable` | `clearLabel` |
+| Select | `multiple` + `multipleDisplay="chips"` | `removeChipLabel(option)` |
+| Select | `multiple` + `multipleDisplay="summary"` | `renderSummary(selected)` |
+| Select | `selectAll` | `selectAll.label` |
+| Select | `creatable` | `createLabel(query)` y `onCreate(query)` |
+| Grupo de radios | `otherOption` | `otherOption.label` y `otherOption.inputLabel` |
+| Switch | `stateLabels` / `thumbIcons` | `on` y `off` |
+| OTP | `masked` + `reveal` | `reveal.showLabel` y `reveal.hideLabel` |
+| Archivo | siempre | `chooseLabel`, `removeLabel(name)` y `getFileInfo(data)` |
+| Archivo | `dropzone` | `dropzoneText` |
+| Archivo | `appearance="single"` | `replaceLabel(name)` |
+| Archivo | `upload` | `uploadProgressLabel`, `cancelUploadLabel`, `retryUploadLabel` y `uploadErrorText` (cada uno a partir del nombre del archivo) |
+| Archivo | `reorderable` | `moveLabel(name)` y `moveAnnouncement(name, position, total)` |
+
+El spinner de carga del Switch es decorativo (`aria-busy` anuncia el estado), así que no necesita texto. Un test sobre el código de la librería falla si un componente trae un texto fijo.
 
 ## Providers
 

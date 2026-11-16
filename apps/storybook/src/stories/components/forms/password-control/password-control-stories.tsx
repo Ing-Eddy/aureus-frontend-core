@@ -1,18 +1,23 @@
-import { PasswordControl } from "@aureus-core/ui/components/password-control";
+import {
+  PasswordControl,
+  type PasswordControlProps,
+} from "@aureus-core/ui/components/password-control";
 import { PasswordField } from "@aureus-core/ui/components/password-field";
 import { Button } from "@aureus-core/ui/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type ComponentType, type ReactNode, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { z } from "zod";
+import type { StoryArgs } from "../story-args";
 import { docs } from "./password-control-docs";
 
 const schema = z
   .object({
     password: z.string().min(8, "Use at least 8 characters."),
     confirm: z.string(),
+    previous: z.string().optional(),
   })
   .refine((values) => values.password === values.confirm, {
     message: "The passwords do not match.",
@@ -25,10 +30,10 @@ type Passwords = z.infer<typeof schema>;
  * The form every story renders into: one `useForm` with a schema resolver, a `FormProvider` and a
  * submit button. The last submitted payload is printed below, to show what the form sends.
  */
-function DemoForm({ children }: { children: ReactNode }) {
+function DemoForm({ children, defaults }: { children: ReactNode; defaults?: Partial<Passwords> }) {
   const form = useForm<Passwords>({
     resolver: zodResolver(schema),
-    defaultValues: { password: "", confirm: "" },
+    defaultValues: { password: "", confirm: "", ...defaults },
     mode: "onTouched",
   });
   const [payload, setPayload] = useState<string>();
@@ -54,25 +59,35 @@ function DemoForm({ children }: { children: ReactNode }) {
   );
 }
 
+type PasswordControlStoryArgs = StoryArgs<PasswordControlProps>;
+
+const toggleTexts = { showPasswordLabel: "Show password", hidePasswordLabel: "Hide password" };
+
 const meta = {
   title: "components/Forms/Password Control",
-  component: PasswordControl,
+  component: PasswordControl as unknown as ComponentType<PasswordControlStoryArgs>,
   parameters: { aureusDocs: docs },
   decorators: [
-    (Story) => (
-      <DemoForm>
+    (Story, { parameters }) => (
+      <DemoForm defaults={parameters.demoDefaults as Partial<Passwords> | undefined}>
         <Story />
       </DemoForm>
     ),
   ],
-  render: (args) => <PasswordControl key={String(args.defaultVisible)} {...args} />,
+  render: (args) => (
+    <PasswordControl key={String(args.defaultVisible)} {...(args as PasswordControlProps)} />
+  ),
   args: {
     name: "password",
     label: "Password",
     helperText: "At least 8 characters.",
     info: "Use a passphrase: several words are easier to remember and harder to guess.",
+    infoLabel: "More information",
     required: true,
     loading: false,
+    loadingLabel: "Loading",
+    showPasswordLabel: "Show password",
+    hidePasswordLabel: "Hide password",
     disabled: false,
     defaultVisible: false,
     autoComplete: "current-password",
@@ -86,12 +101,14 @@ const meta = {
     placeholder: { control: "text", table: { category: "Content" } },
     helperText: { control: "text", table: { category: "Content" } },
     info: { control: "text", table: { category: "Content" } },
+    infoLabel: { control: "text", table: { category: "Content" } },
     showPasswordLabel: { control: "text", table: { category: "Content" } },
     hidePasswordLabel: { control: "text", table: { category: "Content" } },
     classNames: { control: "object", table: { category: "Appearance" } },
     className: { control: "text", table: { category: "Appearance" } },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     defaultVisible: { control: "boolean", table: { category: "State" } },
     visible: { control: false, table: { category: "State" } },
@@ -105,7 +122,7 @@ const meta = {
     onChange: { table: { category: "Events" } },
     onBlur: { table: { category: "Events" } },
   },
-} satisfies Meta<typeof PasswordControl>;
+} satisfies Meta<PasswordControlStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -124,8 +141,17 @@ export const Playground: Story = {
 export const WithSchema: Story = {
   render: () => (
     <>
-      <PasswordControl name="password" label="New password" required autoComplete="new-password" />
       <PasswordControl
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        name="password"
+        label="New password"
+        required
+        autoComplete="new-password"
+      />
+      <PasswordControl
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
         name="confirm"
         label="Repeat password"
         required
@@ -148,11 +174,61 @@ export const WithSchema: Story = {
   },
 };
 
+/**
+ * A loading field keeps its value in the submitted data; a disabled field is left out. The
+ * confirmation is loading with a value from the form's defaults, and the old password is disabled.
+ */
+export const DisabledVsLoading: Story = {
+  parameters: { demoDefaults: { confirm: "correct-horse-1", previous: "old-secret" } },
+  render: () => (
+    <>
+      <PasswordControl {...toggleTexts} name="password" label="Password" />
+      <PasswordControl
+        {...toggleTexts}
+        name="confirm"
+        label="Confirmation (loading)"
+        loading
+        loadingLabel="Loading"
+        helperText="Still submitted."
+      />
+      <PasswordControl
+        {...toggleTexts}
+        name="previous"
+        label="Old password (disabled)"
+        disabled
+        helperText="Left out."
+      />
+    </>
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.type(canvas.getByLabelText("Password"), "correct-horse-1");
+    await expect(canvas.getByLabelText("Confirmation (loading)")).toBeDisabled();
+    await expect(canvas.getByRole("status", { name: "Loading" })).toBeInTheDocument();
+    await expect(canvas.getByLabelText("Old password (disabled)")).toBeDisabled();
+
+    await userEvent.click(canvas.getByRole("button", { name: "Save" }));
+
+    const payload = await canvas.findByRole("status", { name: "Submitted data" });
+    await expect(payload).toHaveTextContent('"confirm":"correct-horse-1"');
+    await expect(payload).not.toHaveTextContent("old-secret");
+  },
+};
+
 export const HidesOnSubmit: Story = {
   render: () => (
     <>
-      <PasswordControl name="password" label="Password" />
-      <PasswordControl name="confirm" label="Repeat password" />
+      <PasswordControl
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        name="password"
+        label="Password"
+      />
+      <PasswordControl
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        name="confirm"
+        label="Repeat password"
+      />
     </>
   ),
   play: async ({ canvas }) => {
@@ -174,6 +250,7 @@ const shared = {
   label: "Password",
   required: true,
   info: "Use a passphrase.",
+  infoLabel: "More information",
   helperText: "At least 8 characters.",
 };
 
@@ -182,11 +259,24 @@ export const Parity: Story = {
     <div className="grid gap-6 sm:grid-cols-2">
       <div className="flex flex-col gap-2">
         <span className="text-xs font-medium text-muted-foreground">PasswordField</span>
-        <PasswordField {...shared} id="parity-field" name="password" defaultValue="" />
+        <PasswordField
+          showPasswordLabel="Show password"
+          hidePasswordLabel="Hide password"
+          {...shared}
+          id="parity-field"
+          name="password"
+          defaultValue=""
+        />
       </div>
       <div className="flex flex-col gap-2">
         <span className="text-xs font-medium text-muted-foreground">PasswordControl</span>
-        <PasswordControl {...shared} id="parity-control" name="password" />
+        <PasswordControl
+          showPasswordLabel="Show password"
+          hidePasswordLabel="Hide password"
+          {...shared}
+          id="parity-control"
+          name="password"
+        />
       </div>
     </div>
   ),

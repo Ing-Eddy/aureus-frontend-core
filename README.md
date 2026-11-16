@@ -73,7 +73,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
 ### Fields & controls
 
-Each input comes as a pair that looks the same: a **field** for general use and a **control** bound to react-hook-form. Available pairs: `TextField` / `TextControl`, `PasswordField` / `PasswordControl` (with a built-in show/hide toggle), `TextAreaField` / `TextAreaControl` (multi-line: grows with its content, optional character counter, and its action in a footer bar) and `NumberField` / `NumberControl` (value `number | null`; separators, decimals, currency, prefix/suffix, accounting negatives, custom step buttons, shorthand and calculations, each an independent opt-in prop) and `SelectField` / `SelectControl` (single `string | null` or multiple `string[]` shown as chips or a summary; optional search inside the list, groups, descriptions, server search, a selection limit, select all and creatable options). `CheckboxField` / `CheckboxControl` add a checkbox with two texts (the field `label` above and a clickable `checkboxLabel` beside the box); its value is a `boolean`, or the custom values you pass with `checkedValue`/`uncheckedValue`, with opt-in `indeterminate`, `checkboxPosition="end"` and `appearance="card"`. `CheckboxGroupField` / `CheckboxGroupControl` hold a `string[]` in the order of `options`, with opt-in select all, selection limit, horizontal or column layouts and cards. `RadioGroupField` / `RadioGroupControl` choose exactly one value (`string | null`) with the WAI-ARIA radio group keyboard, plus opt-in cards, segments, an "other" option with free text and deselection. `SwitchField` / `SwitchControl` add an on/off switch for settings that apply immediately, with optional custom values, decorative state labels and thumb icons, and `onBeforeChange` to confirm each change (for example after saving it) with a spinner in the thumb. `OtpField` / `OtpControl` add one-time codes and PINs: boxes over one real input (SMS autofill, pasting), with opt-in character sets, groups, masking and submitting on completion. The select ships no texts of its own: every message is yours, and the texts a feature needs (such as `searchLabel` for `searchable`) are required by TypeScript when you enable it. Controls only take a `name` (plus visual props) and must be rendered inside a `FormProvider`; values, defaults and validation (for example a zod schema) belong to the form, and validation messages appear as the helper text.
+Each input comes as a pair that looks the same: a **field** for general use and a **control** bound to react-hook-form. Available pairs: `TextField` / `TextControl`, `PasswordField` / `PasswordControl` (with a built-in show/hide toggle), `TextAreaField` / `TextAreaControl` (multi-line: grows with its content, optional character counter, and its action in a footer bar) and `NumberField` / `NumberControl` (value `number | null`; separators, decimals, currency, prefix/suffix, accounting negatives, custom step buttons, shorthand and calculations, each an independent opt-in prop) and `SelectField` / `SelectControl` (single `string | null` or multiple `string[]` shown as chips or a summary; optional search inside the list, groups, descriptions, server search, a selection limit, select all and creatable options). `CheckboxField` / `CheckboxControl` add a checkbox with two texts (the field `label` above and a clickable `checkboxLabel` beside the box); its value is a `boolean`, or the custom values you pass with `checkedValue`/`uncheckedValue`, with opt-in `indeterminate`, `checkboxPosition="end"` and `appearance="card"`. `CheckboxGroupField` / `CheckboxGroupControl` hold a `string[]` in the order of `options`, with opt-in select all, selection limit, horizontal or column layouts and cards. `RadioGroupField` / `RadioGroupControl` choose exactly one value (`string | null`) with the WAI-ARIA radio group keyboard, plus opt-in cards, segments, an "other" option with free text and deselection. `SwitchField` / `SwitchControl` add an on/off switch for settings that apply immediately, with optional custom values, decorative state labels and thumb icons, and `onBeforeChange` to confirm each change (for example after saving it) with a spinner in the thumb. `OtpField` / `OtpControl` add one-time codes and PINs: boxes over one real input (SMS autofill, pasting), with opt-in character sets, groups, masking and submitting on completion. `FileField` / `FileControl` attach files in create and update forms: the value mixes new files with the files your backend already stores (any shape, shown through `getFileInfo`), `diffFiles` and `toFormData` turn it into what to send, and lists, thumbnails, a single preview, a dropzone, immediate upload with progress, reordering, paste and camera capture are opt-in. No component ships texts of its own: every message is yours, in your language, and the texts a feature needs (such as `loadingLabel` for `loading`, `infoLabel` for `info` or `searchLabel` for `searchable`) are required by TypeScript when you enable it. The guide lists every feature and the texts it requires. Controls only take a `name` (plus visual props) and must be rendered inside a `FormProvider`; values, defaults and validation (for example a zod schema) belong to the form, and validation messages appear as the helper text.
 
 ```tsx
 import { CheckboxControl } from "@aureus-core/ui/components/checkbox-control";
@@ -87,6 +87,8 @@ import { SelectControl } from "@aureus-core/ui/components/select-control";
 import { TextAreaControl } from "@aureus-core/ui/components/text-area-control";
 import { TextControl } from "@aureus-core/ui/components/text-control";
 import { TextField } from "@aureus-core/ui/components/text-field";
+import { FileControl } from "@aureus-core/ui/components/file-control";
+import { toExistingFiles } from "@aureus-core/ui/components/file-field";
 import { FormProvider, useForm } from "react-hook-form";
 
 <TextField label="Search" helperText="At least 3 characters" />;
@@ -105,15 +107,36 @@ function ProfileForm() {
       plan: null,
       alerts: false,
       code: "",
+      attachments: toExistingFiles(storedAttachments, (file) => file.id),
     },
   });
   return (
     <FormProvider {...form}>
       <form noValidate onSubmit={form.handleSubmit(save)}>
         <TextControl name="username" label="Username" required helperText="Visible to others" />
-        <PasswordControl name="password" label="Password" required />
-        <TextAreaControl name="bio" label="Bio" maxLength={280} showCount />
-        <NumberControl name="amount" label="Amount" currency="USD" decimals={2} grouping />
+        <PasswordControl
+          name="password"
+          label="Password"
+          required
+          showPasswordLabel="Show password"
+          hidePasswordLabel="Hide password"
+        />
+        <TextAreaControl
+          name="bio"
+          label="Bio"
+          maxLength={280}
+          showCount
+          countLabel={(count, max) => `${(max ?? 0) - count} characters remaining`}
+        />
+        <NumberControl
+          name="amount"
+          label="Amount"
+          currency="USD"
+          decimals={2}
+          grouping
+          incrementLabel="Increase"
+          decrementLabel="Decrease"
+        />
         <SelectControl
           name="country"
           label="Country"
@@ -125,6 +148,14 @@ function ProfileForm() {
         <RadioGroupControl name="plan" label="Plan" options={plans} />
         <SwitchControl name="alerts" switchLabel="Email alerts" />
         <OtpControl name="code" label="Verification code" length={6} />
+        <FileControl
+          name="attachments"
+          label="Attachments"
+          multiple
+          chooseLabel="Choose files"
+          removeLabel={(name) => `Remove ${name}`}
+          getFileInfo={(file: StoredAttachment) => ({ name: file.filename, url: file.url })}
+        />
       </form>
     </FormProvider>
   );

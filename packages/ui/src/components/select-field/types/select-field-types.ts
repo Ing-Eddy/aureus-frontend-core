@@ -1,5 +1,10 @@
 import type { FocusEvent, ReactNode, Ref } from "react";
-import type { FieldActionProps, FieldBaseProps, FieldClassNames } from "@/internal/types";
+import type {
+  FieldActionProps,
+  FieldBaseProps,
+  FieldClassNames,
+  FieldTexts,
+} from "@/internal/types";
 import type { SelectOption } from "./select-option-types";
 
 /** Extra parts of a select field that accept classes. */
@@ -41,28 +46,46 @@ export interface SelectFieldBaseProps extends Omit<FieldBaseProps, "classNames">
   onOpenChange?: (open: boolean) => void;
   /** Extra ids describing the field. */
   "aria-describedby"?: string;
+  /** Accessible name of the field's button and list, for a select without a visible `label`. */
+  "aria-label"?: string;
+  /** Id of an element that names the field's button and list, instead of `label`. */
+  "aria-labelledby"?: string;
   /** Extra classes per part. */
   classNames?: SelectFieldClassNames;
 }
 
 /** Single selection: the value is one option id, or `null`. */
 export interface SelectSingleProps {
+  /** Allows several options to be selected. Defaults to `false`. */
   multiple?: false;
+  /** Controlled value: the selected option's `value`, or `null` for none. */
   value?: string | null;
+  /** Initial value when uncontrolled. Defaults to `null`. */
   defaultValue?: string | null;
+  /** Called with the new value when the user picks or clears an option. */
   onValueChange?: (value: string | null) => void;
+  /** Only allowed with `multiple`. */
   multipleDisplay?: never;
+  /** Only allowed with `multipleDisplay="chips"`. */
   removeChipLabel?: never;
+  /** Only allowed with `multipleDisplay="summary"`. */
   renderSummary?: never;
+  /** Only allowed with `multiple`. */
   maxSelected?: never;
+  /** Only allowed with `multiple`. */
   maxSelectedMessage?: never;
+  /** Only allowed with `multiple`. */
   selectAll?: never;
 }
 
 interface SelectMultipleCommon {
+  /** Allows several options to be selected. Requires `multipleDisplay`. */
   multiple: true;
+  /** Controlled value: the selected options' values, in selection order. */
   value?: string[];
+  /** Initial value when uncontrolled. Defaults to `[]`. */
   defaultValue?: string[];
+  /** Called with the new value whenever an option is added or removed. */
   onValueChange?: (value: string[]) => void;
   /** Most options that can be selected. Unselected options are disabled at the limit. */
   maxSelected?: number;
@@ -74,20 +97,25 @@ interface SelectMultipleCommon {
 
 /** Multiple selection shown as removable chips. `removeChipLabel` names each remove button. */
 export interface SelectMultipleChipsProps extends SelectMultipleCommon {
+  /** Shows each selected option as a removable chip in the field. */
   multipleDisplay: "chips";
   /** Accessible name of a chip's remove button, e.g. `(o) => \`Remove ${o.label}\``. Required. */
   removeChipLabel: (option: SelectOption) => string;
+  /** Only allowed with `multipleDisplay="summary"`. */
   renderSummary?: never;
 }
 
 /** Multiple selection shown as one line of text from `renderSummary`. */
 export interface SelectMultipleSummaryProps extends SelectMultipleCommon {
+  /** Shows the selection as one line of text from `renderSummary`. */
   multipleDisplay: "summary";
   /** Content of the field for the selected options. Required. */
   renderSummary: (selected: SelectOption[]) => ReactNode;
+  /** Only allowed with `multipleDisplay="chips"`. */
   removeChipLabel?: never;
 }
 
+/** Single or multiple selection, and how a multiple selection is shown. */
 export type SelectSelectionProps =
   | SelectSingleProps
   | SelectMultipleChipsProps
@@ -95,16 +123,27 @@ export type SelectSelectionProps =
 
 /** No search box. */
 export interface SelectNoSearchProps {
+  /** Shows a search box above the list. Defaults to `false`. */
   searchable?: false;
+  /** Only allowed with `searchable`. */
   searchLabel?: never;
+  /** Only allowed with `searchable`. */
   searchPlaceholder?: never;
+  /** Only allowed with `searchable`. */
   filter?: never;
+  /** Only allowed with `searchable`. */
   onSearchChange?: never;
+  /** Only allowed with `searchable`. */
   noResultsMessage?: never;
+  /** Only allowed with `searchable`. */
   optionsLoading?: never;
+  /** Only allowed with `searchable`. */
   optionsLoadingMessage?: never;
+  /** Only allowed with `searchable`. */
   creatable?: never;
+  /** Only allowed with `creatable`. */
   createLabel?: never;
+  /** Only allowed with `creatable`. */
   onCreate?: never;
 }
 
@@ -127,14 +166,19 @@ interface SelectSearchCommon {
   optionsLoadingMessage?: ReactNode;
 }
 
+/** Search without the option to create values. */
 export interface SelectSearchProps extends SelectSearchCommon {
+  /** Offers to create the typed value when no option matches it. Defaults to `false`. */
   creatable?: false;
+  /** Only allowed with `creatable`. */
   createLabel?: never;
+  /** Only allowed with `creatable`. */
   onCreate?: never;
 }
 
 /** Search that can offer to create the typed value. */
 export interface SelectCreatableProps extends SelectSearchCommon {
+  /** Offers to create the typed value. Requires `createLabel` and `onCreate`. */
   creatable: true;
   /** Content of the "create" option for the typed text. Required. */
   createLabel: (query: string) => ReactNode;
@@ -142,6 +186,7 @@ export interface SelectCreatableProps extends SelectSearchCommon {
   onCreate: (query: string) => void;
 }
 
+/** The search box and the option to create values. */
 export type SelectSearchFeatureProps =
   | SelectNoSearchProps
   | SelectSearchProps
@@ -149,27 +194,29 @@ export type SelectSearchFeatureProps =
 
 /** No clear button. */
 export interface SelectNoClearProps {
+  /** Shows a button that empties the field. Defaults to `false`. */
   clearable?: false;
+  /** Only allowed with `clearable`. */
   clearLabel?: never;
 }
 
 /** A button that empties the field. */
 export interface SelectClearProps {
+  /** Shows a button that empties the field while it has a value. Requires `clearLabel`. */
   clearable: true;
   /** Accessible name of the clear button. Required. */
   clearLabel: string;
 }
 
+/** The clear button. */
 export type SelectClearFeatureProps = SelectNoClearProps | SelectClearProps;
 
 /**
- * Props of `SelectField`. Features that need a text (search, clear, chips, summary, select all,
- * create) require it when they are enabled.
+ * Props of `SelectField`. Features that need a text (loading, info, search, clear, chips,
+ * summary, select all, create) require it when they are enabled.
  */
 export type SelectFieldProps = SelectFieldBaseProps &
+  FieldTexts &
   SelectSelectionProps &
   SelectSearchFeatureProps &
   SelectClearFeatureProps;
-
-/** `Omit` that keeps a union a union. */
-export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;

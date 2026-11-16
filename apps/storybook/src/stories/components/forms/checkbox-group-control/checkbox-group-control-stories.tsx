@@ -8,6 +8,7 @@ import { type ComponentType, type ReactNode, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { z } from "zod";
+import { loadingTexts } from "../story-args";
 import { docs } from "./checkbox-group-control-docs";
 
 const schema = z.object({
@@ -71,6 +72,7 @@ type StoryArgs = {
   appearance: "plain" | "card";
   required?: boolean;
   loading?: boolean;
+  loadingLabel?: string;
   disabled?: boolean;
   onValueChange: (value: string[]) => void;
 };
@@ -86,15 +88,17 @@ const meta = {
       </DemoForm>
     ),
   ],
-  render: ({ selectAllLabel, ...args }) => (
+  render: ({ selectAllLabel, loading, loadingLabel, ...args }) => (
     <CheckboxGroupControl
       {...args}
+      {...loadingTexts(Boolean(loading), loadingLabel ?? "")}
       options={channels}
       selectAll={selectAllLabel ? { label: selectAllLabel } : undefined}
     />
   ),
   args: {
     name: "channels",
+    loadingLabel: "Loading",
     label: "Notification channels",
     helperText: "Where we write to you.",
     selectAllLabel: "",
@@ -120,6 +124,7 @@ const meta = {
     },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     onValueChange: { table: { category: "Events" } },
   },
@@ -174,6 +179,7 @@ export const DisabledVsLoading: Story = {
     <>
       <CheckboxGroupControl name="channels" label="Notification channels" options={channels} />
       <CheckboxGroupControl
+        loadingLabel="Loading"
         name="sizes"
         label="Sizes (loading)"
         options={sizes}

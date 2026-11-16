@@ -1,5 +1,5 @@
 import type { FocusEvent, ReactNode, Ref } from "react";
-import type { FieldBaseProps, FieldClassNames } from "@/internal/types";
+import type { FieldBaseProps, FieldClassNames, FieldTexts } from "@/internal/types";
 import type { CheckboxGroupOption } from "./checkbox-group-option-types";
 
 /** Extra parts of a checkbox group that accept classes. */
@@ -20,7 +20,7 @@ export interface CheckboxGroupFieldClassNames extends FieldClassNames {
  * Props of `CheckboxGroupField`. Every option is independent and opt-in, and there are no default
  * texts: a text that is not passed is not shown.
  */
-export interface CheckboxGroupFieldProps extends Omit<FieldBaseProps, "classNames"> {
+export interface CheckboxGroupFieldBaseProps extends Omit<FieldBaseProps, "classNames"> {
   /** The choices, rendered in this order. */
   options: readonly CheckboxGroupOption[];
   /** Controlled value: the checked option values. */
@@ -63,3 +63,9 @@ export interface CheckboxGroupFieldProps extends Omit<FieldBaseProps, "className
   /** Extra classes per part. */
   classNames?: CheckboxGroupFieldClassNames;
 }
+
+/**
+ * Props of `CheckboxGroupField`. `loading` requires `loadingLabel` and `info` requires `infoLabel`; no text
+ * is generated.
+ */
+export type CheckboxGroupFieldProps = CheckboxGroupFieldBaseProps & FieldTexts;

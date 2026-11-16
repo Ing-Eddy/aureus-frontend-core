@@ -56,7 +56,13 @@ describe("RadioGroupControl in a form", () => {
   it("leaves disabled values out and keeps loading values", async () => {
     const { onSubmit } = renderInForm(
       <>
-        <RadioGroupControl name="plan" label="Plan" options={plans} loading />
+        <RadioGroupControl
+          loadingLabel="Loading"
+          name="plan"
+          label="Plan"
+          options={plans}
+          loading
+        />
         <RadioGroupControl name="source" label="Source" options={sources} disabled />
       </>,
       { plan: "pro", source: "friend" },

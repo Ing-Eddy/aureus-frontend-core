@@ -1,14 +1,17 @@
-import { PasswordField } from "@aureus-core/ui/components/password-field";
+import { PasswordField, type PasswordFieldProps } from "@aureus-core/ui/components/password-field";
 import { Checkbox } from "@aureus-core/ui/shadcn/checkbox";
 import { Label } from "@aureus-core/ui/shadcn/label";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { type ComponentType, useState } from "react";
 import { expect, fn, userEvent } from "storybook/test";
+import type { StoryArgs } from "../story-args";
 import { docs } from "./password-field-docs";
+
+type PasswordFieldStoryArgs = StoryArgs<PasswordFieldProps>;
 
 const meta = {
   title: "components/Forms/Password Field",
-  component: PasswordField,
+  component: PasswordField as unknown as ComponentType<PasswordFieldStoryArgs>,
   parameters: { aureusDocs: docs },
   decorators: [
     (Story) => (
@@ -18,13 +21,17 @@ const meta = {
     ),
   ],
   // `defaultVisible` only applies on mount; remount when it changes so the control is live.
-  render: (args) => <PasswordField key={String(args.defaultVisible)} {...args} />,
+  render: (args) => (
+    <PasswordField key={String(args.defaultVisible)} {...(args as PasswordFieldProps)} />
+  ),
   args: {
     label: "Password",
     helperText: "At least 8 characters.",
     info: "Use a passphrase: several words are easier to remember and harder to guess.",
+    infoLabel: "More information",
     required: false,
     loading: false,
+    loadingLabel: "Loading",
     disabled: false,
     error: false,
     errorMessage: "",
@@ -41,6 +48,7 @@ const meta = {
     placeholder: { control: "text", table: { category: "Content" } },
     helperText: { control: "text", table: { category: "Content" } },
     info: { control: "text", table: { category: "Content" } },
+    infoLabel: { control: "text", table: { category: "Content" } },
     errorMessage: { control: "text", table: { category: "Content" } },
     showPasswordLabel: { control: "text", table: { category: "Content" } },
     hidePasswordLabel: { control: "text", table: { category: "Content" } },
@@ -48,6 +56,7 @@ const meta = {
     className: { control: "text", table: { category: "Appearance" } },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     error: { control: "boolean", table: { category: "State" } },
     defaultVisible: { control: "boolean", table: { category: "State" } },
@@ -62,7 +71,7 @@ const meta = {
     onChange: { table: { category: "Events" } },
     onBlur: { table: { category: "Events" } },
   },
-} satisfies Meta<typeof PasswordField>;
+} satisfies Meta<PasswordFieldStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -103,17 +112,40 @@ export const Playground: Story = {
 export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
-      <PasswordField label="Password" required info="Ask your administrator if you forgot it." />
-      <PasswordField label="Current password" helperText="The one you use today." />
       <PasswordField
+        infoLabel="More information"
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Password"
+        required
+        info="Ask your administrator if you forgot it."
+      />
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="Current password"
+        helperText="The one you use today."
+      />
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
         label="New password"
         defaultValue="short"
         error
         helperText="At least 8 characters."
         errorMessage="Use at least 8 characters."
       />
-      <PasswordField label="API secret" defaultValue="sk-live-1234" loading />
       <PasswordField
+        loadingLabel="Loading"
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+        label="API secret"
+        defaultValue="sk-live-1234"
+        loading
+      />
+      <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
         label="Recovery key"
         defaultValue="aureus-recovery"
         disabled
@@ -139,6 +171,8 @@ function SharedVisibility() {
   return (
     <div className="flex flex-col gap-6">
       <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
         label="New password"
         autoComplete="new-password"
         defaultValue="correct horse"
@@ -146,6 +180,8 @@ function SharedVisibility() {
         onVisibleChange={setShow}
       />
       <PasswordField
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
         label="Repeat password"
         autoComplete="new-password"
         defaultValue="correct horse"
@@ -194,6 +230,52 @@ export const NewPassword: Story = {
       "autocomplete",
       "new-password",
     );
+  },
+};
+
+/** Keyboard only: the toggle follows the input, and Space or Enter keeps focus on it. */
+export const Keyboard: Story = {
+  render: () => (
+    <PasswordField
+      label="Password"
+      showPasswordLabel="Show password"
+      hidePasswordLabel="Hide password"
+    />
+  ),
+  play: async ({ canvas }) => {
+    await userEvent.tab();
+    const input = canvas.getByLabelText("Password");
+    await expect(input).toHaveFocus();
+    await userEvent.keyboard("secret");
+    await userEvent.tab();
+    const toggle = canvas.getByRole("button", { name: "Show password" });
+    await expect(toggle).toHaveFocus();
+    await userEvent.keyboard(" ");
+    await expect(input).toHaveAttribute("type", "text");
+    const hide = canvas.getByRole("button", { name: "Hide password" });
+    await expect(hide).toHaveFocus();
+    await expect(hide).toHaveAttribute("aria-pressed", "true");
+    await userEvent.keyboard("{Enter}");
+    await expect(input).toHaveAttribute("type", "password");
+    await expect(canvas.getByRole("button", { name: "Show password" })).toHaveFocus();
+  },
+};
+
+/** Right to left: the visibility toggle moves to the inline end, on the left. */
+export const Rtl: Story = {
+  render: () => (
+    <div dir="rtl">
+      <PasswordField
+        label="Password"
+        showPasswordLabel="Show password"
+        hidePasswordLabel="Hide password"
+      />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const input = canvas.getByLabelText("Password").getBoundingClientRect();
+    const toggle = canvas.getByRole("button", { name: "Show password" }).getBoundingClientRect();
+    await expect(toggle.right).toBeLessThanOrEqual(input.left + 1);
   },
 };
 

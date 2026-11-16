@@ -25,7 +25,12 @@ describe("TextField accessibility", () => {
   });
 
   it("describes the input with the helper text and the info content", () => {
-    renderField({ label: "Username", helperText: "At least 3", info: "Visible to others" });
+    renderField({
+      label: "Username",
+      helperText: "At least 3",
+      info: "Visible to others",
+      infoLabel: "More information",
+    });
     const input = screen.getByRole("textbox", { name: "Username" });
     const ids = input.getAttribute("aria-describedby")?.split(" ") ?? [];
     const texts = ids.map((id) => document.getElementById(id)?.textContent);

@@ -95,7 +95,13 @@ describe("SelectControl in a form", () => {
   it("leaves a disabled field out and keeps a loading one", async () => {
     const { onSubmit } = renderInForm(
       <>
-        <SelectControl name="country" label="Country" options={countries} loading />
+        <SelectControl
+          loadingLabel="Loading"
+          name="country"
+          label="Country"
+          options={countries}
+          loading
+        />
         <SelectControl
           name="tags"
           label="Tags"

@@ -35,6 +35,8 @@ export interface SelectViewProps {
     id: string;
     className: string;
     "aria-describedby"?: string;
+    "aria-label"?: string;
+    "aria-labelledby"?: string;
     "aria-invalid"?: boolean;
     "aria-required"?: boolean;
     "aria-busy"?: boolean;
@@ -44,8 +46,10 @@ export interface SelectViewProps {
   triggerContent: ReactNode;
   popupClassName?: string;
   optionClassName?: string;
-  /** Names the listbox: the field label's id, when there is a label. */
+  /** Names the listbox: the field label's id, or the consumer's `aria-labelledby`. */
   listLabelledBy?: string;
+  /** Names the listbox with the consumer's `aria-label` when nothing labels it by id. */
+  listLabel?: string;
   /** Status region content (loading, no results, empty) — only what the developer provided. */
   status: ReactNode;
   /** Shown above the list when the selection limit is reached. */
@@ -156,6 +160,8 @@ export function ListboxRoot(view: SelectViewProps) {
     </Select.Item>
   );
 
+  // Base UI ties the types of `multiple`, `value` and `itemToStringLabel` to a generic that is
+  // fixed per render. The view keeps them as a runtime union, so these props are cast (`as never`).
   return (
     <Select.Root
       multiple={view.multiple as never}
@@ -191,7 +197,11 @@ export function ListboxRoot(view: SelectViewProps) {
             className={cn(selectStyles.popup, view.popupClassName)}
           >
             <StatusArea status={view.status} limitMessage={view.limitMessage} />
-            <Select.List aria-labelledby={view.listLabelledBy} className={selectStyles.list}>
+            <Select.List
+              aria-labelledby={view.listLabelledBy}
+              aria-label={view.listLabel}
+              className={selectStyles.list}
+            >
               {view.groups.map((group) =>
                 group.title ? (
                   <Select.Group key={group.key}>
@@ -220,6 +230,8 @@ export function ComboboxRoot(view: SelectViewProps) {
     items: group.rows,
   }));
 
+  // Base UI ties the types of `multiple`, `value` and `itemToStringLabel` to a generic that is
+  // fixed per render. The view keeps them as a runtime union, so these props are cast (`as never`).
   return (
     <Combobox.Root
       items={items}
@@ -266,7 +278,11 @@ export function ComboboxRoot(view: SelectViewProps) {
               />
             </div>
             <StatusArea status={view.status} limitMessage={view.limitMessage} />
-            <Combobox.List aria-labelledby={view.listLabelledBy} className={selectStyles.list}>
+            <Combobox.List
+              aria-labelledby={view.listLabelledBy}
+              aria-label={view.listLabel}
+              className={selectStyles.list}
+            >
               {(group: (typeof items)[number]) => (
                 <Combobox.Group key={group.value} items={group.items}>
                   {group.title ? (

@@ -1,15 +1,16 @@
 import type { SwitchBooleanProps, SwitchCustomProps, SwitchValue } from "@/components/switch-field";
-import type { ControlBaseProps } from "@/internal/types";
+import type { ControlBaseProps, DistributiveOmit } from "@/internal/types";
 
 /** Field props that come from the surrounding form instead. */
 type FormOwned = "name" | "value" | "defaultValue" | "error" | "errorMessage" | "disabled";
 
 /** `SwitchControl` storing `true` / `false`. */
-export type SwitchControlBooleanProps = ControlBaseProps & Omit<SwitchBooleanProps, FormOwned>;
+export type SwitchControlBooleanProps = ControlBaseProps &
+  DistributiveOmit<SwitchBooleanProps, FormOwned>;
 
 /** `SwitchControl` storing custom values: pass both `checkedValue` and `uncheckedValue`. */
 export type SwitchControlCustomProps<V extends SwitchValue> = ControlBaseProps &
-  Omit<SwitchCustomProps<V>, FormOwned>;
+  DistributiveOmit<SwitchCustomProps<V>, FormOwned>;
 
 /**
  * Props of `SwitchControl`: the field `name` and binding options, plus every `SwitchField` prop

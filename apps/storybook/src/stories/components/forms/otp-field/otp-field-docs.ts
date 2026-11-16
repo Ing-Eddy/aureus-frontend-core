@@ -40,6 +40,10 @@ export const docs = defineComponentDocs({
       "aria-label": { type: "string" },
       className: { type: "string" },
       classNames: { type: "OtpFieldClassNames" },
+      loadingLabel: { type: "string" },
+      infoLabel: { type: "string" },
+      id: { type: "string" },
+      onBlur: { type: "(event: FocusEvent) => void" },
       ref: { type: "Ref<HTMLInputElement>" },
     },
   },
@@ -111,6 +115,12 @@ export const docs = defineComponentDocs({
         "aria-label": "Accessible name of the input when there is no visible `label`.",
         className: "Extra classes for the root.",
         classNames: "Extra classes per part: `slots`, `slot`, `separator` plus the family's parts.",
+        loadingLabel:
+          "Accessible name of the loading spinner, in your language. Required with `loading`; there is no default.",
+        infoLabel:
+          "Accessible name of the info button, in your language. Required with `info`; there is no default.",
+        id: "Id of the field's control. Generated when missing; the ids of the label, helper text and info derive from it.",
+        onBlur: "Called when focus leaves the field.",
         ref: "Reaches the real input.",
       },
     },
@@ -200,6 +210,12 @@ export const docs = defineComponentDocs({
         className: "Clases extra para la raíz.",
         classNames:
           "Clases extra por parte: `slots`, `slot`, `separator` y las partes de la familia.",
+        loadingLabel:
+          "Nombre accesible del spinner de carga, en tu idioma. Obligatorio con `loading`; no hay valor por defecto.",
+        infoLabel:
+          "Nombre accesible del botón de información, en tu idioma. Obligatorio con `info`; no hay valor por defecto.",
+        id: "Id del control del field. Se genera si falta; los ids del label, el texto de ayuda y la info se derivan de él.",
+        onBlur: "Se llama cuando el foco sale del field.",
         ref: "Llega al input real.",
       },
     },

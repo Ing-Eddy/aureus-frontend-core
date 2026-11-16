@@ -42,7 +42,15 @@ describe("TextAreaControl in a form", () => {
 
   it("counts the form value", async () => {
     const { container } = renderInForm(
-      <TextAreaControl name="bio" label="Bio" showCount maxLength={500} />,
+      <TextAreaControl
+        countLabel={(count, max) =>
+          max === undefined ? `${count} characters` : `${max - count} characters remaining`
+        }
+        name="bio"
+        label="Bio"
+        showCount
+        maxLength={500}
+      />,
       { bio: "Hello", notes: "" },
     );
     const counter = () => container.querySelector("[data-slot=field-counter]")?.textContent;
@@ -54,7 +62,7 @@ describe("TextAreaControl in a form", () => {
   it("leaves a disabled field out and keeps a loading one", async () => {
     const { onSubmit } = renderInForm(
       <>
-        <TextAreaControl name="bio" label="Bio" loading />
+        <TextAreaControl loadingLabel="Loading" name="bio" label="Bio" loading />
         <TextAreaControl name="notes" label="Notes" disabled />
       </>,
       { bio: "A long enough biography text.", notes: "internal" },

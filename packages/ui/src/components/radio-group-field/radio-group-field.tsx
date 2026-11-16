@@ -5,7 +5,7 @@ import {
   FieldLoading,
   FieldShell,
 } from "@/internal/components";
-import { useFieldA11y } from "@/internal/hooks";
+import { useFieldA11y, useInheritedDirection } from "@/internal/hooks";
 import { cn } from "@/shadcn/lib/utils";
 import { RadioGroup } from "@/shadcn/ui/radio-group";
 import { RadioOptionRow, RadioOtherInput, RadioSegment, segmentedStyles } from "./components";
@@ -61,6 +61,9 @@ export function RadioGroupField(props: RadioGroupFieldProps) {
     componentName: "RadioGroupField",
   });
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Radix defaults the group to left to right; follow the page instead (layout and arrow keys).
+  const direction = useInheritedDirection(containerRef);
   const a11y = useFieldA11y({
     id,
     describedBy,
@@ -136,6 +139,7 @@ export function RadioGroupField(props: RadioGroupFieldProps) {
     >
       {/* biome-ignore lint/a11y/noStaticElementInteractions: listens to focus leaving the group; it is not itself interactive. */}
       <div
+        ref={containerRef}
         data-slot="radio-group-container"
         className="@container flex min-w-0 flex-col"
         onBlur={(event) => {
@@ -144,6 +148,7 @@ export function RadioGroupField(props: RadioGroupFieldProps) {
       >
         <RadioGroup
           ref={ref}
+          dir={direction}
           value={group.radixValue}
           onValueChange={group.choose}
           orientation={columns ? undefined : orientation}

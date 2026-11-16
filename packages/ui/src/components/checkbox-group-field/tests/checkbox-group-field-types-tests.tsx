@@ -19,7 +19,27 @@ const typeChecks = [
   <CheckboxGroupField key="columns" label="Channels" options={channels} columns={5} />,
 ];
 
+// The texts of the loading state and the info tooltip. Only constructed, never rendered.
+const textChecks = [
+  <CheckboxGroupField key="loading-ok" label="A" options={[]} loading loadingLabel="Cargando" />,
+  // @ts-expect-error `loading` needs `loadingLabel`.
+  <CheckboxGroupField key="loading" label="A" options={[]} loading />,
+  <CheckboxGroupField
+    key="info-ok"
+    label="A"
+    options={[]}
+    info="Help"
+    infoLabel="Más información"
+  />,
+  // @ts-expect-error `info` needs `infoLabel`.
+  <CheckboxGroupField key="info" label="A" options={[]} info="Help" />,
+];
+
 describe("CheckboxGroupField types", () => {
+  it("require the texts of loading and info", () => {
+    expect(textChecks).toHaveLength(4);
+  });
+
   it("are checked at compile time", () => {
     expect(typeChecks).toHaveLength(4);
   });

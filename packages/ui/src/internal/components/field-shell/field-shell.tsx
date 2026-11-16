@@ -1,22 +1,15 @@
 import type { ReactNode } from "react";
-import type { FieldBaseProps } from "@/internal/types";
+import type { FieldBaseProps, FieldStatusInternal } from "@/internal/types";
 import { cn } from "@/shadcn/lib/utils";
 import { Field } from "@/shadcn/ui/field";
 import { FieldHeader, FieldHelper } from "./components";
 
 export interface FieldShellProps
   extends Pick<
-    FieldBaseProps,
-    | "label"
-    | "required"
-    | "info"
-    | "infoLabel"
-    | "helperText"
-    | "error"
-    | "errorMessage"
-    | "className"
-    | "classNames"
-  > {
+      FieldBaseProps,
+      "label" | "required" | "helperText" | "error" | "errorMessage" | "className" | "classNames"
+    >,
+    Pick<FieldStatusInternal, "info" | "infoLabel"> {
   inputId: string;
   helperId: string;
   infoId: string;

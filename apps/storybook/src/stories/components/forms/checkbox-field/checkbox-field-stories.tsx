@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ComponentType, type MouseEvent, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import { infoTexts, loadingTexts } from "../story-args";
 import { docs } from "./checkbox-field-docs";
 
 /** Flat, story-only args; the render builds the value props from `valueMode`. */
@@ -11,6 +12,7 @@ interface PlaygroundArgs extends ActionArgs {
   checkboxLabel: string;
   helperText: string;
   info: string;
+  infoLabel: string;
   errorMessage: string;
   valueMode: "boolean" | "S / N" | "1 / 0";
   indeterminate: boolean;
@@ -18,6 +20,7 @@ interface PlaygroundArgs extends ActionArgs {
   appearance: "plain" | "card";
   required: boolean;
   loading: boolean;
+  loadingLabel: string;
   disabled: boolean;
   error: boolean;
   onValueChange: (value: unknown) => void;
@@ -34,13 +37,13 @@ function PlaygroundRender(args: PlaygroundArgs) {
     label: text(base.label),
     checkboxLabel: text(base.checkboxLabel),
     helperText: text(base.helperText),
-    info: text(base.info),
+    ...infoTexts(base.info, base.infoLabel),
     errorMessage: text(base.errorMessage),
     indeterminate: base.indeterminate,
     checkboxPosition: base.checkboxPosition,
     appearance: base.appearance,
     required: base.required,
-    loading: base.loading,
+    ...loadingTexts(base.loading, base.loadingLabel),
     disabled: base.disabled,
     error: base.error,
     action,
@@ -89,6 +92,7 @@ const meta = {
     checkboxLabel: "Receive the weekly digest",
     helperText: "",
     info: "",
+    infoLabel: "More information",
     errorMessage: "",
     valueMode: "boolean",
     indeterminate: false,
@@ -96,6 +100,7 @@ const meta = {
     appearance: "plain",
     required: false,
     loading: false,
+    loadingLabel: "Loading",
     disabled: false,
     error: false,
     onValueChange: fn(),
@@ -107,6 +112,7 @@ const meta = {
     checkboxLabel: { control: "text", ...content },
     helperText: { control: "text", ...content },
     info: { control: "text", ...content },
+    infoLabel: { control: "text", ...content },
     errorMessage: { control: "text", ...content },
     valueMode: { control: "inline-radio", options: ["boolean", "S / N", "1 / 0"], ...behavior },
     indeterminate: { control: "boolean", ...behavior },
@@ -114,6 +120,7 @@ const meta = {
     appearance: { control: "inline-radio", options: ["plain", "card"], ...behavior },
     required: { control: "boolean", ...state },
     loading: { control: "boolean", ...state },
+    loadingLabel: { control: "text", ...content },
     disabled: { control: "boolean", ...state },
     error: { control: "boolean", ...state },
     ...actionArgTypes,
@@ -146,6 +153,7 @@ export const BooleanValue: Story = {
 export const LabelAndText: Story = {
   render: () => (
     <CheckboxField
+      infoLabel="More information"
       label="Notifications"
       checkboxLabel="Receive the weekly digest by email"
       helperText="You can change it at any time."
@@ -350,6 +358,7 @@ export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
       <CheckboxField
+        infoLabel="More information"
         label="Terms"
         checkboxLabel="I accept the terms"
         required
@@ -362,7 +371,12 @@ export const States: Story = {
         error
         errorMessage="Accept it to continue."
       />
-      <CheckboxField checkboxLabel="Syncing preferences" loading defaultValue />
+      <CheckboxField
+        loadingLabel="Loading"
+        checkboxLabel="Syncing preferences"
+        loading
+        defaultValue
+      />
       <CheckboxField checkboxLabel="Managed by your organization" disabled defaultValue />
     </div>
   ),
@@ -372,6 +386,22 @@ export const States: Story = {
     await expect(syncing).toHaveAttribute("aria-busy", "true");
     await userEvent.click(syncing);
     await waitFor(() => expect(syncing).toHaveAttribute("aria-checked", "true"));
+  },
+};
+
+/** Right to left: the box moves to the inline start, on the right of its text. */
+export const Rtl: Story = {
+  render: () => (
+    <div dir="rtl">
+      <CheckboxField checkboxLabel="Receive the weekly digest" />
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    const box = canvas.getByRole("checkbox", { name: "Receive the weekly digest" });
+    const text = canvas.getByText("Receive the weekly digest");
+    await expect(box.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+      text.getBoundingClientRect().right - 1,
+    );
   },
 };
 

@@ -9,6 +9,7 @@ describe("SelectField accessibility", () => {
     render(
       <TooltipProvider>
         <SelectField
+          infoLabel="More information"
           label="País"
           options={countries}
           required

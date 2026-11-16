@@ -10,8 +10,19 @@ const confirmInput = () => screen.getByLabelText(/^Confirm password/) as HTMLInp
 
 const fields = (
   <>
-    <PasswordControl name="password" label="Password" />
-    <PasswordControl name="confirm" label="Confirm password" autoComplete="new-password" />
+    <PasswordControl
+      showPasswordLabel="Show password"
+      hidePasswordLabel="Hide password"
+      name="password"
+      label="Password"
+    />
+    <PasswordControl
+      showPasswordLabel="Show password"
+      hidePasswordLabel="Hide password"
+      name="confirm"
+      label="Confirm password"
+      autoComplete="new-password"
+    />
   </>
 );
 
@@ -46,8 +57,21 @@ describe("PasswordControl in a form", () => {
   it("leaves a disabled field out and keeps a loading one", async () => {
     const { onSubmit } = renderInForm(
       <>
-        <PasswordControl name="password" label="Password" loading />
-        <PasswordControl name="confirm" label="Confirm password" disabled />
+        <PasswordControl
+          loadingLabel="Loading"
+          showPasswordLabel="Show password"
+          hidePasswordLabel="Hide password"
+          name="password"
+          label="Password"
+          loading
+        />
+        <PasswordControl
+          showPasswordLabel="Show password"
+          hidePasswordLabel="Hide password"
+          name="confirm"
+          label="Confirm password"
+          disabled
+        />
       </>,
       { password: "correct horse", confirm: "correct horse" },
       lenientSchema,
@@ -81,9 +105,16 @@ describe("PasswordControl in a form", () => {
 
   it("throws outside a FormProvider", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    expect(() => render(<PasswordControl name="password" label="Password" />)).toThrow(
-      "PasswordControl must be rendered inside a react-hook-form FormProvider.",
-    );
+    expect(() =>
+      render(
+        <PasswordControl
+          showPasswordLabel="Show password"
+          hidePasswordLabel="Hide password"
+          name="password"
+          label="Password"
+        />,
+      ),
+    ).toThrow("PasswordControl must be rendered inside a react-hook-form FormProvider.");
     vi.restoreAllMocks();
   });
 });

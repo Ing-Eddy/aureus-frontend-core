@@ -1,8 +1,9 @@
-import { type ReactNode, useEffect } from "react";
-import { isDev } from "@/internal/utils/constants";
+import type { ReactNode } from "react";
+import { fieldTextChecks, useMissingTexts } from "@/internal/hooks";
+import type { FieldStatusInternal } from "@/internal/types";
 import { isValidGroups } from "../utils";
 
-export interface OtpWarningSources {
+export interface OtpWarningSources extends FieldStatusInternal {
   label?: ReactNode;
   "aria-label"?: string;
   "aria-labelledby"?: string;
@@ -39,9 +40,8 @@ export function otpProblems(props: OtpWarningSources): string[] {
 
 /** Development warnings, each emitted once per distinct problem. */
 export function useOtpWarnings(componentName: string, props: OtpWarningSources) {
-  const key = otpProblems(props).join("|");
-  useEffect(() => {
-    if (!isDev || !key) return;
-    for (const problem of key.split("|")) console.warn(`${componentName}: ${problem}.`);
-  }, [componentName, key]);
+  useMissingTexts(componentName, [
+    ...otpProblems(props).map((problem) => [true, problem] as const),
+    ...fieldTextChecks(props),
+  ]);
 }

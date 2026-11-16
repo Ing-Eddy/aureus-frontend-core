@@ -9,6 +9,7 @@ describe("OtpField accessibility", () => {
   it("exposes one labelled, described input with SMS autofill", () => {
     renderField(
       <OtpField
+        infoLabel="More information"
         id="code"
         label="Code"
         length={6}

@@ -8,7 +8,14 @@ import { box, renderField } from "./helpers";
 describe("CheckboxField states", () => {
   it("does not change while loading, and shows a spinner", async () => {
     const onValueChange = vi.fn();
-    renderField(<CheckboxField checkboxLabel="Sync" loading onValueChange={onValueChange} />);
+    renderField(
+      <CheckboxField
+        loadingLabel="Loading"
+        checkboxLabel="Sync"
+        loading
+        onValueChange={onValueChange}
+      />,
+    );
     await userEvent.click(box("Sync"));
     await userEvent.click(screen.getByText("Sync"));
     expect(onValueChange).not.toHaveBeenCalled();

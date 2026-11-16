@@ -33,7 +33,7 @@ describe("FieldShell", () => {
   });
 
   it("renders the info button at the end of the header", () => {
-    const { container } = renderShell({ info: "Visible to others" });
+    const { container } = renderShell({ info: "Visible to others", infoLabel: "More information" });
     const button = screen.getByRole("button", { name: "More information" });
     expect(button.className).toContain("ms-auto");
     expect(container.querySelector("#name-info")?.textContent).toBe("Visible to others");
@@ -79,6 +79,7 @@ describe("FieldShell", () => {
       label: "Name",
       required: true,
       info: "Info",
+      infoLabel: "More information",
       helperText: "Help",
       className: "root-a",
       rootProps: { "data-invalid": true, "data-disabled": true },

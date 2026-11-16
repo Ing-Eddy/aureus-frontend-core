@@ -43,7 +43,7 @@ export const textareaClassName = "field-sizing-fixed min-h-0 flex-none";
 
 /** Shared look of the step buttons: quiet, full frame height, separated from the text. */
 const stepperButtonBase =
-  "inline-flex items-center justify-center text-muted-foreground outline-none transition-colors select-none hover:bg-muted hover:text-foreground active:bg-muted disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-3.5";
+  "inline-flex items-center justify-center text-muted-foreground outline-none transition-colors motion-reduce:transition-none select-none hover:bg-muted hover:text-foreground active:bg-muted disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-3.5";
 
 /** Column of stacked ▲▼ buttons at the inline end of the frame. */
 export const fieldStepperStackedClassName =

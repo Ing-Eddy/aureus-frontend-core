@@ -8,7 +8,7 @@ export const segmentedStyles = {
   trackVertical: "flex-col",
   segment: [
     "flex min-h-9 flex-1 items-center justify-center rounded-md px-3 py-1.5 text-center text-sm font-medium text-balance",
-    "text-muted-foreground transition-colors outline-none select-none pointer-coarse:min-h-11",
+    "text-muted-foreground transition-colors motion-reduce:transition-none outline-none select-none pointer-coarse:min-h-11",
     "hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50",
     "data-[state=checked]:bg-background data-[state=checked]:text-foreground data-[state=checked]:shadow-sm",
     "dark:data-[state=checked]:bg-input/50",

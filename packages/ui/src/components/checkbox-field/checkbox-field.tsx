@@ -8,6 +8,7 @@ import {
   FieldShell,
 } from "@/internal/components";
 import { useFieldA11y, useToggleValue } from "@/internal/hooks";
+import type { FieldTexts } from "@/internal/types";
 import { mergeRefs } from "@/internal/utils/helpers";
 import { cn } from "@/shadcn/lib/utils";
 import type {
@@ -25,11 +26,11 @@ import { useCheckboxWarnings } from "./hooks";
  * beside the box. Every option is opt-in and there are no default texts.
  */
 export function CheckboxField(
-  props: CheckboxFieldBaseProps & CheckboxBooleanValueProps,
+  props: CheckboxFieldBaseProps & FieldTexts & CheckboxBooleanValueProps,
 ): ReactElement;
 /** With custom values: the value type is inferred from `checkedValue` and `uncheckedValue`. */
 export function CheckboxField<const V extends CheckboxValue>(
-  props: CheckboxFieldBaseProps & CheckboxCustomValueProps<V>,
+  props: CheckboxFieldBaseProps & FieldTexts & CheckboxCustomValueProps<V>,
 ): ReactElement;
 export function CheckboxField<V extends CheckboxValue = boolean>(
   props: CheckboxFieldProps<V>,
@@ -128,6 +129,7 @@ export function CheckboxField<V extends CheckboxValue = boolean>(
         {action ? (
           <FieldAction
             {...action}
+            componentName="CheckboxField"
             disabled={locked || action.disabled}
             className={cn(classNames?.action, action.className)}
           />

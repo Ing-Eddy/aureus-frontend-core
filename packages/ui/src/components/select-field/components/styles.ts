@@ -14,7 +14,7 @@ export const selectStyles = {
   chipRemove:
     "inline-flex size-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground outline-none hover:bg-background hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none [&_svg]:size-3",
   chevron:
-    "inline-flex cursor-default items-center text-muted-foreground transition-transform group-data-[open=true]/select:rotate-180 [&_svg]:size-4",
+    "inline-flex cursor-default items-center text-muted-foreground transition-transform motion-reduce:transition-none group-data-[open=true]/select:rotate-180 [&_svg]:size-4",
   popup:
     "z-50 max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-none",
   search:

@@ -3,11 +3,12 @@ import { NumberField } from "@aureus-core/ui/components/number-field";
 import { Button } from "@aureus-core/ui/shadcn/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type ComponentType, type ReactNode, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { z } from "zod";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import type { StoryArgs } from "../story-args";
 import { docs } from "./number-control-docs";
 
 const schema = z.object({
@@ -54,11 +55,11 @@ function DemoForm({ children }: { children: ReactNode }) {
   );
 }
 
-type NumberControlStoryArgs = NumberControlProps & ActionArgs;
+type NumberControlStoryArgs = StoryArgs<NumberControlProps> & ActionArgs;
 
 const meta = {
   title: "components/Forms/Number Control",
-  component: NumberControl,
+  component: NumberControl as unknown as ComponentType<NumberControlStoryArgs>,
   parameters: { aureusDocs: docs },
   decorators: [
     (Story) => (
@@ -69,7 +70,7 @@ const meta = {
   ],
   render: (args) => {
     const [props, action] = splitActionArgs(args);
-    return <NumberControl {...props} action={action} />;
+    return <NumberControl {...(props as NumberControlProps)} action={action} />;
   },
   args: {
     name: "amount",
@@ -81,6 +82,12 @@ const meta = {
     decimals: 2,
     padDecimals: true,
     stepperLayout: "stacked",
+    incrementLabel: "Increase",
+    decrementLabel: "Decrease",
+    invalidExpressionLabel: "Invalid expression",
+    calculatedFromLabel: (expression: string) => `Calculated from ${expression}`,
+    loading: false,
+    loadingLabel: "Loading",
     onValueChange: fn(),
     ...actionArgs,
     showAction: false,
@@ -98,6 +105,8 @@ const meta = {
     decimals: { control: { type: "number", min: 0, max: 6 }, table: { category: "Format" } },
     padDecimals: { control: "boolean", table: { category: "Format" } },
     stepper: { control: "boolean", table: { category: "Stepper" } },
+    incrementLabel: { control: "text", table: { category: "Stepper" } },
+    decrementLabel: { control: "text", table: { category: "Stepper" } },
     stepperLayout: {
       control: "inline-radio",
       options: ["stacked", "split"],
@@ -105,8 +114,11 @@ const meta = {
     },
     shorthand: { control: "boolean", table: { category: "Behavior" } },
     expressions: { control: "boolean", table: { category: "Behavior" } },
+    invalidExpressionLabel: { control: "text", table: { category: "Behavior" } },
+    calculatedFromLabel: { control: false, table: { category: "Behavior" } },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     ...actionArgTypes,
     onValueChange: { table: { category: "Events" } },
@@ -130,6 +142,8 @@ export const Playground: Story = {
 export const WithSchema: Story = {
   render: () => (
     <NumberControl
+      incrementLabel="Increase"
+      decrementLabel="Decrease"
       name="amount"
       label="Amount"
       required
@@ -155,14 +169,30 @@ export const WithSchema: Story = {
 export const DisabledVsLoading: Story = {
   render: () => (
     <>
-      <NumberControl name="amount" label="Amount" currency="USD" />
       <NumberControl
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        name="amount"
+        label="Amount"
+        currency="USD"
+      />
+      <NumberControl
+        loadingLabel="Loading"
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
         name="rate"
         label="Exchange rate (loading)"
         loading
         helperText="Still submitted."
       />
-      <NumberControl name="units" label="Units (disabled)" disabled helperText="Left out." />
+      <NumberControl
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        name="units"
+        label="Units (disabled)"
+        disabled
+        helperText="Left out."
+      />
     </>
   ),
   play: async ({ canvas }) => {
@@ -189,11 +219,24 @@ export const Parity: Story = {
     <div className="grid gap-6 sm:grid-cols-2">
       <div className="flex flex-col gap-2">
         <span className="text-xs font-medium text-muted-foreground">NumberField</span>
-        <NumberField {...shared} id="parity-field" name="amount" defaultValue={null} />
+        <NumberField
+          incrementLabel="Increase"
+          decrementLabel="Decrease"
+          {...shared}
+          id="parity-field"
+          name="amount"
+          defaultValue={null}
+        />
       </div>
       <div className="flex flex-col gap-2">
         <span className="text-xs font-medium text-muted-foreground">NumberControl</span>
-        <NumberControl {...shared} id="parity-control" name="amount" />
+        <NumberControl
+          incrementLabel="Increase"
+          decrementLabel="Decrease"
+          {...shared}
+          id="parity-control"
+          name="amount"
+        />
       </div>
     </div>
   ),

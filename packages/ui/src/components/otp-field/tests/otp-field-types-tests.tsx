@@ -12,7 +12,21 @@ const typeChecks = [
   <OtpField key="charset" label="Code" length={4} charset="hex" />,
 ];
 
+// The texts of the loading state and the info tooltip. Only constructed, never rendered.
+const textChecks = [
+  <OtpField key="loading-ok" label="A" length={6} loading loadingLabel="Cargando" />,
+  // @ts-expect-error `loading` needs `loadingLabel`.
+  <OtpField key="loading" label="A" length={6} loading />,
+  <OtpField key="info-ok" label="A" length={6} info="Help" infoLabel="Más información" />,
+  // @ts-expect-error `info` needs `infoLabel`.
+  <OtpField key="info" label="A" length={6} info="Help" />,
+];
+
 describe("OtpField types", () => {
+  it("require the texts of loading and info", () => {
+    expect(textChecks).toHaveLength(4);
+  });
+
   it("are checked at compile time", () => {
     expect(typeChecks).toHaveLength(4);
   });

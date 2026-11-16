@@ -8,6 +8,7 @@ import { type ComponentType, type ReactNode, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { z } from "zod";
+import { loadingTexts } from "../story-args";
 import { docs } from "./radio-group-control-docs";
 
 const schema = z.object({
@@ -73,6 +74,7 @@ type StoryArgs = {
   deselectable: boolean;
   required?: boolean;
   loading?: boolean;
+  loadingLabel?: string;
   disabled?: boolean;
   onValueChange: (value: string | null) => void;
 };
@@ -88,9 +90,16 @@ const meta = {
       </DemoForm>
     ),
   ],
-  render: (args) => <RadioGroupControl {...args} options={plans} />,
+  render: ({ loading, loadingLabel, ...args }) => (
+    <RadioGroupControl
+      {...args}
+      {...loadingTexts(Boolean(loading), loadingLabel ?? "")}
+      options={plans}
+    />
+  ),
   args: {
     name: "plan",
+    loadingLabel: "Loading",
     label: "Plan",
     helperText: "You can change it later.",
     orientation: "vertical",
@@ -115,6 +124,7 @@ const meta = {
     },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     onValueChange: { table: { category: "Events" } },
   },
@@ -173,6 +183,7 @@ export const DisabledVsLoading: Story = {
     <>
       <RadioGroupControl name="plan" label="Plan" options={plans} />
       <RadioGroupControl
+        loadingLabel="Loading"
         name="shipping"
         label="Shipping (loading)"
         options={shipping}

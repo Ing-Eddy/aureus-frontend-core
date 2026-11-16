@@ -1,10 +1,12 @@
 import { NumberField, type NumberFieldProps } from "@aureus-core/ui/components/number-field";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { ComponentType } from "react";
 import { expect, fn, userEvent } from "storybook/test";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import type { StoryArgs } from "../story-args";
 import { docs } from "./number-field-docs";
 
-type NumberFieldStoryArgs = NumberFieldProps & ActionArgs;
+type NumberFieldStoryArgs = StoryArgs<NumberFieldProps> & ActionArgs;
 
 const format = { table: { category: "Format" } };
 const stepper = { table: { category: "Stepper" } };
@@ -12,7 +14,7 @@ const behavior = { table: { category: "Behavior" } };
 
 const meta = {
   title: "components/Forms/Number Field",
-  component: NumberField,
+  component: NumberField as unknown as ComponentType<NumberFieldStoryArgs>,
   parameters: { aureusDocs: docs },
   decorators: [
     (Story) => (
@@ -23,7 +25,7 @@ const meta = {
   ],
   render: (args) => {
     const [props, action] = splitActionArgs(args);
-    return <NumberField {...props} action={action} />;
+    return <NumberField {...(props as NumberFieldProps)} action={action} />;
   },
   args: {
     label: "Amount",
@@ -47,6 +49,11 @@ const meta = {
     expressions: false,
     required: false,
     loading: false,
+    loadingLabel: "Loading",
+    incrementLabel: "Increase",
+    decrementLabel: "Decrease",
+    invalidExpressionLabel: "Invalid expression",
+    calculatedFromLabel: (expression: string) => `Calculated from ${expression}`,
     disabled: false,
     error: false,
     onValueChange: fn(),
@@ -57,6 +64,7 @@ const meta = {
     label: { control: "text", table: { category: "Content" } },
     helperText: { control: "text", table: { category: "Content" } },
     info: { control: "text", table: { category: "Content" } },
+    infoLabel: { control: "text", table: { category: "Content" } },
     errorMessage: { control: "text", table: { category: "Content" } },
     placeholder: { control: "text", table: { category: "Content" } },
     locale: {
@@ -96,8 +104,11 @@ const meta = {
     wheel: { control: "boolean", ...behavior },
     shorthand: { control: "boolean", ...behavior },
     expressions: { control: "boolean", ...behavior },
+    invalidExpressionLabel: { control: "text", ...behavior },
+    calculatedFromLabel: { control: false, ...behavior },
     required: { control: "boolean", table: { category: "State" } },
     loading: { control: "boolean", table: { category: "State" } },
+    loadingLabel: { control: "text", table: { category: "Content" } },
     disabled: { control: "boolean", table: { category: "State" } },
     error: { control: "boolean", table: { category: "State" } },
     value: { control: false, table: { category: "State" } },
@@ -135,9 +146,27 @@ export const Basic: Story = {
 export const Grouping: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
-      <NumberField label="Without grouping" defaultValue={123345} />
-      <NumberField label="With grouping (en-US)" defaultValue={1234567.5} grouping />
-      <NumberField label="With grouping (es-ES)" defaultValue={1234567.5} grouping locale="es-ES" />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Without grouping"
+        defaultValue={123345}
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="With grouping (en-US)"
+        defaultValue={1234567.5}
+        grouping
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="With grouping (es-ES)"
+        defaultValue={1234567.5}
+        grouping
+        locale="es-ES"
+      />
     </div>
   ),
   play: async ({ canvas }) => {
@@ -156,10 +185,36 @@ export const Grouping: Story = {
 export const Decimals: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
-      <NumberField label="Integers only" decimals={0} defaultValue={42} />
-      <NumberField label="Two decimals" decimals={2} defaultValue={12.5} />
-      <NumberField label="Two decimals, padded" decimals={2} padDecimals defaultValue={12.5} />
-      <NumberField label="Three decimals, padded" decimals={3} padDecimals defaultValue={0.5} />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Integers only"
+        decimals={0}
+        defaultValue={42}
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Two decimals"
+        decimals={2}
+        defaultValue={12.5}
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Two decimals, padded"
+        decimals={2}
+        padDecimals
+        defaultValue={12.5}
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Three decimals, padded"
+        decimals={3}
+        padDecimals
+        defaultValue={0.5}
+      />
     </div>
   ),
   play: async ({ canvas }) => {
@@ -177,10 +232,28 @@ export const Decimals: Story = {
 export const PrefixSuffixCurrency: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
-      <NumberField label="Budget" currency="USD" decimals={0} grouping defaultValue={12000} />
-      <NumberField label="Rate" suffix="%" decimals={3} defaultValue={4.125} stepper={false} />
-      <NumberField label="Weight" suffix="kg" decimals={1} defaultValue={72.5} step={0.5} />
       <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Budget"
+        currency="USD"
+        decimals={0}
+        grouping
+        defaultValue={12000}
+      />
+      <NumberField label="Rate" suffix="%" decimals={3} defaultValue={4.125} stepper={false} />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Weight"
+        suffix="kg"
+        decimals={1}
+        defaultValue={72.5}
+        step={0.5}
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
         label="Rent"
         currency="EUR"
         suffix="/month"
@@ -218,7 +291,7 @@ export const Accounting: Story = {
   play: async ({ canvas }) => {
     const field = canvas.getByRole("spinbutton", { name: "Balance" });
     await expect(field).toHaveValue("(1,234.50)");
-    await expect(field).toHaveAttribute("aria-valuetext", "minus $1,234.50");
+    await expect(field).toHaveAttribute("aria-valuetext", "-$1,234.50");
     await userEvent.click(field);
     await expect(field).toHaveValue("-1,234.50");
     await userEvent.keyboard("1.5k");
@@ -250,8 +323,23 @@ export const Expressions: Story = {
 export const StepperLayouts: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
-      <NumberField label="Stacked" defaultValue={5} min={0} max={10} />
-      <NumberField label="Split" defaultValue={5} min={0} max={10} stepperLayout="split" />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Stacked"
+        defaultValue={5}
+        min={0}
+        max={10}
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Split"
+        defaultValue={5}
+        min={0}
+        max={10}
+        stepperLayout="split"
+      />
       <NumberField label="No buttons" defaultValue={5} stepper={false} />
     </div>
   ),
@@ -318,11 +406,49 @@ export const Paste: Story = {
 export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
-      <NumberField label="Price" required info="Before discounts." currency="USD" decimals={2} />
-      <NumberField label="Discount" suffix="%" helperText="Between 0 and 100." min={0} max={100} />
-      <NumberField label="Stock" defaultValue={-3} error errorMessage="Stock cannot be negative." />
-      <NumberField label="Exchange rate" defaultValue={17.12} loading />
-      <NumberField label="Tax ID" defaultValue={42} disabled helperText="Set by the system." />
+      <NumberField
+        infoLabel="More information"
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Price"
+        required
+        info="Before discounts."
+        currency="USD"
+        decimals={2}
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Discount"
+        suffix="%"
+        helperText="Between 0 and 100."
+        min={0}
+        max={100}
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Stock"
+        defaultValue={-3}
+        error
+        errorMessage="Stock cannot be negative."
+      />
+      <NumberField
+        loadingLabel="Loading"
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Exchange rate"
+        defaultValue={17.12}
+        loading
+      />
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Tax ID"
+        defaultValue={42}
+        disabled
+        helperText="Set by the system."
+      />
     </div>
   ),
   play: async ({ canvas }) => {
@@ -333,6 +459,30 @@ export const States: Story = {
     await expect(canvas.getByRole("alert")).toHaveTextContent("Stock cannot be negative.");
     await expect(canvas.getByRole("spinbutton", { name: "Exchange rate" })).toBeDisabled();
     await expect(canvas.getByRole("spinbutton", { name: "Tax ID" })).toBeDisabled();
+  },
+};
+
+/** Right to left: the step buttons move to the left; the number itself stays left to right. */
+export const Rtl: Story = {
+  render: () => (
+    <div dir="rtl">
+      <NumberField
+        label="Quantity"
+        defaultValue={-1234.5}
+        grouping
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+      />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const input = canvas.getByRole("spinbutton", { name: "Quantity" });
+    const stepper = canvasElement.querySelector("[data-slot=field-stepper]") as HTMLElement;
+    await expect(stepper.getBoundingClientRect().right).toBeLessThanOrEqual(
+      input.getBoundingClientRect().left + 1,
+    );
+    await expect(getComputedStyle(input).direction).toBe("ltr");
+    await expect(input).toHaveValue("-1,234.5");
   },
 };
 

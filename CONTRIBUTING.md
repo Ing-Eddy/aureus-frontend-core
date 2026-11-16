@@ -88,9 +88,18 @@ A field either accepts a configurable `action` (text, text area) or defines a fi
 
 **Multipurpose rule.** Every configurable behaviour is its own independent, opt-in prop with a neutral default. No prop changes another prop's default (for example `currency` only adds a symbol; it never implies decimals or separators). A domain (such as accounting) inspires extra opt-in features, never defaults. Each component has tests proving its props are independent. State a field owns but a consumer may control (such as password visibility) uses `useControllableState` from `internal/hooks`.
 
-**No default messages.** From Select on, new components ship no texts of their own, visible or accessible, in any language: the developer writes each text for the situation where it appears. A visible message that is omitted (empty list, no results, loading, limit reached, placeholder) renders nothing; never add a fallback string to `fieldStrings`. The texts a feature needs to be accessible (a search box name, a clear or remove button name, a summary) are required when the feature is enabled: model the props as discriminated unions so TypeScript rejects the feature without its text, add a type test with `@ts-expect-error` for each case, and emit a development warning naming the missing prop for untyped JavaScript.
+**No default messages.** No component of the library ships texts of its own, visible or accessible, in any language: the developer writes each text for the situation where it appears.
 
-The shared props (`FieldBaseProps`, `FieldActionProps`, `FieldClassNames`) live in `internal/types`. Each pair has a parity test that compares the markup of the field and the control.
+- **Optional visible messages** (empty list, no results, limit reached, placeholder) render nothing when they are omitted. There is no fallback string anywhere.
+- **The texts a feature needs** (a spinner or button name, a counter text, a summary) are required when the feature is enabled. Model the props as discriminated unions so TypeScript rejects the feature without its text: the shared `FieldLoadingTexts`, `FieldInfoTexts` and `FieldTexts` in `internal/types`, plus one union per feature. Keep the unions in controls with `DistributiveOmit`, never `Omit`. Add a type test with `@ts-expect-error` for each case, and a development warning for untyped JavaScript through `useMissingTexts` (`internal/hooks`), which logs `<Component>: <problem>.` once per problem.
+- **Exemption:** developer-facing messages (development warnings, and errors such as a control used outside its `FormProvider`) are plain English strings.
+- **Guard test:** `packages/ui/src/no-default-texts-tests.ts` scans `src/components` and `src/internal` and fails on a literal accessible or visible attribute, a literal default for a prop named `*Label`, `*Message` or `*Text`, or letters as JSX text. An exception goes in its allowlist with a reason.
+
+**Focusable control and ARIA.** When a field's control must carry `aria-required` and is not a form element with that role, make the native element the focusable control instead of a `button` (ARIA forbids `aria-required` on `button` and `group`). The file field does this: the native `<input type="file">` is visually hidden but focusable, and a `<label>` styled as a button presents it.
+
+**Generic callbacks and JSX spreads.** TypeScript cannot type the parameters of an inline callback whose return infers a generic (such as the file field's `upload`) when the element also uses a JSX spread (`{...texts}`). Write such props explicitly in docs examples, or pass a named function.
+
+The shared props (`FieldBaseProps`, `FieldTexts`, `FieldActionProps`, `FieldClassNames`) live in `internal/types`. Each pair has a parity test that compares the markup of the field and the control, with the shared helpers in `internal/testing` (excluded from the build).
 
 ## Naming
 

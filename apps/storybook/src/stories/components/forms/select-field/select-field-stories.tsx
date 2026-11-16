@@ -8,6 +8,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ComponentType, useEffect, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { type ActionArgs, actionArgs, actionArgTypes, splitActionArgs } from "../field-action-args";
+import { infoTexts, loadingTexts } from "../story-args";
 import { docs } from "./select-field-docs";
 
 /** Flat, story-only args; the render builds the discriminated props and their required texts. */
@@ -16,6 +17,7 @@ interface PlaygroundArgs extends ActionArgs {
   placeholder: string;
   helperText: string;
   info: string;
+  infoLabel: string;
   emptyMessage: string;
   noResultsMessage: string;
   maxSelectedMessage: string;
@@ -30,6 +32,7 @@ interface PlaygroundArgs extends ActionArgs {
   closeOnSelect?: boolean;
   required: boolean;
   loading: boolean;
+  loadingLabel: string;
   disabled: boolean;
   error: boolean;
   options: SelectOption[];
@@ -59,12 +62,12 @@ function buildProps(args: PlaygroundArgs): SelectFieldProps {
     options: base.options,
     placeholder: text(base.placeholder),
     helperText: text(base.helperText),
-    info: text(base.info),
+    ...infoTexts(base.info, base.infoLabel),
     emptyMessage: text(base.emptyMessage),
     errorMessage: text(base.errorMessage),
     closeOnSelect: base.closeOnSelect,
     required: base.required,
-    loading: base.loading,
+    ...loadingTexts(base.loading, base.loadingLabel),
     disabled: base.disabled,
     error: base.error,
     action,
@@ -122,6 +125,7 @@ const meta = {
     placeholder: "",
     helperText: "",
     info: "",
+    infoLabel: "More information",
     emptyMessage: "",
     noResultsMessage: "",
     maxSelectedMessage: "",
@@ -134,6 +138,7 @@ const meta = {
     selectAll: false,
     required: false,
     loading: false,
+    loadingLabel: "Loading",
     disabled: false,
     error: false,
     options: countries,
@@ -145,6 +150,7 @@ const meta = {
     label: { control: "text", ...content },
     helperText: { control: "text", ...content },
     info: { control: "text", ...content },
+    infoLabel: { control: "text", ...content },
     placeholder: { control: "text", ...messages },
     emptyMessage: { control: "text", ...messages },
     noResultsMessage: { control: "text", ...messages },
@@ -160,6 +166,7 @@ const meta = {
     closeOnSelect: { control: "boolean", ...behavior },
     required: { control: "boolean", ...state },
     loading: { control: "boolean", ...state },
+    loadingLabel: { control: "text", ...content },
     disabled: { control: "boolean", ...state },
     error: { control: "boolean", ...state },
     options: { control: "object", ...content },
@@ -463,7 +470,13 @@ export const Keyboard: Story = {
 export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
-      <SelectField label="Country" options={countries} required info="Used for taxes." />
+      <SelectField
+        infoLabel="More information"
+        label="Country"
+        options={countries}
+        required
+        info="Used for taxes."
+      />
       <SelectField label="Currency" options={currencies} helperText="The account's currency." />
       <SelectField
         label="Region"
@@ -472,7 +485,7 @@ export const States: Story = {
         errorMessage="Choose a region."
         placeholder="Choose a region"
       />
-      <SelectField label="Account" options={currencies} loading />
+      <SelectField loadingLabel="Loading" label="Account" options={currencies} loading />
       <SelectField label="Owner" options={colors} defaultValue="red" disabled />
     </div>
   ),
@@ -487,6 +500,21 @@ export const States: Story = {
       "aria-expanded",
       "false",
     );
+  },
+};
+
+/** Right to left: the chevron moves to the inline end, on the left of the value. */
+export const Rtl: Story = {
+  render: () => (
+    <div dir="rtl">
+      <SelectField label="Currency" options={currencies} defaultValue="EUR" />
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    await expect(canvas.getByRole("combobox", { name: "Currency" })).toHaveTextContent("Euro");
+    const trigger = canvas.getByRole("combobox", { name: "Currency" }).getBoundingClientRect();
+    const chevron = canvasElement.querySelector("[data-slot=select-chevron]") as HTMLElement;
+    await expect(chevron.getBoundingClientRect().right).toBeLessThanOrEqual(trigger.left + 1);
   },
 };
 
