@@ -30,6 +30,7 @@ Available families:
 | OTP | `OtpField` | `OtpControl` | Boxes over one input; optional show/hide toggle and `action` |
 | File | `FileField` | `FileControl` | The choose button (the native file input); optional dropzone and `action` |
 | Avatar | `AvatarField` | `AvatarControl` | A circular camera button on the avatar; the avatar opens a dialog (change, edit, remove, open); optional `action` |
+| Slider | `SliderField` | `SliderControl` | No frame: a track with one or two thumbs; optional number inputs and `action` |
 
 Every family shares the same view, so all fields look alike.
 
@@ -341,6 +342,39 @@ const form = useForm({ defaultValues: { photo: user.photo ? toExistingFile(user.
 - **The editor (`editable`).** Crop with zoom (drag, or the arrow keys and `+`/`-`), rotate by 90°, flip, reset. Applying exports a square image (`outputType`, `outputSize`, `outputQuality`) that becomes a new photo. The export never upscales beyond the source pixels.
 - **CORS.** Editing a stored photo reads its pixels, so its server must send `Access-Control-Allow-Origin`. Without it, `onEditError` receives `reason: "cors"` and nothing changes. Displaying the photo never needs CORS.
 
+## Slider
+
+```tsx
+import { SliderControl } from "@aureus-core/ui/components/slider-control";
+
+// The form holds [low, high]; the schema validates the span.
+const schema = z.object({
+  price: z.tuple([z.number(), z.number()]).refine(([low, high]) => high - low >= 100, "The range must span at least 100."),
+});
+
+<SliderControl
+  name="price"
+  label="Price"
+  range
+  min={0}
+  max={1000}
+  step={10}
+  thumbLabels={["Minimum price", "Maximum price"]}
+  locale="es-ES"
+  formatOptions={{ style: "currency", currency: "EUR", maximumFractionDigits: 0 }}
+  showValue="header"
+  marks={[{ value: 0, label: "0 €" }, { value: 500 }, { value: 1000, label: "1000 €" }]}
+  withInput
+  inputLabels={["From", "To"]}
+/>;
+```
+
+- **One value or a range.** The value is a `number`, or with `range` a sorted `[low, high]` with two thumbs. Without `minDistance` a thumb dragged past the other one becomes the other end; with it, a dragged thumb stops at that distance. With the keyboard a thumb never passes the other one.
+- **One formatter.** `locale` with `formatOptions` (currency, percent, unit), or your `formatValue`, formats the header value, the tooltips and each thumb's `aria-valuetext`. A range in the header uses `formatRange`.
+- **Opt-in extras, each independent.** `showValue` (`"header"` or `"tooltip"`), `marks` with optional labels, `snapToMarks`, `withInput` (one or two number inputs that commit on Enter or blur) and `orientation="vertical"`.
+- **Every key follows the props.** Arrows step, Page Up / Page Down use `largeStep`, Home and End go to the limits, and with `snapToMarks` they all move by marks.
+- **`onValueCommit` for the end of an interaction.** `onValueChange` (and the form value of the control) follows the thumb while it moves; `onValueCommit` runs once when a drag ends, a key changes the value or an input commits, which suits requests.
+
 ## Messages are the developer's
 
 No field or control ships **texts of its own**, neither visible nor accessible. The developer writes every text, in their language, for the situation where it appears. Only developer messages are in English: development warnings and errors such as a control used outside its `FormProvider`.
@@ -376,6 +410,8 @@ No field or control ships **texts of its own**, neither visible nor accessible. 
 | Avatar | `removable` / `downloadable` / `dropzone` | `removeLabel` / `downloadLabel` / `dropzoneText` |
 | Avatar | `editable` | `editLabel`, `cropAreaLabel`, `zoomLabel`, `rotateLeftLabel`, `rotateRightLabel`, `flipHorizontalLabel`, `flipVerticalLabel`, `resetLabel`, `applyLabel` and `cancelLabel` |
 | Avatar | `upload` | the same four texts as File |
+| Slider | `range` | `thumbLabels` (the names of the low and high thumbs) |
+| Slider | `withInput` | `inputLabel`, or `inputLabels` with `range` |
 
 The Switch's loading spinner is decorative (`aria-busy` announces the state), so it needs no text. A test over the library source fails when a component ships a hard-coded text.
 
@@ -412,6 +448,7 @@ Familias disponibles:
 | OTP | `OtpField` | `OtpControl` | Casillas sobre un input; botón mostrar/ocultar y `action` opcionales |
 | Archivo | `FileField` | `FileControl` | El botón de elegir (el input de archivos nativo); zona de arrastre y `action` opcionales |
 | Avatar | `AvatarField` | `AvatarControl` | Un botón circular con la cámara sobre el avatar; el avatar abre un diálogo (cambiar, editar, quitar, abrir); `action` opcional |
+| Slider | `SliderField` | `SliderControl` | Sin marco: una pista con uno o dos thumbs; inputs numéricos y `action` opcionales |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -723,6 +760,39 @@ const form = useForm({ defaultValues: { foto: usuario.foto ? toExistingFile(usua
 - **El editor (`editable`).** Recorta con zoom (arrastrando, o con las flechas y `+`/`-`), gira 90°, voltea y restablece. Al aplicar se exporta una imagen cuadrada (`outputType`, `outputSize`, `outputQuality`) que pasa a ser la foto nueva. La exportación nunca amplía más allá de los píxeles de origen.
 - **CORS.** Editar una foto guardada lee sus píxeles, así que su servidor debe enviar `Access-Control-Allow-Origin`. Sin él, `onEditError` recibe `reason: "cors"` y no cambia nada. Mostrar la foto nunca necesita CORS.
 
+## Slider
+
+```tsx
+import { SliderControl } from "@aureus-core/ui/components/slider-control";
+
+// El formulario guarda [bajo, alto]; el schema valida la amplitud.
+const schema = z.object({
+  price: z.tuple([z.number(), z.number()]).refine(([low, high]) => high - low >= 100, "El rango debe ser de al menos 100."),
+});
+
+<SliderControl
+  name="price"
+  label="Precio"
+  range
+  min={0}
+  max={1000}
+  step={10}
+  thumbLabels={["Precio mínimo", "Precio máximo"]}
+  locale="es-ES"
+  formatOptions={{ style: "currency", currency: "EUR", maximumFractionDigits: 0 }}
+  showValue="header"
+  marks={[{ value: 0, label: "0 €" }, { value: 500 }, { value: 1000, label: "1000 €" }]}
+  withInput
+  inputLabels={["Desde", "Hasta"]}
+/>;
+```
+
+- **Un valor o un rango.** El valor es un `number` o, con `range`, un par ordenado `[bajo, alto]` con dos thumbs. Sin `minDistance`, un thumb que pasa al otro se convierte en el otro extremo; con ella, el thumb arrastrado se detiene a esa distancia. Con el teclado un thumb nunca pasa al otro.
+- **Un único formateador.** `locale` con `formatOptions` (moneda, porcentaje, unidad), o tu `formatValue`, formatea el valor de la cabecera, los tooltips y el `aria-valuetext` de cada thumb. Un rango en la cabecera usa `formatRange`.
+- **Extras opcionales e independientes.** `showValue` (`"header"` o `"tooltip"`), `marks` con etiquetas opcionales, `snapToMarks`, `withInput` (uno o dos inputs numéricos que confirman con Enter o al salir) y `orientation="vertical"`.
+- **Todas las teclas siguen las props.** Las flechas avanzan un paso, Re Pág / Av Pág usan `largeStep`, Inicio y Fin van a los límites y, con `snapToMarks`, todas se mueven por marcas.
+- **`onValueCommit` para el final de una interacción.** `onValueChange` (y el valor del formulario en el control) sigue al thumb mientras se mueve; `onValueCommit` se llama una vez al terminar un arrastre, cuando una tecla cambia el valor o cuando un input confirma, lo que viene bien para peticiones.
+
 ## Los mensajes son del desarrollador
 
 Ningún field ni control **trae textos propios**, ni visibles ni accesibles. El desarrollador escribe cada texto, en su idioma, para la situación en que aparece. Solo los mensajes para desarrolladores están en inglés: los avisos en desarrollo y errores como el de un control usado fuera de su `FormProvider`.
@@ -758,6 +828,8 @@ Ningún field ni control **trae textos propios**, ni visibles ni accesibles. El 
 | Avatar | `removable` / `downloadable` / `dropzone` | `removeLabel` / `downloadLabel` / `dropzoneText` |
 | Avatar | `editable` | `editLabel`, `cropAreaLabel`, `zoomLabel`, `rotateLeftLabel`, `rotateRightLabel`, `flipHorizontalLabel`, `flipVerticalLabel`, `resetLabel`, `applyLabel` y `cancelLabel` |
 | Avatar | `upload` | los mismos cuatro textos que Archivo |
+| Slider | `range` | `thumbLabels` (los nombres del thumb bajo y del alto) |
+| Slider | `withInput` | `inputLabel`, o `inputLabels` con `range` |
 
 El spinner de carga del Switch es decorativo (`aria-busy` anuncia el estado), así que no necesita texto. Un test sobre el código de la librería falla si un componente trae un texto fijo.
 

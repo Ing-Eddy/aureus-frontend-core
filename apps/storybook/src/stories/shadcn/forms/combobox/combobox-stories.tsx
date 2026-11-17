@@ -177,7 +177,9 @@ export const Empty: Story = {
     const input = canvas.getByRole("combobox", { name: "Framework" });
     await userEvent.click(input);
     await userEvent.type(input, "zzz");
-    await expect(await body().findByText("No frameworks found.")).toBeVisible();
+    const empty = await body().findByText("No frameworks found.");
+    // The popup fades in: wait for it instead of checking the first frame.
+    await waitFor(() => expect(empty).toBeVisible());
     await userEvent.keyboard("{Escape}{Escape}");
   },
 };

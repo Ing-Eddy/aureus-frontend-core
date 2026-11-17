@@ -8,3 +8,4 @@ export * from "./field-shell";
 export * from "./field-stepper";
 export * from "./file-trigger";
 export * from "./input-field";
+export * from "./slider-base";
