@@ -29,6 +29,7 @@ Available families:
 | Switch | `SwitchField` | `SwitchControl` | No frame: an optional `action` at the end of the row |
 | OTP | `OtpField` | `OtpControl` | Boxes over one input; optional show/hide toggle and `action` |
 | File | `FileField` | `FileControl` | The choose button (the native file input); optional dropzone and `action` |
+| Avatar | `AvatarField` | `AvatarControl` | A circular camera button on the avatar; the avatar opens a dialog (change, edit, remove, open); optional `action` |
 
 Every family shares the same view, so all fields look alike.
 
@@ -308,6 +309,38 @@ body.append("removed", JSON.stringify(removed.map((file) => file.id)));
 - **The focusable control is the native file input,** presented as a button, so it carries the name, the description and `aria-required`. Rejected files are reported through `onReject` and, with `rejectionMessage`, announced in your words.
 - **Validate on the server.** `accept` and the sizes guide people and the picker; they are not a security control.
 
+## Avatar
+
+```tsx
+import { AvatarControl } from "@aureus-core/ui/components/avatar-control";
+import { toExistingFile } from "@aureus-core/ui/components/file-field";
+
+// Update form: the backend returns { id, url, filename } for the stored photo, or null.
+const form = useForm({ defaultValues: { photo: user.photo ? toExistingFile(user.photo, (p) => p.id) : null } });
+
+<AvatarControl
+  name="photo"
+  label="Profile photo"
+  initialsFrom={user.name}
+  getFileInfo={(photo: Photo) => ({ name: photo.filename, url: photo.url })}
+  chooseLabel="Upload photo"
+  changeLabel="Change photo"
+  inspectLabel={(name) => `View ${name}`}
+  dialogTitle="Profile photo"
+  closeLabel="Close"
+  removable
+  removeLabel="Remove photo"
+/>;
+```
+
+- **The File Field model, with one item.** The value is the stored photo (`existing`, your backend's data), a new one (`new`, a `File`) or `null`, so `diffFiles`, `toFormData` and `upload` work as with files.
+- **Fallback.** Without a photo, or when its URL fails, the avatar shows your `fallback`, the initials of `initialsFrom`, or a user icon.
+- **The circular button.** A round camera button on the avatar's bottom corner picks or changes the photo. It is the native file input, so it carries `required`, the error state and the focus on a failed submit; `chooseLabel` and `changeLabel` name it.
+- **Only showing (`readOnly`).** No button, and no change, edit or remove action: the avatar only opens the dialog to look at the photo. Use it for profile pages and headers.
+- **The dialog.** With a photo, the avatar is a button that opens a dialog with the large photo: change and close, plus `removable`, `downloadable`, `dropzone` and `pasteable` (each opt-in).
+- **The editor (`editable`).** Crop with zoom (drag, or the arrow keys and `+`/`-`), rotate by 90°, flip, reset. Applying exports a square image (`outputType`, `outputSize`, `outputQuality`) that becomes a new photo. The export never upscales beyond the source pixels.
+- **CORS.** Editing a stored photo reads its pixels, so its server must send `Access-Control-Allow-Origin`. Without it, `onEditError` receives `reason: "cors"` and nothing changes. Displaying the photo never needs CORS.
+
 ## Messages are the developer's
 
 No field or control ships **texts of its own**, neither visible nor accessible. The developer writes every text, in their language, for the situation where it appears. Only developer messages are in English: development warnings and errors such as a control used outside its `FormProvider`.
@@ -338,6 +371,11 @@ No field or control ships **texts of its own**, neither visible nor accessible. 
 | File | `appearance="single"` | `replaceLabel(name)` |
 | File | `upload` | `uploadProgressLabel`, `cancelUploadLabel`, `retryUploadLabel` and `uploadErrorText` (each from the file's name) |
 | File | `reorderable` | `moveLabel(name)` and `moveAnnouncement(name, position, total)` |
+| Avatar | always | `getFileInfo(data)`, `inspectLabel(name)`, `dialogTitle` and `closeLabel` |
+| Avatar | unless `readOnly` | `chooseLabel` and `changeLabel` (names of the circular button) |
+| Avatar | `removable` / `downloadable` / `dropzone` | `removeLabel` / `downloadLabel` / `dropzoneText` |
+| Avatar | `editable` | `editLabel`, `cropAreaLabel`, `zoomLabel`, `rotateLeftLabel`, `rotateRightLabel`, `flipHorizontalLabel`, `flipVerticalLabel`, `resetLabel`, `applyLabel` and `cancelLabel` |
+| Avatar | `upload` | the same four texts as File |
 
 The Switch's loading spinner is decorative (`aria-busy` announces the state), so it needs no text. A test over the library source fails when a component ships a hard-coded text.
 
@@ -373,6 +411,7 @@ Familias disponibles:
 | Switch | `SwitchField` | `SwitchControl` | Sin marco: una `action` opcional al final de la fila |
 | OTP | `OtpField` | `OtpControl` | Casillas sobre un input; botón mostrar/ocultar y `action` opcionales |
 | Archivo | `FileField` | `FileControl` | El botón de elegir (el input de archivos nativo); zona de arrastre y `action` opcionales |
+| Avatar | `AvatarField` | `AvatarControl` | Un botón circular con la cámara sobre el avatar; el avatar abre un diálogo (cambiar, editar, quitar, abrir); `action` opcional |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -652,6 +691,38 @@ body.append("removed", JSON.stringify(removed.map((archivo) => archivo.id)));
 - **El control enfocable es el input de archivos nativo,** presentado como un botón, así que lleva el nombre, la descripción y `aria-required`. Los archivos rechazados llegan a `onReject` y, con `rejectionMessage`, se anuncian con tus palabras.
 - **Valida en el servidor.** `accept` y los tamaños guían a las personas y al selector; no son un control de seguridad.
 
+## Avatar
+
+```tsx
+import { AvatarControl } from "@aureus-core/ui/components/avatar-control";
+import { toExistingFile } from "@aureus-core/ui/components/file-field";
+
+// Formulario de edición: el backend devuelve { id, url, filename } de la foto guardada, o null.
+const form = useForm({ defaultValues: { foto: usuario.foto ? toExistingFile(usuario.foto, (f) => f.id) : null } });
+
+<AvatarControl
+  name="foto"
+  label="Foto de perfil"
+  initialsFrom={usuario.nombre}
+  getFileInfo={(foto: Foto) => ({ name: foto.filename, url: foto.url })}
+  chooseLabel="Subir foto"
+  changeLabel="Cambiar foto"
+  inspectLabel={(nombre) => `Ver ${nombre}`}
+  dialogTitle="Foto de perfil"
+  closeLabel="Cerrar"
+  removable
+  removeLabel="Quitar foto"
+/>;
+```
+
+- **El modelo de File Field, con un solo elemento.** El valor es la foto guardada (`existing`, los datos de tu backend), una nueva (`new`, un `File`) o `null`, así que `diffFiles`, `toFormData` y `upload` funcionan igual que con archivos.
+- **Fallback.** Sin foto, o cuando su URL falla, el avatar muestra tu `fallback`, las iniciales de `initialsFrom` o un icono de usuario.
+- **El botón circular.** Un botón redondo con una cámara en la esquina inferior del avatar elige o cambia la foto. Es el input de archivos nativo, así que lleva `required`, el estado de error y el foco cuando falla el envío; `chooseLabel` y `changeLabel` le dan nombre.
+- **Solo mostrar (`readOnly`).** Sin botón ni acciones de cambiar, editar o quitar: el avatar solo abre el diálogo para ver la foto. Úsalo en páginas de perfil y cabeceras.
+- **El diálogo.** Con foto, el avatar es un botón que abre un diálogo con la foto grande: cambiar y cerrar, más `removable`, `downloadable`, `dropzone` y `pasteable` (cada uno opcional).
+- **El editor (`editable`).** Recorta con zoom (arrastrando, o con las flechas y `+`/`-`), gira 90°, voltea y restablece. Al aplicar se exporta una imagen cuadrada (`outputType`, `outputSize`, `outputQuality`) que pasa a ser la foto nueva. La exportación nunca amplía más allá de los píxeles de origen.
+- **CORS.** Editar una foto guardada lee sus píxeles, así que su servidor debe enviar `Access-Control-Allow-Origin`. Sin él, `onEditError` recibe `reason: "cors"` y no cambia nada. Mostrar la foto nunca necesita CORS.
+
 ## Los mensajes son del desarrollador
 
 Ningún field ni control **trae textos propios**, ni visibles ni accesibles. El desarrollador escribe cada texto, en su idioma, para la situación en que aparece. Solo los mensajes para desarrolladores están en inglés: los avisos en desarrollo y errores como el de un control usado fuera de su `FormProvider`.
@@ -682,6 +753,11 @@ Ningún field ni control **trae textos propios**, ni visibles ni accesibles. El 
 | Archivo | `appearance="single"` | `replaceLabel(name)` |
 | Archivo | `upload` | `uploadProgressLabel`, `cancelUploadLabel`, `retryUploadLabel` y `uploadErrorText` (cada uno a partir del nombre del archivo) |
 | Archivo | `reorderable` | `moveLabel(name)` y `moveAnnouncement(name, position, total)` |
+| Avatar | siempre | `getFileInfo(data)`, `inspectLabel(name)`, `dialogTitle` y `closeLabel` |
+| Avatar | salvo con `readOnly` | `chooseLabel` y `changeLabel` (nombres del botón circular) |
+| Avatar | `removable` / `downloadable` / `dropzone` | `removeLabel` / `downloadLabel` / `dropzoneText` |
+| Avatar | `editable` | `editLabel`, `cropAreaLabel`, `zoomLabel`, `rotateLeftLabel`, `rotateRightLabel`, `flipHorizontalLabel`, `flipVerticalLabel`, `resetLabel`, `applyLabel` y `cancelLabel` |
+| Avatar | `upload` | los mismos cuatro textos que Archivo |
 
 El spinner de carga del Switch es decorativo (`aria-busy` anuncia el estado), así que no necesita texto. Un test sobre el código de la librería falla si un componente trae un texto fijo.
 

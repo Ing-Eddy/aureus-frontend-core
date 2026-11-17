@@ -195,7 +195,7 @@ type Story = StoryObj<typeof meta>;
 /** Every option has a control. The play function picks a file and removes it. */
 export const Playground: Story = {
   args: {
-    appearance: "single"
+    appearance: "single",
   },
 
   play: async ({ args, canvas, canvasElement }) => {
@@ -204,7 +204,7 @@ export const Playground: Story = {
     await expect(args.onValueChange).toHaveBeenCalled();
     await userEvent.click(canvas.getByRole("button", { name: "Remove brief.pdf" }));
     await expect(fileInput(canvasElement)).toHaveFocus();
-  }
+  },
 };
 
 /** A create form: the new files are sent as multipart `FormData`. */

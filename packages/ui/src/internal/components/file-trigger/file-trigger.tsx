@@ -17,8 +17,11 @@ export interface FileTriggerProps {
   labelledBy?: string;
   /** Content of the trigger. */
   children: ReactNode;
-  /** `"button"` shows a text button; `"icon"` a small icon button (its text is visually hidden). */
-  variant?: "button" | "icon";
+  /**
+   * `"button"` shows a text button; `"icon"` a small icon button; `"badge"` a round icon button
+   * meant to sit on an avatar's corner. With `"icon"` and `"badge"`, the text is visually hidden.
+   */
+  variant?: "button" | "icon" | "badge";
   accept?: string;
   multiple: boolean;
   capture?: "user" | "environment";
@@ -28,6 +31,8 @@ export interface FileTriggerProps {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   inputRef?: Ref<HTMLInputElement>;
   className?: string;
+  /** Classes of the element that holds the input and its label, for example to position it. */
+  wrapperClassName?: string;
 }
 
 /**
@@ -49,6 +54,7 @@ export function FileTrigger({
   onChange,
   inputRef,
   className,
+  wrapperClassName,
 }: FileTriggerProps) {
   const ownRef = useRef<HTMLInputElement>(null);
   const ref = useMemo(() => mergeRefs(ownRef, inputRef), [inputRef]);
@@ -63,7 +69,7 @@ export function FileTrigger({
   }, [name, newFiles]);
 
   return (
-    <span data-slot="file-trigger-wrapper" className="relative inline-flex">
+    <span data-slot="file-trigger-wrapper" className={cn("relative inline-flex", wrapperClassName)}>
       <input
         {...inputProps}
         ref={ref}
@@ -80,9 +86,18 @@ export function FileTrigger({
         id={textId}
         htmlFor={inputProps.id}
         data-slot="file-trigger"
+        data-variant={variant}
         className={cn(
-          buttonVariants({ variant: "outline", size: variant === "icon" ? "icon-sm" : "sm" }),
-          "cursor-pointer pointer-coarse:min-h-11 pointer-coarse:min-w-11",
+          buttonVariants({
+            variant: "outline",
+            size: variant === "button" ? "sm" : variant === "icon" ? "icon-sm" : "icon-xs",
+          }),
+          "cursor-pointer",
+          variant === "badge"
+            ? // The circle may be small on small avatars; an invisible ring around it keeps the
+              // target at least 24 px (and larger on coarse pointers).
+              "relative min-h-0 min-w-0 rounded-full bg-background p-0 shadow-sm ring-2 ring-background after:absolute after:-inset-[5px] after:rounded-full after:content-[''] hover:bg-muted pointer-coarse:after:-inset-2.5 [&_svg]:size-[60%] dark:bg-background dark:hover:bg-muted"
+            : "pointer-coarse:min-h-11 pointer-coarse:min-w-11",
           "peer-focus-visible:border-ring peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50",
           "peer-disabled:pointer-events-none peer-disabled:cursor-default peer-disabled:opacity-50",
           "peer-aria-[invalid=true]:border-destructive",

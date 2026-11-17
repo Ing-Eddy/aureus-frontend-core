@@ -1,4 +1,4 @@
-import type { FileRejection, FileRejectionReason } from "../types";
+import type { FileRejection, FileRejectionReason } from "@/internal/types";
 import { acceptMatches } from "./accept-matches";
 
 /** The restrictions a file field checks. Each is optional and independent. */

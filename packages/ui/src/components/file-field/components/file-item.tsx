@@ -1,5 +1,6 @@
 import { GripVerticalIcon, RotateCwIcon, XIcon } from "lucide-react";
 import type { HTMLAttributes, ReactNode } from "react";
+import type { FileInfo, FileUploadState } from "@/internal/types";
 import { cn } from "@/shadcn/lib/utils";
 import {
   Attachment,
@@ -10,7 +11,6 @@ import {
   AttachmentMedia,
   AttachmentTitle,
 } from "@/shadcn/ui/attachment";
-import type { FileInfo, FileUploadState } from "../types";
 import { formatFileSize } from "../utils";
 import { FileProgress } from "./file-progress";
 import { FileTypeIcon } from "./file-type-icon";

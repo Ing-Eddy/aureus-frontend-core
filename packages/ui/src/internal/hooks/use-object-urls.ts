@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { FileItem } from "../types";
+import type { FileItem } from "@/internal/types";
 
 /**
  * Preview URLs for the new image items, by item id. Each URL is created once and released when

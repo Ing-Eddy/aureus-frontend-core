@@ -4,8 +4,11 @@ import type {
   FieldBaseProps,
   FieldClassNames,
   FieldTexts,
+  FileInfo,
+  FileItem,
+  FileRejection,
+  FileUploadProps,
 } from "@/internal/types";
-import type { FileInfo, FileItem, FileRejection, FileUploadContext } from "./file-item-types";
 
 /** Extra parts of a file field that accept classes. */
 export interface FileFieldClassNames extends FieldClassNames {
@@ -93,41 +96,6 @@ export type FileDropzoneTexts =
       dropzone: true;
       /** Text inside the area, such as "Arrastra archivos aquí". Required with `dropzone`. */
       dropzoneText: ReactNode;
-    };
-
-/** Immediate upload. Turning it on requires the texts of its progress, cancel, retry and error. */
-export type FileUploadProps<E> =
-  | {
-      /** Uploads each file as soon as it is added. Without it, files travel with the form. */
-      upload?: undefined;
-      /** Only allowed together with `upload`. */
-      uploadProgressLabel?: never;
-      /** Only allowed together with `upload`. */
-      cancelUploadLabel?: never;
-      /** Only allowed together with `upload`. */
-      retryUploadLabel?: never;
-      /** Only allowed together with `upload`. */
-      uploadErrorText?: never;
-      /** Only allowed together with `upload`. */
-      onUploadError?: never;
-    }
-  | {
-      /**
-       * Uploads a file and resolves with what the backend stored. The item then becomes an
-       * existing item with that data. Abort the request when `signal` aborts, and report the
-       * progress (0–100) through `onProgress`.
-       */
-      upload: (file: File, context: FileUploadContext) => Promise<E>;
-      /** Accessible name of an item's progress bar. Required with `upload`. */
-      uploadProgressLabel: (name: string) => string;
-      /** Accessible name of an item's cancel button. Required with `upload`. */
-      cancelUploadLabel: (name: string) => string;
-      /** Accessible name of a failed item's retry button. Required with `upload`. */
-      retryUploadLabel: (name: string) => string;
-      /** Text shown on a failed item. Required with `upload`. */
-      uploadErrorText: (name: string) => ReactNode;
-      /** Called when an upload fails. */
-      onUploadError?: (file: File, error: unknown) => void;
     };
 
 /** Reordering. Turning it on requires the handle's name and the move announcement. */

@@ -456,7 +456,8 @@ export const Keyboard: Story = {
     await userEvent.keyboard("j");
     await waitFor(() => expect(japan).toHaveAttribute("data-highlighted"));
     await userEvent.keyboard("{Enter}");
-    await expect(field).toHaveTextContent("Japón");
+    // The selection renders a moment after the key under load.
+    await waitFor(() => expect(field).toHaveTextContent("Japón"));
     await popupClosed();
     await expect(field).toHaveFocus();
     await userEvent.keyboard("{ArrowDown}");

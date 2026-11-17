@@ -9,6 +9,7 @@ export type {
   FieldStatusInternal,
   FieldTexts,
 } from "./field-text-types";
+export type * from "./file-item-types";
 export type {
   ToggleBooleanValueProps,
   ToggleCustomValueProps,

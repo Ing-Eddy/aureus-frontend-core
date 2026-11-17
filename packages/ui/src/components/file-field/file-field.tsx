@@ -1,8 +1,14 @@
 import { RefreshCwIcon, UploadIcon } from "lucide-react";
 import { type ReactElement, type ReactNode, useMemo, useRef, useState } from "react";
-import { FieldAction, FieldLoading, FieldShell } from "@/internal/components";
-import { useFieldA11y, useInheritedDirection } from "@/internal/hooks";
-import { mergeRefs } from "@/internal/utils/helpers";
+import { FieldAction, FieldLoading, FieldShell, FileTrigger } from "@/internal/components";
+import {
+  useFieldA11y,
+  useFileInput,
+  useFileUploads,
+  useInheritedDirection,
+  useObjectUrls,
+} from "@/internal/hooks";
+import { createFileId, mergeRefs } from "@/internal/utils/helpers";
 import { cn } from "@/shadcn/lib/utils";
 import {
   FileDropzone,
@@ -10,17 +16,13 @@ import {
   type FileItemTexts,
   FileItemView,
   FileSingle,
-  FileTrigger,
 } from "./components";
 import {
   type FileValue,
   type FileWarningSources,
-  useFileInput,
   useFileItems,
   useFileReorder,
-  useFileUploads,
   useFileWarnings,
-  useObjectUrls,
 } from "./hooks";
 import type {
   FileFieldMultipleProps,
@@ -29,7 +31,6 @@ import type {
   FileInfo,
   FileItem,
 } from "./types";
-import { createFileId } from "./utils";
 
 /**
  * A file field for create and update forms. Its value holds new files (picked now) and existing

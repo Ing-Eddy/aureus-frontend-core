@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { FileItem, FileUploadContext, FileUploadState, NewFileItem } from "../types";
+import type { FileItem, FileUploadContext, FileUploadState, NewFileItem } from "@/internal/types";
 
 export interface UseFileUploadsOptions<E> {
   upload?: (file: File, context: FileUploadContext) => Promise<E>;

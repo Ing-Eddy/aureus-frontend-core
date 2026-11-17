@@ -1,8 +1,8 @@
 import { RotateCwIcon, XIcon } from "lucide-react";
 import type { DragEvent, ReactNode } from "react";
+import type { FileInfo, FileUploadState } from "@/internal/types";
 import { cn } from "@/shadcn/lib/utils";
 import { Button } from "@/shadcn/ui/button";
-import type { FileInfo, FileUploadState } from "../types";
 import { formatFileSize } from "../utils";
 import type { FileItemTexts } from "./file-item";
 import { FileProgress } from "./file-progress";

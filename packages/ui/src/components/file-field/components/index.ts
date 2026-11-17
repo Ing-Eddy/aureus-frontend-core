@@ -7,6 +7,4 @@ export { FileItems } from "./file-items";
 export { FileProgress } from "./file-progress";
 export type { FileSingleProps } from "./file-single";
 export { FileSingle } from "./file-single";
-export type { FileTriggerProps } from "./file-trigger";
-export { FileTrigger } from "./file-trigger";
 export { FileTypeIcon } from "./file-type-icon";

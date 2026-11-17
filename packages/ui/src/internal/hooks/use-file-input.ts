@@ -6,8 +6,8 @@ import {
   useRef,
   useState,
 } from "react";
-import type { FileRejection } from "../types";
-import { type CurrentFiles, type FileRestrictions, validateFiles } from "../utils";
+import type { FileRejection } from "@/internal/types";
+import { type CurrentFiles, type FileRestrictions, validateFiles } from "@/internal/utils/helpers";
 
 export interface UseFileInputOptions {
   multiple: boolean;
