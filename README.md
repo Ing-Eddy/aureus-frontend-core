@@ -187,6 +187,42 @@ function ProfileForm() {
 
 See the "Fields & controls" guide in the documentation for the shared props.
 
+### Modal
+
+`Modal` is a centred dialog on wide viewports and a bottom drawer (swipe to close) below `breakpoint` (768 px by default); `mode` can force either. Compose it from parts: `Modal` holds the state and behaviour, `ModalTrigger` opens it, `ModalContent` is the panel, and `ModalHeader`, `ModalTitle`, `ModalDescription`, `ModalBody` (scrolls on its own) and `ModalFooter` lay it out. `onOpenChange` receives the reason of every change, `closeOnEscape`, `closeOnOutsidePress` and `closeOnSwipe` are independent, and `useModal()` closes it from any child. Like every component, it renders no text of its own: `closeButton` requires `closeLabel`.
+
+```tsx
+import {
+  Modal,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from "@aureus-core/ui/components/modal";
+
+<Modal onOpenChange={(open, { reason }) => track(open, reason)} lockModeWhileOpen>
+  <ModalTrigger asChild>
+    <Button>Edit profile</Button>
+  </ModalTrigger>
+  <ModalContent size="md" closeButton closeLabel="Close">
+    <ModalHeader>
+      <ModalTitle>Edit profile</ModalTitle>
+      <ModalDescription>Change how your name appears.</ModalDescription>
+    </ModalHeader>
+    <ModalBody>…</ModalBody>
+    <ModalFooter>
+      <ModalClose asChild>
+        <Button variant="outline">Cancel</Button>
+      </ModalClose>
+    </ModalFooter>
+  </ModalContent>
+</Modal>;
+```
+
 ### Dark mode
 
 Add the `dark` class to `<html>`; every token switches to its dark value:

@@ -101,6 +101,17 @@ A field either accepts a configurable `action` (text, text area) or defines a fi
 
 The shared props (`FieldBaseProps`, `FieldTexts`, `FieldActionProps`, `FieldClassNames`) live in `internal/types`. Each pair has a parity test that compares the markup of the field and the control, with the shared helpers in `internal/testing` (excluded from the build).
 
+## Overlays
+
+`Modal` (`src/components/modal/`) is the pattern for overlays that change presentation with the viewport: a Radix dialog on wide screens and a Vaul drawer on narrow ones.
+
+- **The root renders no element.** `Modal` is a context provider holding the state (`useControllableState`), the mode, the dismissal flags and the close reason. Only `ModalContent` mounts a primitive (`Dialog` or `Drawer`), so a mode change remounts the panel and nothing else.
+- **Own trigger and close.** `ModalTrigger` and `ModalClose` call the context instead of using `DialogTrigger` / `DrawerTrigger`, which must live inside their own root and would remount on every switch. Focus is therefore returned by hand in `onCloseAutoFocus`, and left alone when the panel unmounts only because the mode changed.
+- **shadcn parts, primitive content.** shadcn's `DialogContent` and `DrawerContent` bundle their portal and overlay, and `DialogContent` renders a fixed English "Close". The modal reuses shadcn's `*Portal`, `*Overlay`, `*Title` and `*Description`, and renders `Dialog.Content` (`radix-ui`) and `Drawer.Content` (`vaul`) with shadcn's classes, copied in `modal/utils/modal-classes.ts`. Compare that file after `shadcn:update`.
+- **One set of dismissal rules.** Vaul's `dismissible={false}` blocks every close request, and a non-modal Vaul drawer ignores outside presses, so the modal closes itself through `open` in those cases (`use-modal-dismiss.ts`). Each `closeOn*` prop stays independent in both modes.
+- **Viewport queries** use `useMediaQuery` from `internal/hooks` (`useSyncExternalStore`, with a server value). Do not use shadcn's `useIsMobile`: it reports `false` on the first render and only updates in an effect.
+- **Testing in jsdom.** Vaul injects CSS animations that jsdom reports but never runs, so a closing drawer stays mounted until it receives `animationend`. The modal's test helper (`modal/tests/render-modal.tsx`) dispatches it and mocks `matchMedia` with a settable width. Gestures (swipe, snap points) are tested in Storybook.
+
 ## Naming
 
 Pure kebab-case. Role suffixes use `-`, never `.`:

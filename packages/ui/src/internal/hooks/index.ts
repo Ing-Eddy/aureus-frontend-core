@@ -7,6 +7,7 @@ export { useFileInput } from "./use-file-input";
 export type { UseFileUploadsOptions } from "./use-file-uploads";
 export { useFileUploads } from "./use-file-uploads";
 export { useInheritedDirection } from "./use-inherited-direction";
+export { useMediaQuery } from "./use-media-query";
 export type { InputNameSources, MissingTextCheck } from "./use-missing-texts";
 export {
   fieldTextChecks,
