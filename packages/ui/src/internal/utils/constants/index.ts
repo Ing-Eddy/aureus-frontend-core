@@ -1,4 +1,5 @@
 export {
+  dateFrameClassName,
   fieldAddonClassName,
   fieldFooterClassName,
   fieldFrameClassName,

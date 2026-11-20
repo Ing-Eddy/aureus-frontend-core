@@ -63,3 +63,21 @@ export const fieldHeaderClassName = "flex min-w-0 items-center gap-2";
 
 /** Label text: wraps instead of overflowing, with the asterisk right after it. */
 export const fieldLabelClassName = "min-w-0 gap-0.5 break-words";
+
+/**
+ * Classes added to the frame of a date field. Its focusable parts are segments, not an
+ * `input-group-control`, so the focus ring and the dimmed look are keyed on the segments; the
+ * disabled calendar button of a loading field does not dim the frame.
+ */
+export const dateFrameClassName = [
+  fieldFrameClassName,
+  "h-auto min-h-8 cursor-text",
+  "has-[[data-slot=date-segment]:focus-visible]:border-ring has-[[data-slot=date-segment]:focus-visible]:ring-3 has-[[data-slot=date-segment]:focus-visible]:ring-ring/50",
+  "has-[[data-slot=date-segment][aria-disabled=true]]:bg-input/50 has-[[data-slot=date-segment][aria-disabled=true]]:opacity-50",
+  "dark:has-[[data-slot=date-segment][aria-disabled=true]]:bg-input/80",
+  "has-[[data-slot=date-segment][aria-disabled=true]]:cursor-not-allowed",
+  // The summary button of several days fills the frame.
+  "has-[[data-slot=date-selection-summary]:focus-visible]:border-ring has-[[data-slot=date-selection-summary]:focus-visible]:ring-3 has-[[data-slot=date-selection-summary]:focus-visible]:ring-ring/50",
+  "has-[[data-slot=date-selection-summary]:disabled]:bg-input/50 has-[[data-slot=date-selection-summary]:disabled]:opacity-50",
+  "dark:has-[[data-slot=date-selection-summary]:disabled]:bg-input/80",
+].join(" ");

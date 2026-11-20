@@ -31,6 +31,8 @@ Available families:
 | File | `FileField` | `FileControl` | The choose button (the native file input); optional dropzone and `action` |
 | Avatar | `AvatarField` | `AvatarControl` | A circular camera button on the avatar; the avatar opens a dialog (change, edit, remove, open); optional `action` |
 | Slider | `SliderField` | `SliderControl` | No frame: a track with one or two thumbs; optional number inputs and `action` |
+| Date and time | `DateTimeField` | `DateTimeControl` | Segments; the calendar button (date modes) and an optional `action` |
+| Date selection | `DateSelectionField` | `DateSelectionControl` | Two groups of segments and the calendar button (range), or a summary button (several days); optional `action` |
 
 Every family shares the same view, so all fields look alike.
 
@@ -375,6 +377,54 @@ const schema = z.object({
 - **Every key follows the props.** Arrows step, Page Up / Page Down use `largeStep`, Home and End go to the limits, and with `snapToMarks` they all move by marks.
 - **`onValueCommit` for the end of an interaction.** `onValueChange` (and the form value of the control) follows the thumb while it moves; `onValueCommit` runs once when a drag ends, a key changes the value or an input commits, which suits requests.
 
+## Dates and times
+
+```tsx
+import { DateSelectionControl } from "@aureus-core/ui/components/date-selection-control";
+import { addDaysIso, DateTimeControl, isIsoDateTime, todayIso } from "@aureus-core/ui/components/date-time-field";
+
+// Booking form: a date and time, plus a stay as a range. The form holds ISO strings.
+const schema = z.object({
+  meeting: z.string().nullable().refine((value) => isIsoDateTime(value), "Pick a date and a time."),
+  stay: z
+    .object({ from: z.string(), to: z.string().nullable() })
+    .nullable()
+    .refine((range) => range?.to != null, "Pick the check-out date."),
+});
+
+<DateTimeControl
+  name="meeting"
+  label="Meeting"
+  mode="datetime"
+  locale="en-GB"
+  minuteStep={15}
+  min={`${todayIso()}T00:00`}
+  openCalendarLabel="Open calendar"
+  previousMonthLabel="Previous month"
+  nextMonthLabel="Next month"
+/>;
+<DateSelectionControl
+  name="stay"
+  label="Stay"
+  selection="range"
+  locale="en-GB"
+  startLabel="Check-in"
+  endLabel="Check-out"
+  maxDays={27}
+  presets={[{ label: "Next 7 days", value: () => ({ from: todayIso(), to: addDaysIso(todayIso(), 6) }) }]}
+  presetsLabel="Shortcuts"
+  openCalendarLabel="Open calendar"
+  previousMonthLabel="Previous month"
+  nextMonthLabel="Next month"
+/>;
+```
+
+- **Two families.** `DateTimeField` holds one value: `mode="date"` (the default), `"time"` or `"datetime"`. `DateSelectionField` holds several days: `selection="range"` (`{ from, to }`, `to: null` while the end is chosen) or `"multiple"` (a sorted list).
+- **Local ISO strings.** `"2026-08-01"`, `"14:30"`, `"2026-08-01T14:30"`: no time zone, so a birthday never moves by a day. A single value is `null` while the input is incomplete. The helpers `toDate`, `fromDate`, `todayIso`, `addDaysIso`, `isIsoDate`, `isIsoTime` and `isIsoDateTime` come from `@aureus-core/ui/components/date-time-field`.
+- **Segments in the locale's order.** Day, month and year (and hour, minute, second, day period) are typed with auto-advance or stepped with the arrows. Their names, the calendar's captions, weekdays and day names come from `Intl` with `locale`.
+- **Limits.** `min`/`max`, `disabledDates` and `isDateDisabled` disable days in the calendar, and the arrows stop at `min`/`max`. Typed values are emitted as typed, so the schema is what rejects a date outside the limits, with your message.
+- **Opt-in extras, each independent.** `presets`, `hourCycle`, `granularity`, `minuteStep`/`secondStep` and `weekStartsOn`; for ranges `minDays`/`maxDays` (both ends count) and `excludeDisabled`; for several days `maxSelected`, `formatSummary` and `placeholder`.
+
 ## Messages are the developer's
 
 No field or control ships **texts of its own**, neither visible nor accessible. The developer writes every text, in their language, for the situation where it appears. Only developer messages are in English: development warnings and errors such as a control used outside its `FormProvider`.
@@ -412,6 +462,10 @@ No field or control ships **texts of its own**, neither visible nor accessible. 
 | Avatar | `upload` | the same four texts as File |
 | Slider | `range` | `thumbLabels` (the names of the low and high thumbs) |
 | Slider | `withInput` | `inputLabel`, or `inputLabels` with `range` |
+| Date and time / Date selection | a calendar (every mode but `"time"`) | `previousMonthLabel` and `nextMonthLabel` |
+| Date and time / Date selection | a calendar button beside the segments (date modes, `range`) | `openCalendarLabel` |
+| Date selection | `selection="range"` | `startLabel` and `endLabel` |
+| Date and time / Date selection | `presets` | `presetsLabel` |
 
 The Switch's loading spinner is decorative (`aria-busy` announces the state), so it needs no text. A test over the library source fails when a component ships a hard-coded text.
 
@@ -449,6 +503,8 @@ Familias disponibles:
 | Archivo | `FileField` | `FileControl` | El botón de elegir (el input de archivos nativo); zona de arrastre y `action` opcionales |
 | Avatar | `AvatarField` | `AvatarControl` | Un botón circular con la cámara sobre el avatar; el avatar abre un diálogo (cambiar, editar, quitar, abrir); `action` opcional |
 | Slider | `SliderField` | `SliderControl` | Sin marco: una pista con uno o dos thumbs; inputs numéricos y `action` opcionales |
+| Fecha y hora | `DateTimeField` | `DateTimeControl` | Segmentos; el botón del calendario (modos con fecha) y una `action` opcional |
+| Selección de fechas | `DateSelectionField` | `DateSelectionControl` | Dos grupos de segmentos y el botón del calendario (rango), o un botón de resumen (varios días); `action` opcional |
 
 Todas las familias comparten la misma vista, así que todos los campos se ven iguales.
 
@@ -793,6 +849,54 @@ const schema = z.object({
 - **Todas las teclas siguen las props.** Las flechas avanzan un paso, Re Pág / Av Pág usan `largeStep`, Inicio y Fin van a los límites y, con `snapToMarks`, todas se mueven por marcas.
 - **`onValueCommit` para el final de una interacción.** `onValueChange` (y el valor del formulario en el control) sigue al thumb mientras se mueve; `onValueCommit` se llama una vez al terminar un arrastre, cuando una tecla cambia el valor o cuando un input confirma, lo que viene bien para peticiones.
 
+## Fechas y horas
+
+```tsx
+import { DateSelectionControl } from "@aureus-core/ui/components/date-selection-control";
+import { addDaysIso, DateTimeControl, isIsoDateTime, todayIso } from "@aureus-core/ui/components/date-time-field";
+
+// Formulario de reserva: fecha y hora, y una estancia como rango. El formulario guarda strings ISO.
+const schema = z.object({
+  meeting: z.string().nullable().refine((value) => isIsoDateTime(value), "Elige fecha y hora."),
+  stay: z
+    .object({ from: z.string(), to: z.string().nullable() })
+    .nullable()
+    .refine((range) => range?.to != null, "Elige la fecha de salida."),
+});
+
+<DateTimeControl
+  name="meeting"
+  label="Reunión"
+  mode="datetime"
+  locale="es-ES"
+  minuteStep={15}
+  min={`${todayIso()}T00:00`}
+  openCalendarLabel="Abrir calendario"
+  previousMonthLabel="Mes anterior"
+  nextMonthLabel="Mes siguiente"
+/>;
+<DateSelectionControl
+  name="stay"
+  label="Estancia"
+  selection="range"
+  locale="es-ES"
+  startLabel="Llegada"
+  endLabel="Salida"
+  maxDays={27}
+  presets={[{ label: "Próximos 7 días", value: () => ({ from: todayIso(), to: addDaysIso(todayIso(), 6) }) }]}
+  presetsLabel="Atajos"
+  openCalendarLabel="Abrir calendario"
+  previousMonthLabel="Mes anterior"
+  nextMonthLabel="Mes siguiente"
+/>;
+```
+
+- **Dos familias.** `DateTimeField` guarda un valor: `mode="date"` (por defecto), `"time"` o `"datetime"`. `DateSelectionField` guarda varios días: `selection="range"` (`{ from, to }`, con `to: null` mientras se elige el final) o `"multiple"` (una lista ordenada).
+- **Strings ISO locales.** `"2026-08-01"`, `"14:30"`, `"2026-08-01T14:30"`: sin zona horaria, así un cumpleaños nunca se mueve un día. Un valor único es `null` mientras el input está incompleto. Los helpers `toDate`, `fromDate`, `todayIso`, `addDaysIso`, `isIsoDate`, `isIsoTime` e `isIsoDateTime` vienen de `@aureus-core/ui/components/date-time-field`.
+- **Segmentos en el orden del idioma.** Día, mes y año (y hora, minuto, segundo, periodo del día) se escriben con avance automático o se cambian con las flechas. Sus nombres, los títulos del calendario, los días de la semana y los nombres de los días salen de `Intl` con `locale`.
+- **Límites.** `min`/`max`, `disabledDates` e `isDateDisabled` deshabilitan días en el calendario, y las flechas se detienen en `min`/`max`. Lo que se escribe se emite tal cual, así que es el schema quien rechaza una fecha fuera de los límites, con tu mensaje.
+- **Extras opcionales e independientes.** `presets`, `hourCycle`, `granularity`, `minuteStep`/`secondStep` y `weekStartsOn`; en rangos `minDays`/`maxDays` (cuentan los dos extremos) y `excludeDisabled`; con varios días `maxSelected`, `formatSummary` y `placeholder`.
+
 ## Los mensajes son del desarrollador
 
 Ningún field ni control **trae textos propios**, ni visibles ni accesibles. El desarrollador escribe cada texto, en su idioma, para la situación en que aparece. Solo los mensajes para desarrolladores están en inglés: los avisos en desarrollo y errores como el de un control usado fuera de su `FormProvider`.
@@ -830,6 +934,10 @@ Ningún field ni control **trae textos propios**, ni visibles ni accesibles. El 
 | Avatar | `upload` | los mismos cuatro textos que Archivo |
 | Slider | `range` | `thumbLabels` (los nombres del thumb bajo y del alto) |
 | Slider | `withInput` | `inputLabel`, o `inputLabels` con `range` |
+| Fecha y hora / Selección de fechas | un calendario (todos los modos salvo `"time"`) | `previousMonthLabel` y `nextMonthLabel` |
+| Fecha y hora / Selección de fechas | un botón de calendario junto a los segmentos (modos con fecha, `range`) | `openCalendarLabel` |
+| Selección de fechas | `selection="range"` | `startLabel` y `endLabel` |
+| Fecha y hora / Selección de fechas | `presets` | `presetsLabel` |
 
 El spinner de carga del Switch es decorativo (`aria-busy` anuncia el estado), así que no necesita texto. Un test sobre el código de la librería falla si un componente trae un texto fijo.
 
