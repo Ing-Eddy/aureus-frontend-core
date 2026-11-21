@@ -1,0 +1,132 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+import * as DisplayStories from "./display/display-stories";
+
+<Meta of={DisplayStories} name="Guide" />
+
+<En>
+
+# Display
+
+`@aureus-core/utils/display` turns a value into the text shown to the user: one function per basic type, all with the same rules. Each function returns a `string`, and a missing value (`null` or `undefined`) always gives the same **empty text**, the one you configure.
+
+## Setup
+
+Create it once in the app and import it wherever values are shown:
+
+```ts
+// src/lib/display.ts
+import { createDisplay } from "@aureus-core/utils/display";
+import i18n from "./i18n";
+
+export const display = createDisplay({
+  empty: "-", // required: the library ships no texts
+  locale: () => i18n.resolvedLanguage, // read on every call; omit it to use the browser's language
+  // timeZone: "America/Mexico_City", // optional; omitted → the browser's time zone
+});
+```
+
+```tsx
+<td>{display.text(user.name, { maxLength: 40, ellipsis: "…" })}</td>
+<td>{display.number(invoice.total, { decimals: 2, padDecimals: true, grouping: true, currency: "EUR" })}</td>
+<td>{display.boolean(user.active, { true: t("common.active"), false: t("common.inactive") })}</td>
+<td>{display.date(order.date, { format: "long" })}</td>
+<td>{display.list(user.tags, { maxItems: 2, more: (n) => t("common.more", { count: n }) })}</td>
+```
+
+The functions are not hooks. With i18next the component already re-renders when the language changes, and the next call reads the new language.
+
+## The empty rule
+
+- `null` and `undefined` give the empty text, silently.
+- A value that cannot be shown also gives the empty text and logs a development warning: a value of the wrong type, `NaN`, `Infinity`, an unreadable date, or a date that does not fit the format.
+- Every call can use its own text: `display.text(note, { empty: t("notes.none") })`.
+
+## Functions
+
+Every option is opt-in and independent: none of them changes another one's default.
+
+| Function | Value | Options |
+| --- | --- | --- |
+| `text` | `string` | Always trimmed. `maxLength`: maximum characters as the user sees them, so an emoji or an accented letter is never split. `ellipsis`: appended only when the text is cut, and counted in `maxLength`. `blankAsEmpty`: blank text gives the empty text (otherwise an empty string). |
+| `number` | `number` | The default is neutral: no grouping, no rounding, no padding (`1234,5678`). `decimals`: maximum decimals, rounded half away from zero. `padDecimals`: zeros up to `decimals`. `grouping`: separators, also in four-digit numbers. `currency`: an ISO code; adds the symbol only, without changing the decimals. `negativeFormat: "parentheses"`: `(1234,5 €)`. |
+| `boolean` | `boolean` | `true` and `false`: both labels are required. |
+| `date` | date | `format`: a date name of the catalog. Default `short`. |
+| `time` | time | `format`: `time` (default) or `timeWithSeconds`. |
+| `dateTime` | date and time | `format`: `shortDateTime` (default), `mediumDateTime` or `longDateTime`. |
+| `list` | array of strings | Items are trimmed, and `null` or blank items are skipped. `type`: `conjunction` (default), `disjunction` or `unit`. `style`: `long` (default), `short` or `narrow`. `maxItems` with `more(hidden)` (required together): `a, b y 3 más`. |
+
+`date`, `time` and `dateTime` accept the values of **utils/Date formats**: a `Date`, a timestamp or an ISO string. TypeScript only accepts the format names of each function's group, so `display.date(value, { format: "time" })` is an error. `number`, the date functions and `list` accept `locale`, and the date functions accept `timeZone`, to override the display for one call.
+
+Try every function and option in the **Playground** story.
+
+## Display or i18next?
+
+- **A value on its own** (a table cell, a field in a detail view, a badge, a `title`): use `display`. It handles the empty text, trimming and cutting.
+- **A value inside a translated sentence** (`"Order from {{date}}"`): use i18next interpolation and pass it the text from `display`: `t("order.from", { date: display.date(order.date, { format: "long" }) })`.
+- **Dates**: always a catalog name. If you need a form the catalog does not have, add it to the library (see **utils/Date formats**).
+
+</En>
+<Es>
+
+# Display
+
+`@aureus-core/utils/display` convierte un valor en el texto que ve el usuario: una función por tipo básico, todas con las mismas reglas. Cada función devuelve un `string`, y un valor que falta (`null` o `undefined`) siempre da el mismo **texto vacío**, el que configuras tú.
+
+## Configuración
+
+Créalo una vez en la app e impórtalo donde se muestren valores:
+
+```ts
+// src/lib/display.ts
+import { createDisplay } from "@aureus-core/utils/display";
+import i18n from "./i18n";
+
+export const display = createDisplay({
+  empty: "-", // obligatorio: la librería no trae textos
+  locale: () => i18n.resolvedLanguage, // se lee en cada llamada; sin él se usa el idioma del navegador
+  // timeZone: "America/Mexico_City", // opcional; sin él → la zona horaria del navegador
+});
+```
+
+```tsx
+<td>{display.text(user.name, { maxLength: 40, ellipsis: "…" })}</td>
+<td>{display.number(invoice.total, { decimals: 2, padDecimals: true, grouping: true, currency: "EUR" })}</td>
+<td>{display.boolean(user.active, { true: t("common.active"), false: t("common.inactive") })}</td>
+<td>{display.date(order.date, { format: "long" })}</td>
+<td>{display.list(user.tags, { maxItems: 2, more: (n) => t("common.more", { count: n }) })}</td>
+```
+
+Las funciones no son hooks. Con i18next el componente ya se vuelve a renderizar cuando cambia el idioma, y la siguiente llamada lee el idioma nuevo.
+
+## La regla del vacío
+
+- `null` y `undefined` dan el texto vacío, sin avisos.
+- Un valor que no se puede mostrar también da el texto vacío y muestra un aviso en desarrollo: un valor del tipo equivocado, `NaN`, `Infinity`, una fecha que no se puede leer, o una fecha que no encaja con el formato.
+- Cada llamada puede usar su propio texto: `display.text(note, { empty: t("notes.none") })`.
+
+## Funciones
+
+Cada opción es opt-in e independiente: ninguna cambia el valor por defecto de otra.
+
+| Función | Valor | Opciones |
+| --- | --- | --- |
+| `text` | `string` | Siempre con trim. `maxLength`: máximo de caracteres tal como los ve el usuario, así nunca se parte un emoji ni una letra acentuada. `ellipsis`: se añade solo si el texto se recorta, y cuenta dentro de `maxLength`. `blankAsEmpty`: un texto en blanco da el texto vacío (si no, un string vacío). |
+| `number` | `number` | Por defecto es neutro: sin separadores de miles, sin redondeo, sin relleno (`1234,5678`). `decimals`: máximo de decimales, redondeando la mitad hacia fuera del cero. `padDecimals`: ceros hasta `decimals`. `grouping`: separadores, también en números de cuatro cifras. `currency`: un código ISO; solo añade el símbolo, sin cambiar los decimales. `negativeFormat: "parentheses"`: `(1234,5 €)`. |
+| `boolean` | `boolean` | `true` y `false`: las dos etiquetas son obligatorias. |
+| `date` | fecha | `format`: un nombre de fecha del catálogo. Por defecto `short`. |
+| `time` | hora | `format`: `time` (por defecto) o `timeWithSeconds`. |
+| `dateTime` | fecha y hora | `format`: `shortDateTime` (por defecto), `mediumDateTime` o `longDateTime`. |
+| `list` | array de strings | Los items llevan trim, y los `null` o en blanco se saltan. `type`: `conjunction` (por defecto), `disjunction` o `unit`. `style`: `long` (por defecto), `short` o `narrow`. `maxItems` con `more(hidden)` (obligatorios juntos): `a, b y 3 más`. |
+
+`date`, `time` y `dateTime` aceptan los valores de **utils/Date formats**: un `Date`, un timestamp o un string ISO. TypeScript solo acepta los nombres del grupo de cada función, así que `display.date(value, { format: "time" })` es un error. `number`, las funciones de fecha y `list` aceptan `locale`, y las de fecha aceptan `timeZone`, para cambiar el display en una sola llamada.
+
+Prueba cada función y opción en la story **Playground**.
+
+## ¿Display o i18next?
+
+- **Un valor suelto** (una celda de tabla, un campo de una vista de detalle, un badge, un `title`): usa `display`. Se ocupa del texto vacío, del trim y del recorte.
+- **Un valor dentro de una frase traducida** (`"Pedido del {{date}}"`): usa la interpolación de i18next y pásale el texto de `display`: `t("order.from", { date: display.date(order.date, { format: "long" }) })`.
+- **Fechas**: siempre un nombre del catálogo. Si necesitas una forma que el catálogo no tiene, añádela a la librería (ver **utils/Date formats**).
+
+</Es>

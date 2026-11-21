@@ -112,6 +112,38 @@ The shared props (`FieldBaseProps`, `FieldTexts`, `FieldActionProps`, `FieldClas
 - **Viewport queries** use `useMediaQuery` from `internal/hooks` (`useSyncExternalStore`, with a server value). Do not use shadcn's `useIsMobile`: it reports `false` on the first render and only updates in an effect.
 - **Testing in jsdom.** Vaul injects CSS animations that jsdom reports but never runs, so a closing drawer stays mounted until it receives `animationend`. The modal's test helper (`modal/tests/render-modal.tsx`) dispatches it and mocks `matchMedia` with a settable width. Gestures (swipe, snap points) are tested in Storybook.
 
+## The utils package
+
+`packages/utils` (`@aureus-core/utils`) holds plain functions for every Aureus project: no React, no dependencies, only standard JavaScript and `Intl`.
+
+```
+packages/utils/src/
+├─ date-formats/          # → @aureus-core/utils/date-formats
+│  ├─ index.ts            # the module's only public entry point
+│  ├─ date-formats.ts     # <module>.ts: the module's main function
+│  ├─ types/              index.ts, date-formats-types.ts
+│  ├─ utils/
+│  │  ├─ constants/       index.ts, date-format-catalog.ts, date-tokens.ts
+│  │  └─ helpers/         index.ts, to-date-value.ts, format-pattern.ts, resolve-definition.ts
+│  └─ tests/
+├─ display/               # → @aureus-core/utils/display
+│  ├─ index.ts, display.ts
+│  ├─ formatters/         # one function per type: display-text.ts, display-number.ts…
+│  ├─ types/, utils/helpers/, tests/
+└─ internal/              # private, never exported
+   ├─ types/
+   └─ utils/{constants,helpers}/
+```
+
+- **A module is a folder** in `src/` with an `index.ts`. Its root holds only `index.ts` and `<module>.ts`; the rest goes in `types/`, `formatters/` (the module's functions), `utils/{constants,helpers}/` and `tests/`, each category with its own `index.ts`. The `./*` export is a wildcard and `check:package` discovers modules from `src/`, so a new module needs no `package.json` or script edit.
+- **No root barrel.** Consumers import `@aureus-core/utils/<module>`. `./internal/*` is blocked in `exports`.
+- **Dependency direction:** `internal/` ← `date-formats` ← `display`. A module imports another one only through its `index.ts` (`@/date-formats`), never its internal files, and never in the other direction.
+- **Locale and time zone are never fixed.** Every language-aware function takes a `locale` that can be a getter evaluated on every call (`LocaleInput`, resolved by `resolveLocale`), and an optional `timeZone`. Both default to the runtime's. `Intl` instances come from the cache in `internal/utils/helpers/intl-cache.ts`.
+- **No default texts, independent options.** Texts are required by TypeScript (`empty`, the boolean labels, `more`). Every option is opt-in with a neutral default and never changes another option's default; tests prove it.
+- **Closed date catalog.** `date-formats` is the one deliberate exception to "multipurpose": its names (`date-format-catalog.ts`) are the library's decision, so every app shows dates the same way. Apps cannot define formats. A new or changed name is a library change with a changeset, and `catalog-tests.ts` must be updated in the same change.
+- **Warnings** go through `warnOnce` (`internal/utils/helpers`), start with the module name (`display: …`), log once and only outside production.
+- **Tests** run in Node with `TZ=America/New_York` (a zone with daylight-saving changes). Type tests are `*-types-tests.ts` files with `@ts-expect-error`. ICU's narrow and no-break spaces are compared as plain spaces.
+
 ## Naming
 
 Pure kebab-case. Role suffixes use `-`, never `.`:
@@ -138,6 +170,8 @@ apps/storybook/src/stories/components/<category>/<name>/
 ```
 
 `src/internal/` is not documented: it is not public API.
+
+The utils package is documented in `apps/storybook/src/stories/utils/`: one bilingual MDX page per module (`<module>.mdx`, attached to its stories with `<Meta of={…} name="Guide" />`) and a `<module>/` folder with live stories that import `@aureus-core/utils/<module>`. Tool strings are typed `{ en, es }` objects checked by `utils-strings-tests.ts`.
 
 Categories: `actions`, `forms`, `overlays`, `navigation`, `data-display`, `feedback`, `layout`, `ai-chat`.
 Use [`actions/button/`](apps/storybook/src/stories/shadcn/actions/button) as the template.

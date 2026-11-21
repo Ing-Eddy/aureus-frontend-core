@@ -93,6 +93,8 @@ const preview: Preview = {
             "AI & Chat",
           ],
           "components",
+          "utils",
+          ["Date formats", ["Guide", "Catalog"], "Display", ["Guide", "Playground"]],
           "Tools",
         ],
       },

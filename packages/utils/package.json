@@ -1,0 +1,44 @@
+{
+  "name": "@aureus-core/utils",
+  "version": "0.0.0",
+  "description": "Framework-free utilities for Aureus projects: a shared date-format catalog and value display helpers",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ing-Eddy/aureus-frontend-core.git",
+    "directory": "packages/utils"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "exports": {
+    "./internal/*": null,
+    "./*": {
+      "types": "./dist/*/index.d.ts",
+      "default": "./dist/*/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check:package": "node scripts/check-package.mjs"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@aureus-core/tsconfig": "workspace:*",
+    "@types/node": "^26.6.6",
+    "publint": "^0.3.25",
+    "tsdown": "^0.23.7",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}

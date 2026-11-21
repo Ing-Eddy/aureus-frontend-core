@@ -1,0 +1,145 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+import * as DateFormatsStories from "./date-formats/date-formats-stories";
+
+<Meta of={DateFormatsStories} name="Guide" />
+
+<En>
+
+# Date formats
+
+`@aureus-core/utils/date-formats` holds **one catalog of date and time formats**, defined in the library and used the same way by every app. An app never writes a format such as `dd/MM/yyyy`: it picks a **name** (`long`, `monthYear`, `time`…), and the name is written the way the active language writes it. When the user switches language, the same code shows the new form.
+
+```ts
+import { createDateFormatter } from "@aureus-core/utils/date-formats";
+import i18n from "./i18n";
+
+// Created once. `locale` is a getter, read on every call, so it follows i18next.
+export const dates = createDateFormatter({ locale: () => i18n.resolvedLanguage });
+
+dates.format("2026-11-21", "long"); // es: 21 de noviembre de 2026 · en: November 21, 2026
+dates.format(order.createdAt, "shortDateTime");
+```
+
+To show values in tables and detail views, use `display` (see **utils/Display**), which uses this catalog and also handles missing values.
+
+## The catalog
+
+| Name | Group | Use it for | es-ES | en-US |
+| --- | --- | --- | --- | --- |
+| `short` | date | Tables and dense lists | 21/11/26 | 11/21/26 |
+| `medium` | date | Cards and summaries | 21 nov 2026 | Nov 21, 2026 |
+| `long` | date | Detail views and sentences | 21 de noviembre de 2026 | November 21, 2026 |
+| `full` | date | Headings that need the weekday | sábado, 21 de noviembre de 2026 | Saturday, November 21, 2026 |
+| `numericDate` | date | Documents, receipts, exports | 21/11/2026 | 11/21/2026 |
+| `dayMonth` | date | Dates in the current year | 21 nov | Nov 21 |
+| `monthYear` | date | Calendar headings, periods | noviembre de 2026 | November 2026 |
+| `weekday` | date | Day columns | sábado | Saturday |
+| `month` | date | Month pickers and charts | noviembre | November |
+| `year` | date | Year pickers and charts | 2026 | 2026 |
+| `time` | time | Times | 14:30 | 2:30 PM |
+| `timeWithSeconds` | time | Logs and timers | 14:30:05 | 2:30:05 PM |
+| `shortDateTime` | date and time | Tables with times | 21/11/26, 14:30 | 11/21/26, 2:30 PM |
+| `mediumDateTime` | date and time | Activity and history | 21 nov 2026, 14:30 | Nov 21, 2026, 2:30 PM |
+| `longDateTime` | date and time | Detail views | 21 de noviembre de 2026 a las 14:30 | November 21, 2026 at 2:30 PM |
+
+Each language decides the order of the parts, the month names and the 12- or 24-hour clock (Mexican Spanish, for example, uses `2:30 p.m.`). Spaces and punctuation come from the browser's language data and can differ slightly between browsers. The live table below follows the toolbar's language:
+
+</En>
+<Es>
+
+# Formatos de fecha
+
+`@aureus-core/utils/date-formats` contiene **un único catálogo de formatos de fecha y hora**, definido en la librería y que todas las apps usan igual. Una app nunca escribe un formato como `dd/MM/yyyy`: elige un **nombre** (`long`, `monthYear`, `time`…), y ese nombre se escribe como lo escribe el idioma activo. Cuando el usuario cambia de idioma, el mismo código muestra la forma nueva.
+
+```ts
+import { createDateFormatter } from "@aureus-core/utils/date-formats";
+import i18n from "./i18n";
+
+// Se crea una vez. `locale` es una función que se lee en cada llamada, así sigue a i18next.
+export const dates = createDateFormatter({ locale: () => i18n.resolvedLanguage });
+
+dates.format("2026-11-21", "long"); // es: 21 de noviembre de 2026 · en: November 21, 2026
+dates.format(order.createdAt, "shortDateTime");
+```
+
+Para mostrar valores en tablas y vistas de detalle, usa `display` (ver **utils/Display**), que usa este catálogo y además resuelve los valores que faltan.
+
+## El catálogo
+
+| Nombre | Grupo | Para qué sirve | es-ES | en-US |
+| --- | --- | --- | --- | --- |
+| `short` | fecha | Tablas y listas densas | 21/11/26 | 11/21/26 |
+| `medium` | fecha | Tarjetas y resúmenes | 21 nov 2026 | Nov 21, 2026 |
+| `long` | fecha | Vistas de detalle y frases | 21 de noviembre de 2026 | November 21, 2026 |
+| `full` | fecha | Encabezados que necesitan el día de la semana | sábado, 21 de noviembre de 2026 | Saturday, November 21, 2026 |
+| `numericDate` | fecha | Documentos, recibos, exportaciones | 21/11/2026 | 11/21/2026 |
+| `dayMonth` | fecha | Fechas del año en curso | 21 nov | Nov 21 |
+| `monthYear` | fecha | Encabezados de calendario, periodos | noviembre de 2026 | November 2026 |
+| `weekday` | fecha | Columnas de días | sábado | Saturday |
+| `month` | fecha | Selectores de mes y gráficos | noviembre | November |
+| `year` | fecha | Selectores de año y gráficos | 2026 | 2026 |
+| `time` | hora | Horas | 14:30 | 2:30 PM |
+| `timeWithSeconds` | hora | Registros y cronómetros | 14:30:05 | 2:30:05 PM |
+| `shortDateTime` | fecha y hora | Tablas con hora | 21/11/26, 14:30 | 11/21/26, 2:30 PM |
+| `mediumDateTime` | fecha y hora | Actividad e historial | 21 nov 2026, 14:30 | Nov 21, 2026, 2:30 PM |
+| `longDateTime` | fecha y hora | Vistas de detalle | 21 de noviembre de 2026 a las 14:30 | November 21, 2026 at 2:30 PM |
+
+Cada idioma decide el orden de las partes, los nombres de los meses y el reloj de 12 o 24 horas (el español de México, por ejemplo, usa `2:30 p.m.`). Los espacios y la puntuación vienen de los datos de idioma del navegador y pueden variar un poco entre navegadores. La tabla en vivo de abajo sigue el idioma del toolbar:
+
+</Es>
+
+<Canvas of={DateFormatsStories.Catalog} />
+
+<En>
+
+## Values
+
+`format(value, name)` accepts:
+
+- **Local ISO strings**: `YYYY-MM-DD`, `HH:mm[:ss]` and `YYYY-MM-DDTHH:mm[:ss]`. They are wall times: they are shown exactly as written, whatever the browser's time zone and whatever `timeZone` you pass. `"2026-11-21"` is the 21st everywhere, and a daylight-saving change never moves it.
+- **Instants**: a `Date`, milliseconds since the epoch, or an ISO string with a zone (`2026-11-21T14:30:00Z`, `…-06:00`). They are shown in `timeZone`, or in the browser's time zone when you pass none.
+
+```ts
+const dates = createDateFormatter({ locale: "es-ES" });
+dates.format("2026-11-21T14:30:00Z", "time", { timeZone: "America/Mexico_City" }); // "8:30"
+dates.format("2026-11-21", "numericDate", { timeZone: "Asia/Tokyo" }); // "21/11/2026", not moved
+```
+
+`format` returns `null` when the value is `null` or `undefined`, when it cannot be read as a date (`"2026-02-30"`, `"21/11/2026"`, an invalid `Date`), or when the value and the format do not fit: a date format on a time alone (`"14:30"` with `long`), or a time format on a date alone. The last two log a development warning. `display` turns every `null` into its empty text.
+
+## Locale and time zone
+
+Neither is ever fixed by the library. Without `locale` the browser's language is used, and `locale` can be a tag (`"es-MX"`), a list of tags, or a function evaluated on every call. Without `timeZone` the browser's time zone is used. Both can be overridden for one call: `format(value, name, { locale, timeZone })`.
+
+## Adding or changing a format
+
+The catalog is closed on purpose, so every app shows dates the same way. To add a name or change how one looks, edit `packages/utils/src/date-formats/utils/constants/date-format-catalog.ts` and add a changeset: every app gets the change when it updates the package. Each entry uses `Intl` options, which are right in any language. When one language must look exactly one way, the entry also gets `patterns` for that language, for example `patterns: { es: "dd/MM/yyyy" }`. The tests compare the whole catalog in Spanish and English, so any change in how a date looks shows up in review.
+
+</En>
+<Es>
+
+## Valores
+
+`format(value, name)` acepta:
+
+- **Strings ISO locales**: `YYYY-MM-DD`, `HH:mm[:ss]` y `YYYY-MM-DDTHH:mm[:ss]`. Son horas de reloj: se muestran exactamente como están escritas, sea cual sea la zona horaria del navegador y el `timeZone` que pases. `"2026-11-21"` es el día 21 en todas partes, y un cambio de horario nunca lo mueve.
+- **Instantes**: un `Date`, milisegundos desde el epoch, o un string ISO con zona (`2026-11-21T14:30:00Z`, `…-06:00`). Se muestran en `timeZone`, o en la zona horaria del navegador si no pasas ninguna.
+
+```ts
+const dates = createDateFormatter({ locale: "es-ES" });
+dates.format("2026-11-21T14:30:00Z", "time", { timeZone: "America/Mexico_City" }); // "8:30"
+dates.format("2026-11-21", "numericDate", { timeZone: "Asia/Tokyo" }); // "21/11/2026", sin moverse
+```
+
+`format` devuelve `null` cuando el valor es `null` o `undefined`, cuando no se puede leer como fecha (`"2026-02-30"`, `"21/11/2026"`, un `Date` inválido), o cuando el valor y el formato no encajan: un formato de fecha sobre una hora sola (`"14:30"` con `long`), o un formato de hora sobre una fecha sola. Los dos últimos casos muestran un aviso en desarrollo. `display` convierte cada `null` en su texto vacío.
+
+## Idioma y zona horaria
+
+La librería nunca fija ninguno de los dos. Sin `locale` se usa el idioma del navegador, y `locale` puede ser una etiqueta (`"es-MX"`), una lista de etiquetas o una función que se evalúa en cada llamada. Sin `timeZone` se usa la zona horaria del navegador. Ambos se pueden cambiar para una sola llamada: `format(value, name, { locale, timeZone })`.
+
+## Añadir o cambiar un formato
+
+El catálogo es cerrado a propósito, para que todas las apps muestren las fechas igual. Para añadir un nombre o cambiar cómo se ve uno, edita `packages/utils/src/date-formats/utils/constants/date-format-catalog.ts` y añade un changeset: todas las apps reciben el cambio al actualizar el paquete. Cada entrada usa opciones `Intl`, que son correctas en cualquier idioma. Cuando un idioma debe verse exactamente de una forma, la entrada lleva además `patterns` para ese idioma, por ejemplo `patterns: { es: "dd/MM/yyyy" }`. Los tests comparan el catálogo completo en español e inglés, así que cualquier cambio en cómo se ve una fecha aparece en la review.
+
+</Es>

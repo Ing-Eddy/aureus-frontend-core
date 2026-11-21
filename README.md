@@ -2,11 +2,12 @@
 
 Monorepo of shared frontend resources (React + TypeScript), published to npm under the `@aureus-core` scope.
 
-| Package                          | Description                                           |
-| -------------------------------- | ----------------------------------------------------- |
-| [`@aureus-core/ui`](packages/ui) | shadcn/ui base layer + custom components, Tailwind v4 |
-| `apps/storybook` (private)       | Component playground and docs                         |
-| `tooling/typescript` (private)   | Shared tsconfig bases                                 |
+| Package                                | Description                                                         |
+| -------------------------------------- | ------------------------------------------------------------------- |
+| [`@aureus-core/ui`](packages/ui)       | shadcn/ui base layer + custom components, Tailwind v4               |
+| [`@aureus-core/utils`](packages/utils) | Framework-free utilities: shared date-format catalog, value display |
+| `apps/storybook` (private)             | Component playground and docs                                       |
+| `tooling/typescript` (private)         | Shared tsconfig bases                                               |
 
 **Documentation:** <https://ing-eddy.github.io/aureus-frontend-core/>. Every component has a bilingual (English/Spanish) page with its API, examples, keyboard and accessibility notes, and a Playground; it is published from `main` on every push.
 
@@ -253,17 +254,43 @@ Override tokens after the package import, light values on `:root` and dark value
 
 When a token is not enough: pass `className` (merged last with `cn`), target the `data-slot` / `data-variant` attributes, or wrap the component in your own. See the Theming guide in the documentation for the full list of tokens.
 
+## Using `@aureus-core/utils` in a project
+
+```sh
+pnpm add @aureus-core/utils
+```
+
+No dependencies and no React. Each module has its own entry point (`@aureus-core/utils/<module>`):
+
+- **`display`**: configure it once, then show every value with the same rules. `null` / `undefined` give your `empty` text, text is trimmed and can be cut, numbers, booleans and lists follow independent opt-in options, and dates use the shared catalog.
+- **`date-formats`**: the single catalog of named date and time formats (`short`, `long`, `monthYear`, `time`, `shortDateTime`…). Apps pick a name; each name is written the way the active language writes it.
+
+Neither module fixes a language or a time zone. `locale` can be a getter read on every call, so the output follows i18next, and both default to the browser's.
+
+```ts
+import { createDisplay } from "@aureus-core/utils/display";
+import i18n from "./i18n";
+
+export const display = createDisplay({ empty: "-", locale: () => i18n.resolvedLanguage });
+
+display.text(user.name, { maxLength: 40, ellipsis: "…" });
+display.date(order.date, { format: "long" }); // es: 21 de noviembre de 2026 · en: November 21, 2026
+display.number(invoice.total, { decimals: 2, padDecimals: true, grouping: true, currency: "EUR" });
+```
+
+See [`packages/utils/README.md`](packages/utils/README.md) and the **utils** section of the documentation.
+
 ## Development
 
 ```sh
 pnpm install
 pnpm --filter @aureus-core/storybook exec playwright install chromium   # once: browser for story tests
-pnpm dev             # ui in watch mode + Storybook on http://localhost:6006
+pnpm dev             # ui and utils in watch mode + Storybook on http://localhost:6006
 pnpm build           # build everything
 pnpm lint            # biome
 pnpm typecheck
 pnpm test            # unit tests + every Storybook story in Chromium (interactions + axe)
-pnpm check:package   # verifies the built ui package (artifacts, aliases, publint, attw, tarball)
+pnpm check:package   # verifies the built ui and utils packages (artifacts, aliases, publint, attw, tarball)
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for conventions, including the story and docs contract.

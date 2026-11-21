@@ -1,0 +1,9 @@
+{
+  "extends": "@aureus-core/tsconfig/base.json",
+  "compilerOptions": {
+    // Only for `process.env.NODE_ENV` in development warnings; the code itself uses no Node API.
+    "types": ["node"],
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["src", "*.config.ts", "scripts"]
+}
