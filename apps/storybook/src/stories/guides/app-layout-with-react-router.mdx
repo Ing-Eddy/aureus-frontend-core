@@ -1,0 +1,388 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Guides/App layout with React Router" />
+
+<En>
+
+# App layout with React Router
+
+`AppLayout` does not depend on any router. You connect it through two props, and the rest of this guide uses React Router (`react-router` v7 or later) to show the usual setup. The live version is the `WithReactRouter` story of `components/Layout/AppLayout`.
+
+## 1. The shell route
+
+Render the layout once, in the route that wraps every page, and put the router's `<Outlet />` in `AppLayoutMain`:
+
+```tsx
+import { Link, matchPath, Outlet, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
+import {
+  AppLayout,
+  AppLayoutInset,
+  type AppLayoutLinkProps,
+  AppLayoutMain,
+  AppLayoutNav,
+  AppLayoutSidebar,
+  AppLayoutSidebarContent,
+  AppLayoutSidebarFooter,
+  AppLayoutSidebarHeader,
+  AppLayoutTopbar,
+} from "@aureus-core/ui/components/app-layout";
+
+// Spread every prop: they carry the classes, aria-current and the click handler.
+const renderLink = ({ href, ...props }: AppLayoutLinkProps) => <Link to={href} {...props} />;
+
+export function AppShell() {
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
+  return (
+    <AppLayout
+      renderLink={renderLink}
+      isActive={(href) => matchPath({ path: href, end: href === "/" }, pathname) !== null}
+      persistKey="app.sidebar"
+      keyboardShortcut="b"
+    >
+      <AppLayoutSidebar mobileTitle={t("layout.navigation")}>
+        <AppLayoutSidebarHeader>{/* team switcher, logo… */}</AppLayoutSidebarHeader>
+        <AppLayoutSidebarContent>
+          <AppLayoutNav aria-label={t("layout.navigation")} items={useNavEntries()} />
+        </AppLayoutSidebarContent>
+        <AppLayoutSidebarFooter>{/* user menu… */}</AppLayoutSidebarFooter>
+      </AppLayoutSidebar>
+      <AppLayoutInset>
+        <AppLayoutTopbar
+          triggerLabel={t("layout.toggleSidebar")}
+          breadcrumbLabel={t("layout.breadcrumb")}
+          actions={<ThemeToggle />}
+        />
+        <AppLayoutMain scrollResetKey={pathname}>
+          <RouteCrumbs />
+          <Outlet />
+        </AppLayoutMain>
+      </AppLayoutInset>
+    </AppLayout>
+  );
+}
+```
+
+- `renderLink` renders every link of the layout: items, sub-items and breadcrumb items.
+- `isActive` marks the row of the current route (`aria-current="page"`), and an active sub-item opens its submenu. With `end: false` a row stays active on its child routes too.
+- `scrollResetKey={pathname}` scrolls the main area back to the top on every navigation, because the main area (not the window) is what scrolls.
+
+## 2. The navigation from a configuration
+
+Build the entries with the translated texts, and hide what a role cannot see with `hidden`:
+
+```tsx
+import type { AppLayoutNavEntry } from "@aureus-core/ui/components/app-layout";
+import { HomeIcon, ShoppingCartIcon } from "lucide-react";
+
+function useNavEntries(): AppLayoutNavEntry[] {
+  const { t } = useTranslation();
+  const { isAdmin } = useSession();
+  return [
+    {
+      type: "group",
+      id: "main",
+      label: t("nav.main"),
+      items: [
+        { type: "item", id: "home", label: t("nav.home"), icon: <HomeIcon aria-hidden />, href: "/" },
+        {
+          type: "submenu",
+          id: "sales",
+          label: t("nav.sales"),
+          icon: <ShoppingCartIcon aria-hidden />,
+          items: [
+            { id: "orders", label: t("nav.orders"), href: "/sales/orders" },
+            { id: "invoices", label: t("nav.invoices"), href: "/sales/invoices" },
+          ],
+        },
+      ],
+    },
+    {
+      type: "group",
+      id: "admin",
+      label: t("nav.admin"),
+      hidden: !isAdmin,
+      // Without an icon, the collapsed sidebar shows the first letter of the label.
+      items: [{ type: "item", id: "users", label: t("nav.users"), href: "/admin/users" }],
+    },
+  ];
+}
+```
+
+The texts change with the language at runtime: the entries are rebuilt on the next render.
+
+## 3. The breadcrumb from the routes
+
+Give each route a `handle.crumb`, then show the crumbs of the matched routes with `useAppLayoutBreadcrumbItems`:
+
+```tsx
+import { useMatches } from "react-router";
+import {
+  type AppLayoutBreadcrumbItem,
+  useAppLayoutBreadcrumbItems,
+} from "@aureus-core/ui/components/app-layout";
+
+const routes = [
+  {
+    path: "/",
+    element: <AppShell />,
+    handle: { crumb: (t: TFunction) => ({ id: "home", label: t("nav.home"), href: "/" }) },
+    children: [
+      {
+        path: "sales/invoices",
+        element: <InvoicesPage />,
+        handle: {
+          crumb: (t: TFunction) => ({
+            id: "invoices",
+            label: t("nav.invoices"),
+            href: "/sales/invoices",
+          }),
+        },
+      },
+    ],
+  },
+];
+
+function RouteCrumbs() {
+  const { t } = useTranslation();
+  const crumbs = useMatches().flatMap(
+    (match) =>
+      (match.handle as { crumb?: (t: TFunction) => AppLayoutBreadcrumbItem } | undefined)?.crumb?.(t) ?? [],
+  );
+  useAppLayoutBreadcrumbItems(crumbs);
+  return null;
+}
+```
+
+A page can refine the trail once its data arrives, for example with the record's number:
+
+```tsx
+function InvoicePage() {
+  const { invoice } = useLoaderData();
+  const { update } = useAppLayoutBreadcrumb();
+  useEffect(() => update("invoice", { label: invoice.number }), [invoice.number, update]);
+  // …
+}
+```
+
+`useAppLayoutBreadcrumbItems` restores the previous trail when the page unmounts, so a page that sets its own trail does not leave it behind.
+
+## 4. Page actions in the top bar
+
+A page adds its own buttons to the top bar with `AppLayoutTopbarActions`. They leave with the page, and they keep the page's context (router, form, queries):
+
+```tsx
+import { AppLayoutTopbarActions } from "@aureus-core/ui/components/app-layout";
+
+function InvoicesPage() {
+  const { t } = useTranslation();
+  return (
+    <>
+      <AppLayoutTopbarActions>
+        <Button onClick={exportInvoices}>{t("invoices.export")}</Button>
+      </AppLayoutTopbarActions>
+      {/* … */}
+    </>
+  );
+}
+```
+
+## 5. On phones
+
+Below 768 px the sidebar is a sheet. Choosing a link closes it (`closeMobileOnNavigate`), so the new page is visible at once. To move the sidebar to the other edge, for example from a user preference, call `setSide("end")` from `useAppLayoutSidebar()`, or control `side`.
+
+</En>
+
+<Es>
+
+# Layout de aplicación con React Router
+
+`AppLayout` no depende de ningún router. Se conecta con dos props, y el resto de esta guía usa React Router (`react-router` v7 o posterior) para mostrar la configuración habitual. La versión en vivo es la story `WithReactRouter` de `components/Layout/AppLayout`.
+
+## 1. La ruta del layout
+
+Dibuja el layout una vez, en la ruta que envuelve todas las páginas, y pon el `<Outlet />` del router dentro de `AppLayoutMain`:
+
+```tsx
+import { Link, matchPath, Outlet, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
+import {
+  AppLayout,
+  AppLayoutInset,
+  type AppLayoutLinkProps,
+  AppLayoutMain,
+  AppLayoutNav,
+  AppLayoutSidebar,
+  AppLayoutSidebarContent,
+  AppLayoutSidebarFooter,
+  AppLayoutSidebarHeader,
+  AppLayoutTopbar,
+} from "@aureus-core/ui/components/app-layout";
+
+// Pasa todas las props: llevan las clases, aria-current y el manejador del clic.
+const renderLink = ({ href, ...props }: AppLayoutLinkProps) => <Link to={href} {...props} />;
+
+export function AppShell() {
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
+  return (
+    <AppLayout
+      renderLink={renderLink}
+      isActive={(href) => matchPath({ path: href, end: href === "/" }, pathname) !== null}
+      persistKey="app.sidebar"
+      keyboardShortcut="b"
+    >
+      <AppLayoutSidebar mobileTitle={t("layout.navigation")}>
+        <AppLayoutSidebarHeader>{/* selector de equipo, logo… */}</AppLayoutSidebarHeader>
+        <AppLayoutSidebarContent>
+          <AppLayoutNav aria-label={t("layout.navigation")} items={useNavEntries()} />
+        </AppLayoutSidebarContent>
+        <AppLayoutSidebarFooter>{/* menú de usuario… */}</AppLayoutSidebarFooter>
+      </AppLayoutSidebar>
+      <AppLayoutInset>
+        <AppLayoutTopbar
+          triggerLabel={t("layout.toggleSidebar")}
+          breadcrumbLabel={t("layout.breadcrumb")}
+          actions={<ThemeToggle />}
+        />
+        <AppLayoutMain scrollResetKey={pathname}>
+          <RouteCrumbs />
+          <Outlet />
+        </AppLayoutMain>
+      </AppLayoutInset>
+    </AppLayout>
+  );
+}
+```
+
+- `renderLink` dibuja todos los enlaces del layout: items, subitems y migas.
+- `isActive` marca la fila de la ruta actual (`aria-current="page"`), y un subitem activo abre su submenú. Con `end: false` una fila sigue activa también en sus rutas hijas.
+- `scrollResetKey={pathname}` lleva el contenido principal arriba en cada navegación, porque lo que hace scroll es el contenido principal, no la ventana.
+
+## 2. La navegación desde una configuración
+
+Construye las entradas con los textos traducidos, y oculta lo que un rol no puede ver con `hidden`:
+
+```tsx
+import type { AppLayoutNavEntry } from "@aureus-core/ui/components/app-layout";
+import { HomeIcon, ShoppingCartIcon } from "lucide-react";
+
+function useNavEntries(): AppLayoutNavEntry[] {
+  const { t } = useTranslation();
+  const { isAdmin } = useSession();
+  return [
+    {
+      type: "group",
+      id: "main",
+      label: t("nav.main"),
+      items: [
+        { type: "item", id: "home", label: t("nav.home"), icon: <HomeIcon aria-hidden />, href: "/" },
+        {
+          type: "submenu",
+          id: "sales",
+          label: t("nav.sales"),
+          icon: <ShoppingCartIcon aria-hidden />,
+          items: [
+            { id: "orders", label: t("nav.orders"), href: "/sales/orders" },
+            { id: "invoices", label: t("nav.invoices"), href: "/sales/invoices" },
+          ],
+        },
+      ],
+    },
+    {
+      type: "group",
+      id: "admin",
+      label: t("nav.admin"),
+      hidden: !isAdmin,
+      // Sin icono, el sidebar colapsado muestra la primera letra del label.
+      items: [{ type: "item", id: "users", label: t("nav.users"), href: "/admin/users" }],
+    },
+  ];
+}
+```
+
+Los textos cambian con el idioma en ejecución: las entradas se reconstruyen en el siguiente render.
+
+## 3. El breadcrumb desde las rutas
+
+Dale a cada ruta un `handle.crumb` y muestra las migas de las rutas que coinciden con `useAppLayoutBreadcrumbItems`:
+
+```tsx
+import { useMatches } from "react-router";
+import {
+  type AppLayoutBreadcrumbItem,
+  useAppLayoutBreadcrumbItems,
+} from "@aureus-core/ui/components/app-layout";
+
+const routes = [
+  {
+    path: "/",
+    element: <AppShell />,
+    handle: { crumb: (t: TFunction) => ({ id: "home", label: t("nav.home"), href: "/" }) },
+    children: [
+      {
+        path: "sales/invoices",
+        element: <InvoicesPage />,
+        handle: {
+          crumb: (t: TFunction) => ({
+            id: "invoices",
+            label: t("nav.invoices"),
+            href: "/sales/invoices",
+          }),
+        },
+      },
+    ],
+  },
+];
+
+function RouteCrumbs() {
+  const { t } = useTranslation();
+  const crumbs = useMatches().flatMap(
+    (match) =>
+      (match.handle as { crumb?: (t: TFunction) => AppLayoutBreadcrumbItem } | undefined)?.crumb?.(t) ?? [],
+  );
+  useAppLayoutBreadcrumbItems(crumbs);
+  return null;
+}
+```
+
+Una página puede afinar las migas cuando llegan sus datos, por ejemplo con el número del registro:
+
+```tsx
+function InvoicePage() {
+  const { invoice } = useLoaderData();
+  const { update } = useAppLayoutBreadcrumb();
+  useEffect(() => update("invoice", { label: invoice.number }), [invoice.number, update]);
+  // …
+}
+```
+
+`useAppLayoutBreadcrumbItems` restaura las migas anteriores cuando la página se desmonta, así que una página que fija sus propias migas no las deja atrás.
+
+## 4. Acciones de página en el topbar
+
+Una página añade sus propios botones al topbar con `AppLayoutTopbarActions`. Se van con la página y conservan su contexto (router, formulario, consultas):
+
+```tsx
+import { AppLayoutTopbarActions } from "@aureus-core/ui/components/app-layout";
+
+function InvoicesPage() {
+  const { t } = useTranslation();
+  return (
+    <>
+      <AppLayoutTopbarActions>
+        <Button onClick={exportInvoices}>{t("invoices.export")}</Button>
+      </AppLayoutTopbarActions>
+      {/* … */}
+    </>
+  );
+}
+```
+
+## 5. En el móvil
+
+Por debajo de 768 px el sidebar es un sheet. Elegir un enlace lo cierra (`closeMobileOnNavigate`), así la nueva página se ve enseguida. Para mover el sidebar al otro borde, por ejemplo desde una preferencia del usuario, llama a `setSide("end")` de `useAppLayoutSidebar()`, o controla `side`.
+
+</Es>

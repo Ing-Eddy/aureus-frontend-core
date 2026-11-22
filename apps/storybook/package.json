@@ -36,6 +36,7 @@
     "lucide-react": "^1.70.0",
     "playwright": "^1.65.0",
     "react-hook-form": "^7.92.0",
+    "react-router": "^8.5.2",
     "recharts": "3.8.0",
     "storybook": "^10.6.7",
     "tailwindcss": "^4.3.5",

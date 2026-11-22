@@ -225,6 +225,57 @@ import {
 </Modal>;
 ```
 
+### App layout
+
+`AppLayout` (`@aureus-core/ui/components/app-layout`) is the application shell, based on the shadcn sidebar blocks.
+
+- **Sidebar:** a header, a content area that scrolls on its own, and a footer. It collapses to icons (rows without an icon show the first letter of their label), off the screen, or never. Below `breakpoint` (768 px) it is a sheet.
+- **Top bar:** the sidebar toggle, a managed breadcrumb and an actions area. Pages add their own buttons with `AppLayoutTopbarActions`.
+- **Main area:** a `main` that scrolls on its own and always keeps a minimum padding.
+- **Navigation:** groups with titles, simple rows (fully clickable or with a "more actions" menu) and submenus, written as JSX parts or as a configuration array.
+- **Hooks:** `useAppLayoutSidebar()` (state, `toggle`, `setSide`), `useAppLayoutBreadcrumb()`, `useAppLayoutBreadcrumbItems(items)` and `useAppLayoutMain()`.
+- **Side and links:** the side is logical (`start` by default) and changes at runtime. Links go through `renderLink`, so any router works. `persistKey` and `keyboardShortcut` are opt-in.
+
+```tsx
+import {
+  AppLayout,
+  AppLayoutInset,
+  AppLayoutMain,
+  AppLayoutNav,
+  AppLayoutSidebar,
+  AppLayoutSidebarContent,
+  AppLayoutTopbar,
+} from "@aureus-core/ui/components/app-layout";
+import { Link, matchPath, Outlet, useLocation } from "react-router";
+
+function AppShell() {
+  const { pathname } = useLocation();
+  return (
+    <AppLayout
+      renderLink={({ href, ...props }) => <Link to={href} {...props} />}
+      isActive={(href) => matchPath({ path: href, end: true }, pathname) !== null}
+    >
+      <AppLayoutSidebar mobileTitle={t("layout.navigation")}>
+        <AppLayoutSidebarContent>
+          <AppLayoutNav aria-label={t("layout.navigation")} items={navEntries} />
+        </AppLayoutSidebarContent>
+      </AppLayoutSidebar>
+      <AppLayoutInset>
+        <AppLayoutTopbar
+          triggerLabel={t("layout.toggleSidebar")}
+          breadcrumbLabel={t("layout.breadcrumb")}
+        />
+        <AppLayoutMain scrollResetKey={pathname}>
+          <Outlet />
+        </AppLayoutMain>
+      </AppLayoutInset>
+    </AppLayout>
+  );
+}
+```
+
+See the "App layout with React Router" guide in the documentation for breadcrumbs from routes and page actions.
+
 ### Data table
 
 `DataTable` (`@aureus-core/ui/components/data-table`) is a full data table on TanStack Table v9 and the shadcn table parts: a header (title, subtitle, search, reload, filters slot, columns menu), the table and pagination. Each feature is an object prop: passing it turns the feature on, and TypeScript requires the texts it needs. `header={false}` and `pagination={false}` hide those areas.

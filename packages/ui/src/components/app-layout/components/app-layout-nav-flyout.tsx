@@ -1,0 +1,66 @@
+import { cn } from "cn";
+import { type ReactNode, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/shadcn/ui/dropdown-menu";
+import { useAppLayoutContext } from "../hooks";
+import {
+  flyoutClassName,
+  menuButtonClassName,
+  menuButtonCollapsedClassName,
+  oppositeSide,
+} from "../utils";
+import { AppLayoutNavTooltip } from "./app-layout-nav-control";
+import { AppLayoutNavIcon } from "./app-layout-nav-icon";
+
+/**
+ * A collapsed submenu: its icon (or letter) opens a menu beside the sidebar, towards the content,
+ * with the submenu's label as heading and its sub-items.
+ */
+export function AppLayoutNavFlyout({
+  label,
+  icon,
+  tooltip,
+  active,
+  children,
+}: {
+  label: string;
+  icon?: ReactNode;
+  tooltip?: ReactNode | false;
+  active: boolean;
+  children?: ReactNode;
+}) {
+  const { direction, physicalSide } = useAppLayoutContext("AppLayoutNavSubmenu");
+  const [open, setOpen] = useState(false);
+  return (
+    <DropdownMenu dir={direction} open={open} onOpenChange={setOpen}>
+      <AppLayoutNavTooltip label={label} tooltip={tooltip}>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            data-slot="app-layout-nav-submenu-trigger"
+            data-active={active}
+            className={cn(menuButtonClassName, menuButtonCollapsedClassName)}
+          >
+            <AppLayoutNavIcon icon={icon} label={label} collapsed />
+            <span data-slot="app-layout-nav-label" className="sr-only">
+              {label}
+            </span>
+          </button>
+        </DropdownMenuTrigger>
+      </AppLayoutNavTooltip>
+      <DropdownMenuContent
+        data-slot="app-layout-nav-flyout"
+        side={oppositeSide(physicalSide)}
+        align="start"
+        className={flyoutClassName}
+      >
+        <DropdownMenuLabel>{label}</DropdownMenuLabel>
+        {children}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
