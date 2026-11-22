@@ -9,14 +9,70 @@ export const pair = (name) => ({ [name]: `var(--${name})`, [`${name}-foreground`
 
 # Colors
 
-Semantic tokens: components ask for a *role* (`--primary`, `--muted`), never a raw color. The swatches read the live CSS variables, so switching the **theme** toolbar shows the dark values. Each surface token has a `-foreground` pair for the text on top of it; keep 4.5:1 between them.
+## Aureus brand
+
+The package ships the Aureus identity by default: **Aureus Blue**, a deep sapphire, and **Aureus Gold**, a warm gold (*aureus* is Latin for "golden"), over cool slate neutrals.
+
+- **Blue** marks what you act on and where you are: the primary button, the active navigation item, links and the focus ring.
+- **Gold** is the premium accent: secondary buttons and badges, highlighted figures and charts. Use it sparingly, so it keeps its weight.
+- **Never use the surface gold as text on a light background** (1.9:1). For gold text use `text-brand-gold-text`, which reaches 4.94:1 on white and 12.7:1 on the dark background.
+
+| Color | Light | Dark |
+| --- | --- | --- |
+| Aureus Blue (`--primary`, `--brand-blue`) | `#1745c2` · `oklch(0.45 0.2 264)` | `#5080eb` · `oklch(0.62 0.17 264)` |
+| Aureus Gold (`--secondary`, `--brand-gold`) | `#e8b543` · `oklch(0.8 0.14 84)` | `#e9be57` · `oklch(0.82 0.13 86)` |
+| Gold as text (`--brand-gold-text`) | `#966800` · `oklch(0.55 0.12 78)` | `#f1c86c` · `oklch(0.85 0.12 86)` |
+
+The `brand-*` colors keep the Aureus values even when an app re-themes `--primary` or `--secondary`: use them for logos and brand highlights (`bg-brand-gold text-brand-gold-foreground`, `text-brand-blue`).
 
 </En>
 <Es>
 
 # Colores
 
-Tokens semánticos: los componentes piden un *rol* (`--primary`, `--muted`), nunca un color concreto. Las muestras leen las variables CSS en vivo, así que al cambiar la barra de **tema** se ven los valores oscuros. Cada token de superficie tiene una pareja `-foreground` para el texto que va encima; mantén 4.5:1 entre ellas.
+## Marca Aureus
+
+El paquete incluye por defecto la identidad de Aureus: **Azul Aureus**, un zafiro profundo, y **Dorado Aureus**, un oro cálido (*aureus* significa «dorado» en latín), sobre neutros slate fríos.
+
+- **El azul** marca lo que se pulsa y dónde estás: el botón principal, el elemento activo de la navegación, los enlaces y el anillo de foco.
+- **El dorado** es el acento premium: botones y badges secundarios, cifras destacadas y gráficos. Úsalo con moderación para que conserve su peso.
+- **Nunca uses el dorado de superficie como texto sobre fondo claro** (1.9:1). Para texto dorado usa `text-brand-gold-text`, que llega a 4.94:1 sobre blanco y a 12.7:1 sobre el fondo oscuro.
+
+| Color | Claro | Oscuro |
+| --- | --- | --- |
+| Azul Aureus (`--primary`, `--brand-blue`) | `#1745c2` · `oklch(0.45 0.2 264)` | `#5080eb` · `oklch(0.62 0.17 264)` |
+| Dorado Aureus (`--secondary`, `--brand-gold`) | `#e8b543` · `oklch(0.8 0.14 84)` | `#e9be57` · `oklch(0.82 0.13 86)` |
+| Dorado como texto (`--brand-gold-text`) | `#966800` · `oklch(0.55 0.12 78)` | `#f1c86c` · `oklch(0.85 0.12 86)` |
+
+Los colores `brand-*` conservan los valores de Aureus aunque una app cambie `--primary` o `--secondary`: úsalos para logotipos y detalles de marca (`bg-brand-gold text-brand-gold-foreground`, `text-brand-blue`).
+
+</Es>
+
+<ColorPalette>
+  <ColorItem
+    title="Aureus brand"
+    subtitle="--brand-blue / --brand-gold / --brand-gold-foreground / --brand-gold-text"
+    colors={{
+      "brand-blue": "var(--brand-blue)",
+      "brand-gold": "var(--brand-gold)",
+      "brand-gold-foreground": "var(--brand-gold-foreground)",
+      "brand-gold-text": "var(--brand-gold-text)",
+    }}
+  />
+</ColorPalette>
+
+<En>
+
+## Semantic tokens
+
+Components ask for a *role* (`--primary`, `--muted`), never a raw color. The swatches read the live CSS variables, so switching the **theme** toolbar shows the dark values. Each surface token has a `-foreground` pair for the text on top of it; keep 4.5:1 between them.
+
+</En>
+<Es>
+
+## Tokens semánticos
+
+Los componentes piden un *rol* (`--primary`, `--muted`), nunca un color concreto. Las muestras leen las variables CSS en vivo, así que al cambiar la barra de **tema** se ven los valores oscuros. Cada token de superficie tiene una pareja `-foreground` para el texto que va encima; mantén 4.5:1 entre ellas.
 
 </Es>
 

@@ -37,7 +37,7 @@ Rather than writing the values by hand, open [Tools › Theme Builder](?path=/st
 - **Download .css** saves a standalone theme file (`:root`, `.dark` and `@theme inline`, all in OKLCH) for any Tailwind CSS v4 shadcn app. It contains no fonts or letter spacing: those come from the Typography Builder.
 - **Copy** puts the same content on the clipboard.
 
-The file is named `theme.css` by default. In an app built on this package, import it after `@import "@aureus-core/ui/styles.css"` (its light block uses `:root, :root:not(.dark)`, so it also overrides the package's accessibility adjustments). In any other shadcn app, the file replaces the theme blocks of your global CSS, after `@import "tailwindcss"`. Your draft is kept in this browser until you select **Reset**.
+The file is named `theme.css` by default. In an app built on this package, import it after `@import "@aureus-core/ui/styles.css"` (it sets every token in its light and dark blocks, so it replaces the Aureus brand theme in both modes). In any other shadcn app, the file replaces the theme blocks of your global CSS, after `@import "tailwindcss"`. Your draft is kept in this browser until you select **Reset**.
 
 ## Typography
 
@@ -53,15 +53,21 @@ When a token is not enough, go one step further, and only as far as you need:
 4. **Wrap.** Build your own component on top (`<SaveButton>` that renders `<Button>` with fixed props). In this repo those live in `packages/ui/src/components/`.
 5. **Fork.** Copy the shadcn component into `src/components/` under a new name and change it. The files in `src/shadcn/` are owned by the shadcn CLI and must never be edited by hand.
 
-## What this package already changed
+## The Aureus brand theme
 
-Three tokens were adjusted to pass WCAG AA contrast; override them to restore the stock shadcn look. The light values are set on `:root:not(.dark)`, so override them with that selector (or `:root, :root:not(.dark)`, as Theme Builder exports do); a plain `:root` loses to it:
+The package does not ship stock shadcn colors. `packages/ui/src/styles/theme.css` redefines every color token, in a `:root` block and then a `.dark` block, with the Aureus identity (see [Foundations › Colors](?path=/docs/foundations-colors--docs)):
 
-| Token                | Stock shadcn               | Aureus                   | Why                                              |
-| -------------------- | -------------------------- | ------------------------ | ------------------------------------------------ |
-| `--destructive`      | `oklch(0.577 0.245 27.325)`| `oklch(0.51 0.2 27.325)` | 3.99:1 on its own tint; now 5.36:1               |
-| `--muted-foreground` | `oklch(0.556 0 0)`         | `oklch(0.53 0 0)`        | 4.34:1 on `--muted`; now 4.84:1                  |
-| `--destructive` (dark) | `oklch(0.704 0.191 22.216)` | `oklch(0.74 0.191 22.216)` | 4.37:1 at 80% on cards; now 4.66:1          |
+| Role | Tokens | Light | Dark |
+| --- | --- | --- | --- |
+| Aureus Blue | `--primary`, `--ring`, `--sidebar-primary`, `--sidebar-ring` | `oklch(0.45 0.2 264)` | `oklch(0.62 0.17 264)`, with dark text |
+| Aureus Gold | `--secondary` | `oklch(0.8 0.14 84)` | `oklch(0.82 0.13 86)` |
+| Charts | `--chart-1` … `--chart-5` | blue, deep gold, light blue, bronze, slate | blue, gold, light blue, deep gold, slate |
+| Neutrals | background, card, muted, accent, border, sidebar… | Tailwind slate | Tailwind slate |
+| Accessible text | `--muted-foreground` slate-600, `--destructive` `oklch(0.51 0.2 27.325)` | 6.9:1 on `--muted`; 5.36:1 on its tint | `--destructive` `oklch(0.74 0.191 22.216)` |
+
+Every text pair reaches 4.5:1 and the focus ring and charts 3:1, in both modes; the Theme Builder tests and the accessibility checks of every story verify it.
+
+To change it, override tokens after the package import, light values in `:root` and dark values in `.dark` (or import a `theme.css` from the Theme Builder). To go back to stock shadcn colors, paste shadcn's own `:root` and `.dark` color blocks there. The `--brand-*` constants are not affected by those overrides.
 
 </En>
 <Es>
@@ -98,7 +104,7 @@ En lugar de escribir los valores a mano, abre [Herramientas › Creador de temas
 - **Descargar .css** guarda un archivo de tema independiente (`:root`, `.dark` y `@theme inline`, todo en OKLCH) para cualquier app con shadcn y Tailwind CSS v4. No contiene fuentes ni espaciado entre letras: vienen del Creador de tipografía.
 - **Copiar** pone el mismo contenido en el portapapeles.
 
-El archivo se llama `theme.css` por defecto. En una app basada en este paquete, impórtalo después de `@import "@aureus-core/ui/styles.css"` (su bloque claro usa `:root, :root:not(.dark)`, así que también sustituye los ajustes de accesibilidad del paquete). En cualquier otra app con shadcn, el archivo sustituye los bloques del tema de tu CSS global, después de `@import "tailwindcss"`. Tu borrador se guarda en este navegador hasta que pulses **Restablecer**.
+El archivo se llama `theme.css` por defecto. En una app basada en este paquete, impórtalo después de `@import "@aureus-core/ui/styles.css"` (define cada token en sus bloques claro y oscuro, así que sustituye el tema de marca Aureus en los dos modos). En cualquier otra app con shadcn, el archivo sustituye los bloques del tema de tu CSS global, después de `@import "tailwindcss"`. Tu borrador se guarda en este navegador hasta que pulses **Restablecer**.
 
 ## Tipografía
 
@@ -114,14 +120,20 @@ Cuando un token no basta, sube un peldaño, y solo hasta donde lo necesites:
 4. **Envolver.** Construye tu propio componente encima (`<SaveButton>` que renderiza `<Button>` con props fijas). En este repo viven en `packages/ui/src/components/`.
 5. **Bifurcar.** Copia el componente de shadcn a `src/components/` con otro nombre y cámbialo. Los archivos de `src/shadcn/` son del CLI de shadcn y nunca se editan a mano.
 
-## Lo que este paquete ya cambió
+## El tema de marca Aureus
 
-Se ajustaron tres tokens para cumplir el contraste WCAG AA; sustitúyelos para recuperar el aspecto original de shadcn. Los valores claros se definen en `:root:not(.dark)`, así que sustitúyelos con ese selector (o `:root, :root:not(.dark)`, como hacen las exportaciones del Creador de temas); un `:root` a secas pierde contra él:
+El paquete no usa los colores de serie de shadcn. `packages/ui/src/styles/theme.css` redefine todos los tokens de color, en un bloque `:root` y después un bloque `.dark`, con la identidad de Aureus (mira [Fundamentos › Colores](?path=/docs/foundations-colors--docs)):
 
-| Token                | shadcn original            | Aureus                   | Motivo                                           |
-| -------------------- | -------------------------- | ------------------------ | ------------------------------------------------ |
-| `--destructive`      | `oklch(0.577 0.245 27.325)`| `oklch(0.51 0.2 27.325)` | 3.99:1 sobre su propio tinte; ahora 5.36:1       |
-| `--muted-foreground` | `oklch(0.556 0 0)`         | `oklch(0.53 0 0)`        | 4.34:1 sobre `--muted`; ahora 4.84:1             |
-| `--destructive` (oscuro) | `oklch(0.704 0.191 22.216)` | `oklch(0.74 0.191 22.216)` | 4.37:1 al 80% sobre tarjetas; ahora 4.66:1 |
+| Rol | Tokens | Claro | Oscuro |
+| --- | --- | --- | --- |
+| Azul Aureus | `--primary`, `--ring`, `--sidebar-primary`, `--sidebar-ring` | `oklch(0.45 0.2 264)` | `oklch(0.62 0.17 264)`, con texto oscuro |
+| Dorado Aureus | `--secondary` | `oklch(0.8 0.14 84)` | `oklch(0.82 0.13 86)` |
+| Gráficos | `--chart-1` … `--chart-5` | azul, dorado profundo, azul claro, bronce, slate | azul, dorado, azul claro, dorado profundo, slate |
+| Neutros | fondo, tarjetas, muted, accent, bordes, barra lateral… | slate de Tailwind | slate de Tailwind |
+| Texto accesible | `--muted-foreground` slate-600, `--destructive` `oklch(0.51 0.2 27.325)` | 6.9:1 sobre `--muted`; 5.36:1 sobre su tinte | `--destructive` `oklch(0.74 0.191 22.216)` |
+
+Todas las parejas de texto llegan a 4.5:1 y el anillo de foco y los gráficos a 3:1, en los dos modos; lo comprueban los tests del Creador de temas y las revisiones de accesibilidad de todas las stories.
+
+Para cambiarlo, sustituye los tokens después del import del paquete, los valores claros en `:root` y los oscuros en `.dark` (o importa un `theme.css` del Creador de temas). Para volver a los colores de serie de shadcn, pega ahí los bloques de color `:root` y `.dark` del propio shadcn. Las constantes `--brand-*` no se ven afectadas por esos cambios.
 
 </Es>

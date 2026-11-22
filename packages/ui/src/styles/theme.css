@@ -1,36 +1,112 @@
 /*
- * Theme overrides. Loaded after shadcn.css, so any variable redefined here wins.
- * Example:
- *   :root { --primary: oklch(0.55 0.2 260); --radius: 0.5rem; }
- *   .dark { --primary: oklch(0.7 0.15 260); }
+ * Aureus brand theme: the default look of @aureus-core/ui (spec: brand-theme). Loaded after
+ * shadcn.css; every color token is redefined in both modes, so no stock shadcn color shows through.
  *
- * A light-only override must use `:root:not(.dark)`: a plain `:root` rule here would also beat
- * shadcn's `.dark` block (same specificity, later in the cascade) and leak into dark mode.
+ *   Aureus Blue   #1745c2  oklch(0.45 0.2 264)   dark mode #5080eb  oklch(0.62 0.17 264)
+ *   Aureus Gold   #e8b543  oklch(0.8 0.14 84)    dark mode #e9be57  oklch(0.82 0.13 86)
+ *   Gold as text  #966800  oklch(0.55 0.12 78)   dark mode #f1c86c  oklch(0.85 0.12 86)
+ *   Neutrals      Tailwind slate
+ *
+ * Contrast (WCAG 2): every surface/foreground pair, muted text, destructive, links and gold text
+ * reach at least 4.5:1, and the focus ring and every chart color at least 3:1, in both modes.
+ * Theme Builder tests check the same values (core/default-theme-contrast-tests.ts).
+ *
+ * Blue is for actions and active states. Gold is for secondary actions, premium highlights and
+ * charts; the surface gold is never text on a light background (use --brand-gold-text).
+ *
+ * Overriding: after @import "@aureus-core/ui/styles.css", put light values in :root and dark values
+ * in .dark. A token set only in an app's :root also applies in dark mode (its rule comes later than
+ * this .dark block), so set both, as Theme Builder exports do.
  */
 
-:root:not(.dark) {
-  /*
-   * Accessibility: stock shadcn `--destructive` (oklch(0.577 0.245 27.325)) reaches only 3.99:1 as
-   * text on its own 10% tint (destructive Button/Badge), below WCAG AA's 4.5:1, and components also
-   * use it at 80% opacity for secondary text (Attachment errors). This darker red keeps the hue and
-   * gives 5.36:1 on the tint, 4.78:1 at 80% on white and 6.38:1 on white. The dark value is set in
-   * the `.dark` block below.
-   */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.129 0.042 264.695);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.129 0.042 264.695);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.129 0.042 264.695);
+  --primary: oklch(0.45 0.2 264);
+  --primary-foreground: oklch(0.984 0.003 247.858);
+  --secondary: oklch(0.8 0.14 84);
+  --secondary-foreground: oklch(0.26 0.05 70);
+  --muted: oklch(0.968 0.007 247.896);
+  /* slate-600 instead of shadcn's slate-500: 6.9:1 on --muted, 7.56:1 on white. */
+  --muted-foreground: oklch(0.446 0.043 257.281);
+  --accent: oklch(0.968 0.007 247.896);
+  --accent-foreground: oklch(0.208 0.042 265.755);
+  /* Darker than stock shadcn (3.99:1 on its own 10% tint): 5.36:1 on the tint, 4.78:1 at 80% on white, 6.38:1 on white. */
   --destructive: oklch(0.51 0.2 27.325);
+  --border: oklch(0.929 0.013 255.508);
+  --input: oklch(0.929 0.013 255.508);
+  --ring: oklch(0.45 0.2 264);
+  --chart-1: oklch(0.45 0.2 264);
+  /* Deep gold: the surface gold reaches only 1.89:1 on white, too low for chart marks (3:1). */
+  --chart-2: oklch(0.55 0.12 78);
+  --chart-3: oklch(0.62 0.17 264);
+  --chart-4: oklch(0.47 0.1 70);
+  --chart-5: oklch(0.446 0.043 257.281);
+  --sidebar: oklch(0.984 0.003 247.858);
+  --sidebar-foreground: oklch(0.129 0.042 264.695);
+  --sidebar-primary: oklch(0.45 0.2 264);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.968 0.007 247.896);
+  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
+  --sidebar-border: oklch(0.929 0.013 255.508);
+  --sidebar-ring: oklch(0.45 0.2 264);
 
-  /*
-   * Accessibility: stock `--muted-foreground` (oklch(0.556 0 0)) gives 4.34:1 on `--muted`/`--accent`
-   * (Kbd, hovered menu descriptions) and 4.27:1 on primary-tinted choice cards. oklch(0.53 0 0) gives
-   * 4.8:1 on `--muted` and 5.3:1 on white. Dark mode keeps shadcn's own `--muted-foreground`.
-   */
-  --muted-foreground: oklch(0.53 0 0);
+  /* Brand constants: they keep the Aureus colors when an app re-themes the tokens above. */
+  --brand-blue: oklch(0.45 0.2 264);
+  --brand-gold: oklch(0.8 0.14 84);
+  --brand-gold-foreground: oklch(0.26 0.05 70);
+  --brand-gold-text: oklch(0.55 0.12 78);
 }
 
 .dark {
-  /*
-   * Accessibility: stock dark `--destructive` (oklch(0.704 0.191 22.216)) passes as solid text, but
-   * at 80% opacity (Attachment error text) it gives 4.37:1 on `--card`. This lighter red keeps the
-   * hue and gives 4.66:1 there, 6.65:1 as solid text on the card and 5.59:1 on its 20% tint.
-   */
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.62 0.17 264);
+  /* Dark text: white on the dark-mode blue gives only 3.73:1. */
+  --primary-foreground: oklch(0.129 0.042 264.695);
+  --secondary: oklch(0.82 0.13 86);
+  --secondary-foreground: oklch(0.26 0.05 70);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  /* Lighter than stock shadcn so the 80% error text reaches 4.66:1 on --card; 6.65:1 solid on the card. */
   --destructive: oklch(0.74 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.62 0.17 264);
+  --chart-1: oklch(0.62 0.17 264);
+  --chart-2: oklch(0.82 0.13 86);
+  --chart-3: oklch(0.76 0.11 258);
+  --chart-4: oklch(0.68 0.12 80);
+  --chart-5: oklch(0.704 0.04 256.788);
+  --sidebar: oklch(0.208 0.042 265.755);
+  --sidebar-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-primary: oklch(0.62 0.17 264);
+  --sidebar-primary-foreground: oklch(0.129 0.042 264.695);
+  --sidebar-accent: oklch(0.279 0.041 260.031);
+  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.62 0.17 264);
+
+  /* Brand constants: they keep the Aureus colors when an app re-themes the tokens above. */
+  --brand-blue: oklch(0.62 0.17 264);
+  --brand-gold: oklch(0.82 0.13 86);
+  --brand-gold-foreground: oklch(0.26 0.05 70);
+  --brand-gold-text: oklch(0.85 0.12 86);
+}
+
+@theme inline {
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-gold-foreground: var(--brand-gold-foreground);
+  --color-brand-gold-text: var(--brand-gold-text);
 }

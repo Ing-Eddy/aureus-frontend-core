@@ -19,6 +19,13 @@ Run `shadcn:update` on a branch, review `git diff`, run tests and Storybook, the
 ## Customising shadcn (use the first that works)
 
 1. **Tokens** – override CSS variables in `packages/ui/src/styles/theme.css` (loaded after `shadcn.css`).
+
+`theme.css` is the source of the **Aureus brand theme**: it redefines every shadcn color token in a `:root` block followed by a `.dark` block (never `:root:not(.dark)`, so apps can override with plain selectors), plus the four `--brand-*` constants mapped to `brand-*` Tailwind colors. When you change a brand value:
+
+- update the Theme Builder preset (`apps/storybook/src/stories/tools/theme-builder/core/default-theme.ts`) in the same commit: `default-theme-tests.ts` fails on any drift;
+- keep every text pair at 4.5:1 and the ring and charts at 3:1 in both modes: `default-theme-contrast-tests.ts` and the axe check of every story guard it;
+- `src/theme-css-tests.ts` checks that both blocks define every token and constant.
+
 2. **Wrap** – create a component in `src/components/` that composes the primitive (`cva` + `cn()` from `@/shadcn/lib/utils`).
 3. **Fork** – copy the file into `src/components/<new-name>/` under a new name. From then on it is yours and the CLI will never touch it.
 

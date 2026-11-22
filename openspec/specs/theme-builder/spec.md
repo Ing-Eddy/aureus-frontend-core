@@ -13,7 +13,7 @@ The playground SHALL provide a theme builder page under "Tools › Theme Builder
 - **THEN** the form and the preview are shown, and every feature (editing, import, export) is available
 
 ### Requirement: Default starting theme
-When there is no saved draft, the builder SHALL start from the Aureus default theme: the stock shadcn tokens plus the package's accessibility overrides. Its preview MUST look like the components do elsewhere in the playground. A "Reset" action MUST bring the builder back to this state after asking for confirmation.
+When there is no saved draft, the builder SHALL start from the Aureus brand theme: the color tokens `@aureus-core/ui` ships, with Aureus Blue as primary, Aureus Gold as secondary and slate neutrals. Its inputs MUST describe that theme: the blue primary color, a non-achromatic primary, the slate neutral palette and primary-derived charts. Its preview MUST look like the components do elsewhere in the playground. A "Reset" action MUST bring the builder back to this state after asking for confirmation.
 
 #### Scenario: First visit
 - **WHEN** a user opens the builder for the first time
@@ -21,7 +21,11 @@ When there is no saved draft, the builder SHALL start from the Aureus default th
 
 #### Scenario: Reset
 - **WHEN** a user has edited the theme and confirms "Reset"
-- **THEN** every input and token returns to the Aureus default theme, and the saved draft is discarded
+- **THEN** every input and token returns to the Aureus brand theme, and the saved draft is discarded
+
+#### Scenario: Brand inputs
+- **WHEN** a user opens the builder for the first time
+- **THEN** the primary color input shows Aureus Blue and the neutral palette shows slate
 
 ### Requirement: Generated color tokens
 The builder SHALL derive every color token for both light and dark mode from these inputs:

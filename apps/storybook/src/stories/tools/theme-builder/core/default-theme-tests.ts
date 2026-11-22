@@ -23,13 +23,18 @@ function declarations(css: string, selector: string): Record<string, string> {
   return result;
 }
 
-/** What `@aureus-core/ui/styles.css` resolves to: shadcn.css, then theme.css on top. */
+/** Brand constants of theme.css: not Theme Builder tokens (spec: brand-theme). */
+const isBrandConstant = (name: string) => name.startsWith("brand-");
+
+/** What `@aureus-core/ui/styles.css` resolves to: shadcn.css, then the brand theme on top. */
 function packageTokens(): Record<Mode, Record<string, string>> {
   const shadcn = read("shadcn.css");
   const theme = read("theme.css");
+  const withoutBrand = (tokens: Record<string, string>) =>
+    Object.fromEntries(Object.entries(tokens).filter(([name]) => !isBrandConstant(name)));
   return {
-    light: { ...declarations(shadcn, ":root"), ...declarations(theme, ":root:not(.dark)") },
-    dark: { ...declarations(shadcn, ".dark"), ...declarations(theme, ".dark") },
+    light: { ...declarations(shadcn, ":root"), ...withoutBrand(declarations(theme, ":root")) },
+    dark: { ...declarations(shadcn, ".dark"), ...withoutBrand(declarations(theme, ".dark")) },
   };
 }
 

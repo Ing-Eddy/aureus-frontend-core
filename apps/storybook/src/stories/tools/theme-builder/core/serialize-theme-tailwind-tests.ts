@@ -53,10 +53,10 @@ describe("exported theme compiled with Tailwind CSS v4", () => {
   it("keeps the theme's own :root and .dark values", async () => {
     const css = await build([]);
     expect(css).toContain("--spacing: 0.3rem;");
-    expect(css).toMatch(/\.dark \{\s*--background: oklch\(0\.145 0 0\);/);
+    expect(css).toMatch(/\.dark \{\s*--background: oklch\(0\.129 0\.042 264\.695\);/);
   });
 
-  it("overrides the package's light-only tokens when imported after @aureus-core/ui/styles.css", async () => {
+  it("overrides the brand theme in both modes when imported after @aureus-core/ui/styles.css", async () => {
     const stylesDir = fileURLToPath(
       new URL("../../../../../../../packages/ui/src/styles/", import.meta.url),
     );
@@ -72,12 +72,12 @@ describe("exported theme compiled with Tailwind CSS v4", () => {
       onDependency: () => {},
     });
     const css = compiler.build([]);
-    // The package's AA override uses :root:not(.dark) (0,2,0); the export repeats that selector
-    // later in the file, so it wins in light mode, and its .dark block still follows.
-    const packageAt = css.indexOf(":root:not(.dark) {");
-    const exportAt = css.lastIndexOf(":root, :root:not(.dark) {");
-    expect(packageAt).toBeGreaterThanOrEqual(0);
-    expect(exportAt).toBeGreaterThan(packageAt);
+    // The brand theme sets every token in :root then .dark; the export repeats both blocks later,
+    // with a light selector at least as specific, so it wins in each mode.
+    const brandAt = css.indexOf("--muted-foreground: oklch(0.446 0.043 257.281);");
+    const exportAt = css.indexOf(":root, :root:not(.dark) {");
+    expect(brandAt).toBeGreaterThanOrEqual(0);
+    expect(exportAt).toBeGreaterThan(brandAt);
     expect(css.slice(exportAt)).toContain("--muted-foreground: oklch(0.4 0.1 250);");
     expect(css.indexOf(".dark {", exportAt)).toBeGreaterThan(exportAt);
   });

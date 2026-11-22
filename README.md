@@ -37,7 +37,7 @@ In your main CSS file, **replace** `@import "tailwindcss";` with:
 @import "@aureus-core/ui/styles.css";
 ```
 
-It brings Tailwind, the shadcn tokens, the Aureus theme overrides, the typography tokens and fonts (Geist and Geist Mono, bundled) and an `@source` rule so Tailwind generates the classes the package components use.
+It brings Tailwind, the shadcn tokens, the Aureus brand theme (sapphire blue and gold, slate neutrals), the typography tokens and fonts (Geist and Geist Mono, bundled) and an `@source` rule so Tailwind generates the classes the package components use.
 
 ### Imports
 
@@ -381,7 +381,9 @@ Set `dir="rtl"` (and `lang`) on `<html>` and pass `dir="rtl"` to `DirectionProvi
 
 ### Theming
 
-The quickest way: download `theme.css` from **Tools › Theme Builder** (colors, radius, shadows, spacing) and `typography.css` from **Tools › Typography Builder** (fonts and text styles) in the documentation, put them next to your main CSS file, install the fonts with the `pnpm add` command the Typography Builder shows, and import both after the package:
+Out of the box, components use the **Aureus brand theme**: Aureus Blue (`#1745c2`, lighter in dark mode) for primary actions, active navigation, links and focus; Aureus Gold (`#e8b543`) for secondary buttons, badges and charts; Tailwind slate for neutrals. Every text pair reaches WCAG AA in both modes. For brand details that must not change with an app's theme, use the `brand-*` colors: `bg-brand-blue`, `bg-brand-gold text-brand-gold-foreground`, and `text-brand-gold-text` for gold text (the surface gold is not legible as text on white). See Foundations › Colors in the documentation.
+
+To give an app its own look, the quickest way: download `theme.css` from **Tools › Theme Builder** (colors, radius, shadows, spacing) and `typography.css` from **Tools › Typography Builder** (fonts and text styles) in the documentation, put them next to your main CSS file, install the fonts with the `pnpm add` command the Typography Builder shows, and import both after the package:
 
 ```css
 @import "@aureus-core/ui/styles.css";

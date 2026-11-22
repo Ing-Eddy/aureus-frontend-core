@@ -58,7 +58,11 @@ describe("generateColors", () => {
   });
 
   it("tints neutrals toward the primary hue", () => {
-    const colors = generateColors(inputsWith({ primary: blue, tint: 1 }), "light");
+    // A pure neutral ramp, so the hue comes only from the tint (the preset uses slate).
+    const colors = generateColors(
+      inputsWith({ primary: blue, neutral: "neutral", tint: 1 }),
+      "light",
+    );
     const muted = mustParse(colors.muted);
     expect(muted.c).toBeGreaterThan(0);
     expect(hueDistance(muted.h, 262.881)).toBeLessThan(5);
