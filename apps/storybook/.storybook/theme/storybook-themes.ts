@@ -7,7 +7,7 @@ import { create, type ThemeVars } from "storybook/theming";
  * #fafafa = --foreground, #a1a1a1 = --muted-foreground.
  */
 const brand = {
-  brandTitle: "Aureus UI",
+  brandTitle: "Aureus Frontend Kit",
   brandUrl: "https://github.com/Ing-Eddy/aureus-frontend-core",
   brandTarget: "_blank",
 } as const;

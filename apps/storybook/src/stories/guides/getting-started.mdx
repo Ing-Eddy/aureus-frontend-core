@@ -19,7 +19,7 @@ pnpm add @aureus-core/ui
 pnpm add -D tailwindcss @tailwindcss/vite
 ```
 
-`date-fns` and `@tanstack/react-table` are **not** dependencies of the package. Install them yourself if you build a DatePicker or a DataTable. To compose charts with `Chart`, install `recharts@3.8.0` (the version the package uses), so your app and the package share one copy.
+`DataTable` needs `@tanstack/react-table@^9`, an **optional** peer dependency: install it only if you use the data table (`pnpm add @tanstack/react-table`). `date-fns` is **not** a dependency of the package; install it yourself to build a DatePicker. To compose charts with `Chart`, install `recharts@3.8.0` (the version the package uses), so your app and the package share one copy.
 
 ## 2. Import the styles
 
@@ -91,7 +91,7 @@ pnpm add @aureus-core/ui
 pnpm add -D tailwindcss @tailwindcss/vite
 ```
 
-`date-fns` y `@tanstack/react-table` **no** son dependencias del paquete. Instálalas tú si construyes un DatePicker o una DataTable. Para componer gráficos con `Chart`, instala `recharts@3.8.0` (la versión que usa el paquete), así tu app y el paquete comparten una sola copia.
+`DataTable` necesita `@tanstack/react-table@^9`, una peer dependency **opcional**: instálala solo si usas la tabla de datos (`pnpm add @tanstack/react-table`). `date-fns` **no** es dependencia del paquete; instálala tú para construir un DatePicker. Para componer gráficos con `Chart`, instala `recharts@3.8.0` (la versión que usa el paquete), así tu app y el paquete comparten una sola copia.
 
 ## 2. Importa los estilos
 

@@ -37,7 +37,7 @@ export const docs = defineComponentDocs({
       "Styled native table elements for tabular data. Combine them with TanStack Table to build a DataTable with sorting, filtering, selection and pagination.",
     whenToUse: [
       "For data with columns users compare across rows: invoices, users, logs.",
-      "With `@tanstack/react-table` when the table needs sorting, filters or selection (see DataTable).",
+      "For a complete table with search, sorting, selection, pagination and server data, use `DataTable` (`@aureus-core/ui/components/data-table`); compose these parts with `@tanstack/react-table` only for a layout it does not cover.",
     ],
     whenNotToUse: [
       "For page layout: use CSS grid or flex.",
@@ -86,7 +86,7 @@ export const docs = defineComponentDocs({
       "Elementos de tabla nativos con estilos para datos tabulares. Combínalos con TanStack Table para construir una DataTable con orden, filtros, selección y paginación.",
     whenToUse: [
       "Para datos con columnas que se comparan entre filas: facturas, usuarios, registros.",
-      "Con `@tanstack/react-table` cuando la tabla necesita orden, filtros o selección (ver DataTable).",
+      "Para una tabla completa con búsqueda, orden, selección, paginación y datos del servidor, usa `DataTable` (`@aureus-core/ui/components/data-table`); compón estas piezas con `@tanstack/react-table` solo para un diseño que no cubra.",
     ],
     whenNotToUse: [
       "Para maquetar la página: usa CSS grid o flex.",

@@ -40,7 +40,7 @@ function SiteNav({ viewport, delayDuration, onValueChange }: NavArgs) {
                 <NavigationMenuLink href="#introduction" active>
                   <span className="font-medium">Introduction</span>
                   <span className="text-muted-foreground">
-                    What Aureus UI is and how it is built.
+                    What Aureus Frontend Kit is and how it is built.
                   </span>
                 </NavigationMenuLink>
               </li>

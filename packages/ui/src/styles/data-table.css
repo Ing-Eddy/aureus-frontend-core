@@ -1,0 +1,114 @@
+/*
+ * DataTable cell backgrounds. Every state lives on a data attribute; each rule only sets
+ * `--dt-cell-bg`, and every selector is wrapped in :where() (zero specificity), so the order
+ * below is the precedence: stripe < row hover < column hover < selected < marked < crossing.
+ * Pinned and sticky-header cells are opaque (the page background) and paint the state on top,
+ * so content scrolling under them never shows through.
+ */
+@layer components {
+  :where([data-slot="data-table"]) {
+    --dt-stripe: color-mix(in oklab, var(--muted) 45%, transparent);
+    --dt-hover: color-mix(in oklab, var(--muted) 80%, transparent);
+    --dt-selected: var(--muted);
+    --dt-marked: color-mix(in oklab, var(--primary) 9%, transparent);
+    --dt-crossing: color-mix(in oklab, var(--primary) 20%, transparent);
+  }
+
+  :where([data-slot="data-table"] tbody tr[data-stripe] > td) {
+    --dt-cell-bg: var(--dt-stripe);
+  }
+  :where([data-slot="data-table"][data-hover-rows] tbody tr:hover > td) {
+    --dt-cell-bg: var(--dt-hover);
+  }
+  :where([data-slot="data-table"] [data-column-hover]) {
+    --dt-cell-bg: var(--dt-hover);
+  }
+  :where([data-slot="data-table"] tbody tr[data-state="selected"] > td) {
+    --dt-cell-bg: var(--dt-selected);
+  }
+  :where([data-slot="data-table"] [data-highlight-column]),
+  :where([data-slot="data-table"] tbody tr[data-highlight-row] > td) {
+    --dt-cell-bg: var(--dt-marked);
+  }
+  :where([data-slot="data-table"] tbody tr[data-highlight-row] > td[data-highlight-column]) {
+    --dt-cell-bg: var(--dt-crossing);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent);
+  }
+
+  :where([data-slot="data-table"] :is(th, td)) {
+    background-color: var(--dt-cell-bg, transparent);
+  }
+  :where([data-slot="data-table"] :is(th, td)[data-opaque]) {
+    background-color: var(--background);
+    background-image: linear-gradient(
+      var(--dt-cell-bg, transparent),
+      var(--dt-cell-bg, transparent)
+    );
+  }
+  /*
+   * The divider of the last start-pinned and first end-pinned columns. A pseudo-element, not a
+   * border: with `border-collapse: collapse` (Tailwind's preflight) borders belong to the table
+   * grid and scroll away from sticky cells. Pinned cells are positioned (sticky), so it stays put.
+   */
+  :where([data-slot="data-table"] :is(th, td)[data-pin-edge])::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    width: 1px;
+    background-color: var(--border);
+    pointer-events: none;
+  }
+  :where([data-slot="data-table"] :is(th, td)[data-pin-edge="start"])::after {
+    inset-inline-end: 0;
+  }
+  :where([data-slot="data-table"] :is(th, td)[data-pin-edge="end"])::after {
+    inset-inline-start: 0;
+  }
+
+  /*
+   * Column dividers (`columnDividers`): a pseudo-element on the inline end of every cell but the
+   * last of its row, for the same reason as the pinned divider (collapsed borders belong to the
+   * table grid and would cross the sticky cells). The cells around a pinned edge skip it: the
+   * pinned divider already draws that line.
+   */
+  :where([data-slot="data-table"][data-column-dividers] td:not([data-pinned])) {
+    position: relative;
+  }
+  :where(
+    [data-slot="data-table"][data-column-dividers]
+      :is(th, td):not(:last-child, [data-pin-edge="start"], :has(+ [data-pin-edge="end"]))
+  )::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 1px;
+    background-color: var(--border);
+    pointer-events: none;
+  }
+
+  /*
+   * Forced colors (Windows high contrast) drop backgrounds and shadows, so the selected, marked and
+   * crossing cells are outlined with system colors, and the pinned divider is painted in CanvasText.
+   */
+  @media (forced-colors: active) {
+    :where([data-slot="data-table"] tbody tr[data-state="selected"] > td) {
+      outline: 1px solid Highlight;
+      outline-offset: -1px;
+    }
+    :where([data-slot="data-table"] [data-highlight-column]),
+    :where([data-slot="data-table"] tbody tr[data-highlight-row] > td) {
+      outline: 2px dashed Highlight;
+      outline-offset: -2px;
+    }
+    :where([data-slot="data-table"] tbody tr[data-highlight-row] > td[data-highlight-column]) {
+      outline: 3px solid Highlight;
+      outline-offset: -3px;
+    }
+    :where([data-slot="data-table"] :is(th, td)[data-pin-edge])::after,
+    :where([data-slot="data-table"][data-column-dividers] :is(th, td))::before {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
+  }
+}

@@ -49,15 +49,22 @@
     "check:package": "node scripts/check-package.mjs"
   },
   "peerDependencies": {
+    "@tanstack/react-table": "^9",
     "react": "^19",
     "react-dom": "^19",
     "react-hook-form": "^7",
     "tailwindcss": "^4"
   },
+  "peerDependenciesMeta": {
+    "@tanstack/react-table": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@aureus-core/tsconfig": "workspace:*",
     "@hookform/resolvers": "^7.0.6",
+    "@tanstack/react-table": "^9.3.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.10",

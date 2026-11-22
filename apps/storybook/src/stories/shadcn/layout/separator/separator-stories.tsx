@@ -23,8 +23,8 @@ const meta = {
       }
     >
       <div className="text-sm">
-        <p className="font-medium">Aureus UI</p>
-        <p className="text-muted-foreground">An open-source component library.</p>
+        <p className="font-medium">Aureus Frontend Kit</p>
+        <p className="text-muted-foreground">Shared frontend resources.</p>
       </div>
       <Separator {...args} />
       <p className="text-sm">Docs · Source · Releases</p>

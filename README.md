@@ -18,6 +18,7 @@ Monorepo of shared frontend resources (React + TypeScript), published to npm und
 - React 19 and React DOM 19.
 - Tailwind CSS v4. With Vite, use `@tailwindcss/vite`.
 - react-hook-form 7, used by the form controls (`*-control` components).
+- `@tanstack/react-table` 9, only for `DataTable` (optional peer dependency).
 
 ### Install
 
@@ -26,7 +27,7 @@ pnpm add @aureus-core/ui react-hook-form
 pnpm add -D tailwindcss @tailwindcss/vite
 ```
 
-`date-fns` and `@tanstack/react-table` are **not** dependencies of the package (no component imports them). Install them yourself if you build a DatePicker (`date-fns`) or a DataTable (`@tanstack/react-table`). To compose charts with `Chart`, install `recharts@3.8.0`, the version the package uses, so your app and the package share one copy.
+`DataTable` needs `@tanstack/react-table@^9`, an **optional** peer dependency: install it only if you use the data table (`pnpm add @tanstack/react-table`), and your app and the package share one copy. `date-fns` is **not** a dependency (no component imports it); install it yourself to build a DatePicker. To compose charts with `Chart`, install `recharts@3.8.0`, the version the package uses, so your app and the package share one copy.
 
 ### CSS
 
@@ -223,6 +224,77 @@ import {
   </ModalContent>
 </Modal>;
 ```
+
+### Data table
+
+`DataTable` (`@aureus-core/ui/components/data-table`) is a full data table on TanStack Table v9 and the shadcn table parts: a header (title, subtitle, search, reload, filters slot, columns menu), the table and pagination. Each feature is an object prop: passing it turns the feature on, and TypeScript requires the texts it needs. `header={false}` and `pagination={false}` hide those areas.
+
+- **Columns:** text or rich headers with a `subtitle`, nested columns, three-state sorting, hiding, start/end pinning, resizing and a footer row.
+- **Interaction:** mark a column and a row (the crossing cell stands out), row and column hover, row selection with bulk actions, expandable detail rows, a per-row actions menu and `onRowClick`.
+- **States and layout:** loading skeleton, empty and error slots, `density`, `striped`, `stickyHeader` and `maxHeight`.
+- **Control:** every state slice takes `value` / `defaultValue` / `onChange`, and search, sorting and pagination each have their own `manual` flag for server data. `tableRef` exposes the TanStack instance.
+
+```tsx
+import { DataTable, type DataTableColumn } from "@aureus-core/ui/components/data-table";
+
+const columns: DataTableColumn<User>[] = [
+  { accessorKey: "name", header: t("users.name"), sortable: true, pin: "start" },
+  {
+    id: "contact",
+    header: t("users.contact"),
+    columns: [
+      { accessorKey: "email", header: t("users.email"), hideable: true },
+      { accessorKey: "phone", header: t("users.phone"), hideable: true },
+    ],
+  },
+];
+
+<DataTable
+  data={users}
+  columns={columns}
+  getRowId={(user) => user.id}
+  header={{ title: t("users.title") }}
+  search={{
+    label: t("search.label"),
+    submitLabel: t("search.submit"),
+    clearLabel: t("search.clear"),
+    manual: true,
+    onSearch: setQuery,
+  }}
+  sorting={{
+    manual: true,
+    value: sorting,
+    onChange: setSorting,
+    sortLabel: (column) => t("table.sortBy", { column }),
+  }}
+  selection={{
+    selectRowLabel: (user) => t("table.select", { name: user.name }),
+    selectAllLabel: t("table.selectAll"),
+    actionsLabel: t("table.actions"),
+    actions: [
+      {
+        id: "delete",
+        label: t("users.delete"),
+        variant: "destructive",
+        onSelect: (rows, clear) => remove(rows).then(clear),
+      },
+    ],
+  }}
+  pagination={{
+    manual: true,
+    rowCount: total,
+    value: page,
+    onChange: setPage,
+    previousLabel: t("page.previous"),
+    nextLabel: t("page.next"),
+    pageLabel: (page, count) => t("page.of", { page, count }),
+  }}
+  loading={isFetching}
+  loadingLabel={t("table.loading")}
+/>;
+```
+
+Its icon buttons show their label as a tooltip, so mount `TooltipProvider` (see Providers).
 
 ### Dark mode
 

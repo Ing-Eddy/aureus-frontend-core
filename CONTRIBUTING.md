@@ -112,6 +112,21 @@ The shared props (`FieldBaseProps`, `FieldTexts`, `FieldActionProps`, `FieldClas
 - **Viewport queries** use `useMediaQuery` from `internal/hooks` (`useSyncExternalStore`, with a server value). Do not use shadcn's `useIsMobile`: it reports `false` on the first render and only updates in an effect.
 - **Testing in jsdom.** Vaul injects CSS animations that jsdom reports but never runs, so a closing drawer stays mounted until it receives `animationend`. The modal's test helper (`modal/tests/render-modal.tsx`) dispatches it and mocks `matchMedia` with a settable width. Gestures (swipe, snap points) are tested in Storybook.
 
+## Data table
+
+`DataTable` (`src/components/data-table/`) is built on TanStack Table v9 (`@tanstack/react-table`, an **optional** peer dependency of the package) and the shadcn table parts.
+
+- **One object per feature.** `search`, `reload`, `filters`, `columnToggle`, `sorting`, `highlight`, `hover`, `selection`, `expansion`, `rowActions`, `resizing`, `pinning` and `pagination` are opt-in objects. Their required texts are required properties or discriminated unions (`types/data-table-feature-types.ts`). Every one has a `@ts-expect-error` case in `tests/data-table-types-tests.tsx` and a development warning in `hooks/use-data-table-warnings.ts`.
+- **One source of truth.** `hooks/use-table-state.ts` owns every state slice through `useControllableState`, and TanStack always receives them as controlled `state`. Its `on*Change` updaters are resolved with `functionalUpdate` and reported through the feature's `onChange`.
+- **A static feature set.** `utils/data-table-features.ts` declares one `tableFeatures` (v9 expects it static). Whether a feature acts is decided per render by `manual*` / `enable*`, so a feature that is off, or `manual`, runs no client row model. Each feature's `manual` is independent of the others.
+- **Columns.** The consumer writes `DataTableColumn<TData>`, and `utils/to-tanstack-columns.ts` maps it to `ColumnDef`, keeping the source column in `meta.aureus`. The table parts render headers, cells and footers from it, so consumers never touch TanStack types. The selection, expansion and row-actions columns use the reserved ids `__aureus_*`.
+- **Nested headers.** TanStack repeats an ungrouped leaf as a placeholder in the upper header rows. `data-table-content.tsx` draws it once, in its first row, with `rowSpan`.
+- **Hover by DOM.** `hooks/use-column-hover.ts` sets `data-column-hover` on the cells of the column under the pointer with delegated `pointerover` listeners. No React state changes, so cells never re-render on pointer movement.
+- **Backgrounds in CSS.** Stripes, row and column hover, selected, marked and crossing cells, and the opaque pinned and sticky cells, are rules on data attributes in `src/styles/data-table.css`. Every selector is wrapped in `:where()`, so the file order is the precedence.
+- **Pinning.** Without `resizing`, `hooks/use-pinned-offsets.ts` measures the pinned header cells (one `ResizeObserver`), so the browser's automatic layout is kept. With `resizing`, the table uses `table-layout: fixed`, and the offsets come from the column sizes. Logical insets keep RTL right.
+- **shadcn classes.** The table container and `<table>` classes are copied into `utils/data-table-classes.ts`, because shadcn's `Table` renders a scroll container that cannot be configured. Compare that file after `shadcn:update`.
+- **Testing in jsdom.** There is no layout, so offsets are tested with mocked widths, and pinning and dragging are checked in the stories. Radix menus need the pointer-capture and `scrollIntoView` shims in `vitest-setup.ts`. In stories, wait for a menu to close (`queryByRole("menu")` is `null`) before the story ends; otherwise axe sees the rest of the page still `aria-hidden`.
+
 ## The utils package
 
 `packages/utils` (`@aureus-core/utils`) holds plain functions for every Aureus project: no React, no dependencies, only standard JavaScript and `Intl`.

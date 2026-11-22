@@ -29,3 +29,23 @@ if (typeof URL.createObjectURL !== "function") {
 if (typeof URL.revokeObjectURL !== "function") {
   URL.revokeObjectURL = () => {};
 }
+
+// jsdom has no pointer capture or scrollIntoView; Radix menus (dropdown, select) call them.
+if (typeof Element !== "undefined") {
+  for (const method of [
+    "hasPointerCapture",
+    "releasePointerCapture",
+    "setPointerCapture",
+  ] as const) {
+    if (typeof Element.prototype[method] !== "function") {
+      Object.defineProperty(Element.prototype, method, {
+        configurable: true,
+        writable: true,
+        value: method === "hasPointerCapture" ? () => false : () => {},
+      });
+    }
+  }
+  if (typeof Element.prototype.scrollIntoView !== "function") {
+    Element.prototype.scrollIntoView = () => {};
+  }
+}
