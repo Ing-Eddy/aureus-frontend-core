@@ -80,6 +80,21 @@ function ProfileForm() {
 - **Always pass `defaultValues`.** `name` is a plain string, so a typo cannot be caught by TypeScript. In development, a control warns when its `name` is not among the form's default values.
 - **Outside a `FormProvider`, a control throws** an error that says so.
 
+**Recommended: `createFormHook`.** `@aureus-core/hooks/schema-form` builds the same `useForm` + `zodResolver` setup for you, configured per form, with edit values, backend errors (arrays of messages per field) and messages that follow the language. The control side does not change:
+
+```tsx
+import { createFormHook } from "@aureus-core/hooks/schema-form";
+
+const useProfileForm = createFormHook({ schema, defaultValues: { username: "" } });
+
+function ProfileForm({ profile, errors }: ProfileFormProps) {
+  const form = useProfileForm({ values: profile, serverErrors: errors });
+  return <FormProvider {...form}>{/* the same controls */}</FormProvider>;
+}
+```
+
+See [hooks/Schema form](?path=/docs/hooks-schema-form--guide).
+
 ## `disabled` vs `loading`
 
 Both make the input unavailable, but they mean different things to the form:
@@ -551,6 +566,21 @@ function ProfileForm() {
 - **Los mensajes de validación aparecen en el lugar del texto de ayuda.** Mientras el campo tiene un error en el estado del formulario, su mensaje sustituye a `helperText`, el input recibe `aria-invalid` y el mensaje se anuncia. Cuando el valor se corrige, `helperText` vuelve.
 - **Pasa siempre `defaultValues`.** `name` es un string, así que TypeScript no detecta un error tipográfico. En desarrollo, un control avisa cuando su `name` no está entre los valores por defecto del formulario.
 - **Fuera de un `FormProvider`, un control lanza** un error que lo indica.
+
+**Recomendado: `createFormHook`.** `@aureus-core/hooks/schema-form` arma por ti el mismo `useForm` + `zodResolver`, configurado por formulario, con valores de edición, errores del backend (arreglos de mensajes por campo) y mensajes que siguen el idioma. Del lado de los controles no cambia nada:
+
+```tsx
+import { createFormHook } from "@aureus-core/hooks/schema-form";
+
+const useProfileForm = createFormHook({ schema, defaultValues: { username: "" } });
+
+function ProfileForm({ profile, errors }: ProfileFormProps) {
+  const form = useProfileForm({ values: profile, serverErrors: errors });
+  return <FormProvider {...form}>{/* los mismos controles */}</FormProvider>;
+}
+```
+
+Ver [hooks/Schema form](?path=/docs/hooks-schema-form--guide).
 
 ## `disabled` frente a `loading`
 

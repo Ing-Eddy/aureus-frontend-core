@@ -49,6 +49,18 @@ import { cn } from "@aureus-core/ui/lib/utils";
 
 Joins class names (falsy values are skipped) and resolves Tailwind conflicts: the last class wins (`cn("p-2", "p-4")` → `"p-4"`). Every component uses it to merge your `className`.
 
+## Form hooks: `@aureus-core/hooks`
+
+The hooks above come with `@aureus-core/ui`. Reusable application hooks live in their own package, `@aureus-core/hooks`, one module per family:
+
+```ts
+import { createFormHook } from "@aureus-core/hooks/schema-form";
+
+export const useLoginForm = createFormHook({ schema: useLoginSchema, defaultValues: { email: "", password: "" } });
+```
+
+`schema-form` creates react-hook-form form hooks from zod schemas (or schema hooks), with edit values, backend errors and messages that follow the language. See [hooks/Schema form](?path=/docs/hooks-schema-form--guide).
+
 </En>
 <Es>
 
@@ -95,5 +107,17 @@ import { cn } from "@aureus-core/ui/lib/utils";
 ```
 
 Une nombres de clase (se saltan los valores falsos) y resuelve conflictos de Tailwind: gana la última clase (`cn("p-2", "p-4")` → `"p-4"`). Todos los componentes lo usan para combinar tu `className`.
+
+## Hooks de formulario: `@aureus-core/hooks`
+
+Los hooks de arriba vienen con `@aureus-core/ui`. Los hooks de aplicación reutilizables viven en su propio paquete, `@aureus-core/hooks`, un módulo por familia:
+
+```ts
+import { createFormHook } from "@aureus-core/hooks/schema-form";
+
+export const useLoginForm = createFormHook({ schema: useLoginSchema, defaultValues: { email: "", password: "" } });
+```
+
+`schema-form` crea hooks de formulario de react-hook-form a partir de schemas de zod (o hooks de schema), con valores de edición, errores del backend y mensajes que siguen el idioma. Ver [hooks/Schema form](?path=/docs/hooks-schema-form--guide).
 
 </Es>

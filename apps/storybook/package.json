@@ -9,6 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@aureus-core/hooks": "workspace:*",
     "@aureus-core/ui": "workspace:*",
     "@aureus-core/utils": "workspace:*",
     "react": "^19.3.1",

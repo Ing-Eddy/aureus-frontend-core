@@ -1,0 +1,83 @@
+{
+  "name": "@aureus-core/hooks",
+  "version": "0.0.0",
+  "description": "Reusable React hooks for Aureus projects: schema-driven react-hook-form forms",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ing-Eddy/aureus-frontend-core.git",
+    "directory": "packages/hooks"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "exports": {
+    "./internal/*": null,
+    "./*": {
+      "types": "./dist/*/index.d.ts",
+      "default": "./dist/*/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check:package": "node scripts/check-package.mjs"
+  },
+  "peerDependencies": {
+    "@hookform/resolvers": "^7",
+    "react": "^19",
+    "react-hook-form": "^7",
+    "zod": "^4"
+  },
+  "peerDependenciesMeta": {
+    "@hookform/resolvers": {
+      "optional": true
+    },
+    "react-hook-form": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@aureus-core/tsconfig": "workspace:*",
+    "@hookform/resolvers": "^7.0.6",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.10",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "jsdom": "^31.0.0",
+    "publint": "^0.3.25",
+    "react": "^19",
+    "react-dom": "^19",
+    "react-hook-form": "^7.92.0",
+    "tsdown": "^0.23.7",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0",
+    "zod": "^4.6.7"
+  },
+  "homepage": "https://ing-eddy.github.io/aureus-frontend-core/",
+  "bugs": {
+    "url": "https://github.com/Ing-Eddy/aureus-frontend-core/issues"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "react-hook-form",
+    "zod",
+    "forms"
+  ]
+}

@@ -6,7 +6,7 @@ Provides an isolated, private environment for browsing, documenting and developi
 ## Requirements
 
 ### Requirement: Playground renders the built package
-The playground SHALL consume `@aureus-core/ui` through its public import paths and its published stylesheet, and `@aureus-core/utils` through its public module paths, exactly as a consumer would. It MUST NOT import either package's internal source files.
+The playground SHALL consume `@aureus-core/ui` through its public import paths and its published stylesheet, and `@aureus-core/utils` and `@aureus-core/hooks` through their public module paths, exactly as a consumer would. It MUST NOT import any package's internal source files.
 
 #### Scenario: Story uses public paths
 - **WHEN** a story renders the shadcn `Button`
@@ -16,6 +16,10 @@ The playground SHALL consume `@aureus-core/ui` through its public import paths a
 - **WHEN** a story shows the date-format catalog
 - **THEN** it imports from `@aureus-core/utils/date-formats`, not from the package's `src/`
 
+#### Scenario: Hooks page uses public paths
+- **WHEN** a story renders a form built with `createFormHook`
+- **THEN** it imports from `@aureus-core/hooks/schema-form` and renders `@aureus-core/ui` controls through their public paths
+
 ### Requirement: Live development loop
 Running the root `dev` command SHALL rebuild the UI package on change and refresh the playground, without manual rebuilds.
 
@@ -24,7 +28,7 @@ Running the root `dev` command SHALL rebuild the UI package on change and refres
 - **THEN** the playground shows the new value without the developer running another command
 
 ### Requirement: Story organisation
-Stories SHALL live in the playground app, not in the UI package. Component stories are grouped into `shadcn/` and `components/` sections that mirror the package layers. The documentation of `@aureus-core/utils` lives in a `utils/` section, with one page per public module, shown after the component sections. Interactive tools that are not package documentation live in a `tools/` section, shown last in the sidebar. Code shared by several tools lives in `tools/shared/` and contains no story. Story files are named `<name>-stories.tsx`.
+Stories SHALL live in the playground app, not in the UI package. Component stories are grouped into `shadcn/` and `components/` sections that mirror the package layers. The documentation of `@aureus-core/utils` lives in a `utils/` section, and the documentation of `@aureus-core/hooks` lives in a `hooks/` section. Both have one page per public module and are shown after the component sections, `utils` first. Interactive tools that are not package documentation live in a `tools/` section, shown last in the sidebar. Code shared by several tools lives in `tools/shared/` and contains no story. Story files are named `<name>-stories.tsx`.
 
 #### Scenario: Stories never enter the CLI-owned layer
 - **WHEN** a story is written for a shadcn component
@@ -37,6 +41,10 @@ Stories SHALL live in the playground app, not in the UI package. Component stori
 #### Scenario: Utils section
 - **WHEN** a user browses the playground sidebar
 - **THEN** a "utils" section appears after the component sections and before "Tools", with a page for `date-formats` and a page for `display`
+
+#### Scenario: Hooks section
+- **WHEN** a user browses the playground sidebar
+- **THEN** a "hooks" section appears after "utils" and before "Tools", with a page for `schema-form` (a guide and its live examples)
 
 ### Requirement: Accessibility feedback
 The playground SHALL report accessibility violations for every rendered story.
@@ -93,7 +101,7 @@ Each component's documentation page SHALL present:
 - **THEN** the page shows an import snippet from `@aureus-core/ui/shadcn/dialog` naming the exported sub-components, and a control to copy it
 
 ### Requirement: Bilingual documentation with a locale switcher
-All documentation prose (component pages, utils pages, guides and foundations) SHALL be available in English and Spanish. The playground MUST offer a locale switcher in its toolbar. Switching locale MUST update the documentation currently shown without a page reload. English MUST be the default locale. A missing translation for any documentation entry MUST fail the playground's test command.
+All documentation prose (component pages, utils pages, hooks pages, guides and foundations) SHALL be available in English and Spanish. The playground MUST offer a locale switcher in its toolbar. Switching locale MUST update the documentation currently shown without a page reload. English MUST be the default locale. A missing translation for any documentation entry MUST fail the playground's test command.
 
 #### Scenario: Switching to Spanish
 - **WHEN** a user viewing a component's documentation page selects "Español" in the locale switcher
@@ -104,12 +112,16 @@ All documentation prose (component pages, utils pages, guides and foundations) S
 - **THEN** the playground's test command fails and names the component and entry
 
 #### Scenario: Utils page missing a translation
-- **WHEN** a utils page has a section in English with no Spanish counterpart
+- **WHEN** a utils or hooks page has a section in English with no Spanish counterpart
 - **THEN** the playground's test command fails and names the page
 
 #### Scenario: Live catalog follows the locale
 - **WHEN** a user viewing the date-formats catalog story switches the toolbar to "Español"
 - **THEN** every example in the table is shown in Spanish without reloading the page
+
+#### Scenario: Form example follows the locale
+- **WHEN** a user viewing the schema-form multilanguage story has submitted the form with errors and switches the toolbar to "Español"
+- **THEN** the labels and the visible validation messages are shown in Spanish without reloading the page
 
 ### Requirement: Bilingual interactive tools
 Every interactive tool in the playground SHALL show its labels, help text, messages and reports in English and Spanish, following the toolbar's locale switcher without a page reload. A tool's UI string that is missing in one locale MUST fail the playground's test command.

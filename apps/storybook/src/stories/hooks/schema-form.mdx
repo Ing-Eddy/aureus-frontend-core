@@ -1,0 +1,704 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+import * as SchemaFormStories from "./schema-form/schema-form-stories";
+
+<Meta of={SchemaFormStories} name="Guide" />
+
+<En>
+
+# Schema form
+
+`@aureus-core/hooks/schema-form` creates the hook of a react-hook-form form from a zod schema in a few lines. You write the schema (usually as a hook, so its messages follow the language), the initial values, and the options of **that** form. You get react-hook-form's own form object, ready for `FormProvider` and the `*-control` components of `@aureus-core/ui`.
+
+- **`createFormHook(config)`**: creates a reusable form hook (`useLoginForm`, `useCompanyForm`…). This is the usual way.
+- **`useSchemaForm(schema, options)`**: the same engine without the factory, for a one-off form.
+- **`applyServerErrors(form, errors, options?)`**: sets backend errors from a callback.
+
+There is no global configuration: each form declares its own options when it is created.
+
+## Installation
+
+```sh
+pnpm add @aureus-core/hooks react-hook-form zod @hookform/resolvers
+```
+
+`react` 19 is required. `react-hook-form` 7, `zod` 4 and `@hookform/resolvers` 7 are optional peers of the package, but this module needs them. There is no root import: always import the module.
+
+```ts
+import { applyServerErrors, createFormHook, useSchemaForm } from "@aureus-core/hooks/schema-form";
+```
+
+## Your first form
+
+**1. The schema**, as a hook that memoizes it on i18next's `t` (see "Schema hooks" below):
+
+```ts
+// features/auth/hooks/use-login-schema.ts
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
+export const useLoginSchema = () => {
+  const { t } = useTranslation("auth");
+  return useMemo(
+    () =>
+      z.object({
+        email: z.string().trim().min(1, t("validation.email.required")).pipe(z.email(t("validation.email.invalid"))),
+        password: z.string().min(1, t("validation.password.required")),
+      }),
+    [t],
+  );
+};
+```
+
+**2. The form hook**: the schema, the initial values and this form's options.
+
+```ts
+// features/auth/hooks/use-login-form.ts
+import { createFormHook } from "@aureus-core/hooks/schema-form";
+import { useLoginSchema } from "./use-login-schema";
+
+export const LOGIN_FORM_DEFAULTS = { email: "", password: "" };
+
+export const useLoginForm = createFormHook({
+  schema: useLoginSchema,
+  defaultValues: LOGIN_FORM_DEFAULTS,
+  mode: "onBlur",
+  reValidateMode: "onBlur",
+});
+```
+
+**3. The component**: spread the form into `FormProvider` and render controls by `name`.
+
+```tsx
+import { PasswordControl } from "@aureus-core/ui/components/password-control";
+import { TextControl } from "@aureus-core/ui/components/text-control";
+import { FormProvider } from "react-hook-form";
+
+export function LoginForm({ onSubmit, errors }: LoginFormProps) {
+  const { t } = useTranslation("auth");
+  const form = useLoginForm({ serverErrors: errors });
+
+  return (
+    <FormProvider {...form}>
+      <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
+        <TextControl name="email" inputMode="email" autoComplete="email" label={t("login.email")} />
+        <PasswordControl
+          name="password"
+          label={t("login.password")}
+          showPasswordLabel={t("login.showPassword")}
+          hidePasswordLabel={t("login.hidePassword")}
+        />
+        <Button type="submit">{t("login.submit")}</Button>
+      </form>
+    </FormProvider>
+  );
+}
+```
+
+The returned `form` is react-hook-form's `UseFormReturn`: `form.handleSubmit`, `form.reset()`, `form.setError()`, `form.watch`… work as usual.
+
+<Canvas of={SchemaFormStories.Basic} />
+
+## Create and edit with the same form
+
+- **`defaultValues`** (in `createFormHook`) is the form's starting point, usually empty values. It is a plain object with the schema's input type.
+- **`values`** (when the hook is used) is existing data, for example the record being edited. It is merged over `defaultValues`, so it can be partial.
+
+```tsx
+const form = useCompanyForm();                         // create: empty form
+const form = useCompanyForm({ values: company });       // edit: filled with the company
+const form = useCompanyForm({ values: companyQuery.data }); // undefined at first, filled when it arrives
+```
+
+How `values` is merged:
+
+- plain objects are merged field by field, at any depth: `{ address: { city: "Lima" } }` keeps the other address fields;
+- arrays, dates and other values replace the default as a whole;
+- a field set to `undefined` keeps the default; `null` is kept;
+- `defaultValues` is never modified.
+
+`values` stays in sync. When it arrives later, or its content changes, the form is reset to it, and `form.reset()` goes back to it. A new object with the **same content** does not reset the form, so re-renders do not wipe the user's edits. If a query can refetch while the user is editing, keep their edits with react-hook-form's `resetOptions`:
+
+```ts
+export const useCompanyForm = createFormHook({
+  schema: useCompanySchema,
+  defaultValues: COMPANY_FORM_DEFAULTS,
+  resetOptions: { keepDirtyValues: true }, // new data fills only the fields the user has not changed
+});
+```
+
+<Canvas of={SchemaFormStories.CreateAndEdit} />
+
+## Configuring each form
+
+`createFormHook` accepts every `useForm` option of react-hook-form, plus three of its own. All are optional and independent: none changes another one's default. What you leave out keeps **react-hook-form's** default.
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| `mode` | `"onSubmit"` | When fields are validated first: `onSubmit`, `onBlur`, `onChange`, `onTouched` or `all`. |
+| `reValidateMode` | `"onChange"` | When fields are validated again after a submit. |
+| `shouldUnregister` | `false` | `true`: an unmounted field loses its value and leaves the submitted data. |
+| `criteriaMode` | `"firstError"` | `"all"`: every failed rule of a field is kept in `error.types`. |
+| `shouldFocusError` | `true` | Focuses the first invalid field on submit. |
+| `delayError` | none | Milliseconds before an error is shown. |
+| `disabled` | `false` | Disables the whole form. |
+| `resetOptions` | none | How `values` resets the form, for example `keepDirtyValues`. |
+| `joinMessages` | joined with a space | Joins several server messages of one field (see "Server errors"). |
+| `parseServerErrors` | none | Converts your backend's error body (see "Server errors"). |
+| `resolverOptions` | none | zod's parse options for validation. Keep the object constant. |
+
+`resolver`, `context`, `defaultValues` and `values` are managed by the module and cannot be passed as options.
+
+Each form hook uses only its own options:
+
+```ts
+export const useLoginForm = createFormHook({ schema: useLoginSchema, defaultValues: LOGIN_FORM_DEFAULTS, mode: "onBlur" });
+export const useSearchForm = createFormHook({ schema: searchSchema, defaultValues: { query: "" }, mode: "onChange" });
+```
+
+An option passed when the hook is used overrides the form's option for that call only: `useLoginForm({ mode: "onSubmit" })`.
+
+## Server errors
+
+Backends often return validation errors as an array of messages per field. Pass them as they come:
+
+```ts
+// the backend's response body
+{ "email": ["Already registered", "Domain not allowed"], "password": ["Too short"] }
+```
+
+```tsx
+const form = useSignUpForm({ serverErrors: signUpMutation.error?.body });
+```
+
+- **Keys** are field paths: `"email"`, nested fields `"address.city"`, array items `"items.0.name"`. Use `"root"` or `"root.<name>"` for an error that belongs to no field; it is in `form.formState.errors.root`.
+- **Values** are a message or an array of messages. Empty messages are ignored, and a field with no message gets no error.
+- **What the user sees.** Each field gets an error of type `"server"`. Its message, the one a control shows in its helper slot, is the field's messages joined by `joinMessages` (default: a space). `error.types.server` keeps the full array if you want to show a list.
+
+```ts
+export const useSignUpForm = createFormHook({
+  schema: useSignUpSchema,
+  defaultValues: SIGN_UP_DEFAULTS,
+  joinMessages: (messages) => messages.join(". "), // "Already registered. Domain not allowed"
+});
+```
+
+**Another shape → `parseServerErrors`.** If your backend wraps the errors, give the form an adapter. `serverErrors` then takes the adapter's input type, and TypeScript checks it:
+
+```ts
+// Laravel: { message: "...", errors: { email: ["..."] } }
+parseServerErrors: (body: { message: string; errors: Record<string, string[]> }) => body.errors,
+
+// A list: [{ field: "email", message: "..." }]
+parseServerErrors: (issues: { field: string; message: string }[]) => {
+  const errors: Record<string, string[]> = {};
+  for (const { field, message } of issues) errors[field] = [...(errors[field] ?? []), message];
+  return errors;
+},
+
+// A single message for the whole form
+parseServerErrors: (body: { detail: string }) => ({ root: body.detail }),
+```
+
+**Reactive or imperative.**
+
+- `serverErrors` (reactive) suits props or a request's error state. The errors are set **each time a new object arrives**, so a new response with the same messages shows them again. The same object passed on later renders is not set again, so an error the user has fixed does not come back. Pass a stable object (the request's error), never a literal written in the render (`serverErrors={{ email: [...] }}` would be a new object on every render). `undefined` leaves the current errors as they are.
+- `applyServerErrors(form, errors, { joinMessages?, parse? })` (imperative) suits a callback:
+
+```ts
+signUpMutation.mutate(values, {
+  onError: (error) => applyServerErrors(form, error.body, { parse: (body: ApiErrorBody) => body.errors }),
+});
+```
+
+A server error disappears like any other error: when react-hook-form validates that field again and it is valid. Changing the language does not remove it.
+
+<Canvas of={SchemaFormStories.ServerErrors} />
+
+## Schema hooks
+
+Writing schemas as hooks is the recommended pattern: the messages come from i18next, and the schema is rebuilt only when the language changes.
+
+```ts
+export const useLoginSchema = () => {
+  const { t } = useTranslation("auth");
+  return useMemo(() => z.object({ /* rules with t(...) messages */ }), [t]);
+};
+```
+
+- `useTranslation` gives a new `t` when the language changes, so `useMemo([t])` gives a new schema only then.
+- The form sees the new schema and validates again **only the fields that show a schema error**, so their messages switch language without the user doing anything. Fields without an error stay untouched, and server errors are kept.
+
+<Canvas of={SchemaFormStories.Multilanguage} />
+
+### Schemas with parameters
+
+A schema hook can take one parameter for its own logic. Pass it as `schemaParams` when you use the form:
+
+```ts
+export const useCompanySchema = ({ isEdit }: { isEdit: boolean }) => {
+  const { t } = useTranslation("companies");
+  return useMemo(
+    () =>
+      z.object({
+        name: z.string().trim().min(1, t("validation.name.required")),
+        taxId: isEdit ? z.string() : z.string().trim().min(1, t("validation.taxId.required")),
+      }),
+    [t, isEdit], // the parameters ALWAYS go in the dependencies
+  );
+};
+
+export const useCompanyForm = createFormHook({ schema: useCompanySchema, defaultValues: COMPANY_FORM_DEFAULTS });
+
+const form = useCompanyForm({ schemaParams: { isEdit: true }, values: company });
+```
+
+TypeScript follows the schema hook's parameter:
+
+| Schema | `schemaParams` | Calling the form hook |
+| --- | --- | --- |
+| A zod schema, or a hook without parameters | not accepted | `useLoginForm()` |
+| A hook with an optional parameter | optional | `useNoteForm()` or `useNoteForm({ schemaParams: { max: 10 } })` |
+| A hook with a required parameter | required | `useCompanyForm({ schemaParams: { isEdit } })` |
+
+When a parameter changes, the schema is rebuilt and the visible errors are recalculated with the new rules, the same as after a language change.
+
+<Canvas of={SchemaFormStories.SchemaParams} />
+
+### Rules for schema hooks
+
+- **Memoize the schema** with `useMemo`, with `t` and every parameter in the dependencies.
+- **Prefer simple parameters** (booleans, numbers, strings). An object or array created in the render (`schemaParams: { roles: ["admin"] }`) is new on every render. With a parameter like that, put the parameter itself in the dependencies (`[t, options]`) only if the caller memoizes it.
+- **If the schema changes on every render**, re-validating would cause new renders without end. The form detects this, stops, and logs once in development: `[useSchemaForm] The schema changed again while its errors were being re-validated…`. Fix the memoization when you see it.
+- **Order the rules in zod 4.** Checks run in the order written, and the first failing message is shown. Tests in this package confirm both points:
+  - with `z.email(invalid).min(1, required).trim()`, an empty field shows "invalid" instead of "required";
+  - with the same schema, `" ana@mail.com "` fails, because the trailing `.trim()` runs after the format check.
+
+  Write trim, required and format in that order:
+
+```ts
+email: z.string().trim().min(1, t("validation.email.required")).pipe(z.email(t("validation.email.invalid"))),
+```
+
+- **Form types** come from the schema hook: `z.input<ReturnType<typeof useLoginSchema>>` for the values, `z.output<…>` for the submitted data (the same type when the schema has no transforms).
+
+## Input and output types
+
+The form's values use the schema's **input** type, and `handleSubmit` receives its **output** type. Schemas with `transform`, `coerce` or `default` work, and TypeScript checks `defaultValues` and `values` against the input type.
+
+```ts
+const ageSchema = z.object({ age: z.string().regex(/^\d+$/, t("validation.age")).transform(Number) });
+
+createFormHook({ schema: ageSchema, defaultValues: { age: "" } }); // the input is a string
+form.handleSubmit((data) => save(data.age)); // data.age is a number
+```
+
+Exported types: `FormInput<S>`, `FormOutput<S>`, `SchemaFormReturn<S>`, `ServerErrors<Values>`, `FormHook`, `FormHookOptions`, `CreateFormHookConfig`, `SchemaFormOptions` and `FormSchema`.
+
+<Canvas of={SchemaFormStories.Transforms} />
+
+## Development warnings and common mistakes
+
+Warnings are logged only outside production builds, once each, and start with the name in brackets.
+
+| Warning or symptom | Cause and fix |
+| --- | --- |
+| `[useSchemaForm] The schema changed again while…` | The schema is not memoized, or a parameter is a new object on every render. Memoize it. |
+| `[useSchemaForm] Server error for "phone", which is not a field…` | A server key that is not in the form's values. Check the key, or add the field to `defaultValues`. The error is set anyway. |
+| `[useSchemaForm] serverErrors must be an object…` | The backend body is not `{ path: messages }`. Add `parseServerErrors`. |
+| A server error keeps coming back | `serverErrors` is a literal written in the render. Pass the request's error object. |
+| A control warns that its `name` is unknown | The field is missing from `defaultValues`. |
+| The edit form loses the user's edits when data refetches | Add `resetOptions: { keepDirtyValues: true }`. |
+
+## Migration
+
+**From `useForm` + `zodResolver`:**
+
+```ts
+// before
+const form = useForm({ resolver: zodResolver(schema), defaultValues: { username: "" } });
+// after
+const form = useSchemaForm(schema, { defaultValues: { username: "" } });
+```
+
+**From the old `createFormHook` (`use-generic-form` / `form-hook-factory`):**
+
+| Before | After |
+| --- | --- |
+| `createFormHook(useXSchema, (preset = {}) => ({ ...DEFAULTS, ...preset }))` | `createFormHook({ schema: useXSchema, defaultValues: DEFAULTS })` |
+| `useXForm(defaultValues ?? {}, errors)` | `useXForm({ values: defaultValues, serverErrors: errors })` |
+| `{ syncOnDefaultValuesChange: true }` | Nothing: `values` always stays in sync. |
+| `const { form, handleSubmit } = useXForm()` | `const form = useXForm()` and `form.handleSubmit` |
+| `resetForm()` / `setFieldError(name, message)` | `form.reset()` / `form.setError(name, { message })` |
+| Defaults `onBlur` and `shouldUnregister: true` built in | react-hook-form's defaults; set `mode`, `reValidateMode`, `shouldUnregister` per form. |
+| `concatenateFieldErrors` (". ") | `joinMessages: (messages) => messages.join(". ")` |
+| `XFormPreset` types | Not needed: `values` is typed from the schema. |
+
+## API reference
+
+```ts
+createFormHook<Src, B>(config: CreateFormHookConfig<Src, B>): FormHook<Src, B>
+// config: { schema: Src; defaultValues: FormInput<S> } & useForm options & { joinMessages?, parseServerErrors?, resolverOptions? }
+// useXForm(options?): SchemaFormReturn<S>
+//   options: { schemaParams?, values?, serverErrors? } & the same options, overriding for that call
+
+useSchemaForm<S, B>(schema: S, options: SchemaFormOptions<S, B>): SchemaFormReturn<S>
+// options: { defaultValues: FormInput<S>; values?; serverErrors? } & useForm options & { joinMessages?, parseServerErrors?, resolverOptions? }
+
+applyServerErrors<Values, B>(form, errors: B | null | undefined, options?: { joinMessages?; parse? }): void
+```
+
+- `SchemaFormReturn<S>` is `UseFormReturn<FormInput<S>, unknown, FormOutput<S>>`.
+- `ServerErrors<Values>` is an object from field paths (or `root`) to a message or an array of messages.
+
+</En>
+<Es>
+
+# Schema form
+
+`@aureus-core/hooks/schema-form` crea en pocas líneas el hook de un formulario de react-hook-form a partir de un schema de zod. Tú escribes el schema (normalmente como hook, para que sus mensajes sigan el idioma), los valores iniciales y las opciones de **ese** formulario. Recibes el objeto de formulario de react-hook-form, listo para `FormProvider` y los componentes `*-control` de `@aureus-core/ui`.
+
+- **`createFormHook(config)`**: crea un hook de formulario reutilizable (`useLoginForm`, `useCompanyForm`…). Es la forma habitual.
+- **`useSchemaForm(schema, options)`**: el mismo motor sin la fábrica, para un formulario puntual.
+- **`applyServerErrors(form, errors, options?)`**: aplica errores del backend desde un callback.
+
+No hay configuración global: cada formulario declara sus propias opciones cuando se crea.
+
+## Instalación
+
+```sh
+pnpm add @aureus-core/hooks react-hook-form zod @hookform/resolvers
+```
+
+`react` 19 es obligatorio. `react-hook-form` 7, `zod` 4 y `@hookform/resolvers` 7 son peers opcionales del paquete, pero este módulo los necesita. No hay import raíz: importa siempre el módulo.
+
+```ts
+import { applyServerErrors, createFormHook, useSchemaForm } from "@aureus-core/hooks/schema-form";
+```
+
+## Tu primer formulario
+
+**1. El schema**, como un hook que lo memoiza sobre el `t` de i18next (ver "Hooks de schema" más abajo):
+
+```ts
+// features/auth/hooks/use-login-schema.ts
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
+export const useLoginSchema = () => {
+  const { t } = useTranslation("auth");
+  return useMemo(
+    () =>
+      z.object({
+        email: z.string().trim().min(1, t("validation.email.required")).pipe(z.email(t("validation.email.invalid"))),
+        password: z.string().min(1, t("validation.password.required")),
+      }),
+    [t],
+  );
+};
+```
+
+**2. El hook del formulario**: el schema, los valores iniciales y las opciones de este formulario.
+
+```ts
+// features/auth/hooks/use-login-form.ts
+import { createFormHook } from "@aureus-core/hooks/schema-form";
+import { useLoginSchema } from "./use-login-schema";
+
+export const LOGIN_FORM_DEFAULTS = { email: "", password: "" };
+
+export const useLoginForm = createFormHook({
+  schema: useLoginSchema,
+  defaultValues: LOGIN_FORM_DEFAULTS,
+  mode: "onBlur",
+  reValidateMode: "onBlur",
+});
+```
+
+**3. El componente**: pasa el formulario a `FormProvider` y renderiza los controles por `name`.
+
+```tsx
+import { PasswordControl } from "@aureus-core/ui/components/password-control";
+import { TextControl } from "@aureus-core/ui/components/text-control";
+import { FormProvider } from "react-hook-form";
+
+export function LoginForm({ onSubmit, errors }: LoginFormProps) {
+  const { t } = useTranslation("auth");
+  const form = useLoginForm({ serverErrors: errors });
+
+  return (
+    <FormProvider {...form}>
+      <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
+        <TextControl name="email" inputMode="email" autoComplete="email" label={t("login.email")} />
+        <PasswordControl
+          name="password"
+          label={t("login.password")}
+          showPasswordLabel={t("login.showPassword")}
+          hidePasswordLabel={t("login.hidePassword")}
+        />
+        <Button type="submit">{t("login.submit")}</Button>
+      </form>
+    </FormProvider>
+  );
+}
+```
+
+El `form` que se devuelve es el `UseFormReturn` de react-hook-form: `form.handleSubmit`, `form.reset()`, `form.setError()`, `form.watch`… funcionan como siempre.
+
+<Canvas of={SchemaFormStories.Basic} />
+
+## Crear y editar con el mismo formulario
+
+- **`defaultValues`** (en `createFormHook`) es el punto de partida del formulario, normalmente valores vacíos. Es un objeto con el tipo de entrada del schema.
+- **`values`** (al usar el hook) son los datos existentes, por ejemplo el registro que se edita. Se mezclan encima de `defaultValues`, así que pueden ser parciales.
+
+```tsx
+const form = useCompanyForm();                         // crear: formulario vacío
+const form = useCompanyForm({ values: company });       // editar: relleno con la empresa
+const form = useCompanyForm({ values: companyQuery.data }); // undefined al principio, se rellena cuando llega
+```
+
+Cómo se mezcla `values`:
+
+- los objetos planos se mezclan campo a campo, a cualquier profundidad: `{ address: { city: "Lima" } }` conserva los demás campos de la dirección;
+- los arrays, las fechas y los demás valores reemplazan el default completo;
+- un campo en `undefined` conserva el default; `null` se respeta;
+- `defaultValues` nunca se modifica.
+
+`values` se mantiene sincronizado. Cuando llega después, o cambia su contenido, el formulario se resetea con él, y `form.reset()` vuelve a él. Un objeto nuevo con el **mismo contenido** no resetea el formulario, así que los re-renders no borran lo que el usuario editó. Si una query puede volver a cargar mientras el usuario edita, conserva sus cambios con `resetOptions` de react-hook-form:
+
+```ts
+export const useCompanyForm = createFormHook({
+  schema: useCompanySchema,
+  defaultValues: COMPANY_FORM_DEFAULTS,
+  resetOptions: { keepDirtyValues: true }, // los datos nuevos solo rellenan los campos que el usuario no cambió
+});
+```
+
+<Canvas of={SchemaFormStories.CreateAndEdit} />
+
+## Configurar cada formulario
+
+`createFormHook` acepta todas las opciones de `useForm` de react-hook-form, más tres propias. Todas son opcionales e independientes: ninguna cambia el valor por defecto de otra. Lo que no pases conserva el valor por defecto **de react-hook-form**.
+
+| Opción | Por defecto | Qué hace |
+| --- | --- | --- |
+| `mode` | `"onSubmit"` | Cuándo se validan los campos la primera vez: `onSubmit`, `onBlur`, `onChange`, `onTouched` o `all`. |
+| `reValidateMode` | `"onChange"` | Cuándo se vuelven a validar los campos después de un submit. |
+| `shouldUnregister` | `false` | `true`: un campo desmontado pierde su valor y sale de los datos enviados. |
+| `criteriaMode` | `"firstError"` | `"all"`: se guardan en `error.types` todas las reglas que falla un campo. |
+| `shouldFocusError` | `true` | Enfoca el primer campo inválido al enviar. |
+| `delayError` | ninguno | Milisegundos antes de mostrar un error. |
+| `disabled` | `false` | Deshabilita todo el formulario. |
+| `resetOptions` | ninguno | Cómo `values` resetea el formulario, por ejemplo `keepDirtyValues`. |
+| `joinMessages` | unidos con un espacio | Une varios mensajes del servidor de un campo (ver "Errores del servidor"). |
+| `parseServerErrors` | ninguno | Convierte el cuerpo de error de tu backend (ver "Errores del servidor"). |
+| `resolverOptions` | ninguno | Opciones de parse de zod para la validación. Mantén el objeto constante. |
+
+`resolver`, `context`, `defaultValues` y `values` los gestiona el módulo y no se pueden pasar como opciones.
+
+Cada hook de formulario usa solo sus propias opciones:
+
+```ts
+export const useLoginForm = createFormHook({ schema: useLoginSchema, defaultValues: LOGIN_FORM_DEFAULTS, mode: "onBlur" });
+export const useSearchForm = createFormHook({ schema: searchSchema, defaultValues: { query: "" }, mode: "onChange" });
+```
+
+Una opción pasada al usar el hook sobrescribe la del formulario solo en esa llamada: `useLoginForm({ mode: "onSubmit" })`.
+
+## Errores del servidor
+
+Muchos backends devuelven los errores de validación como un arreglo de mensajes por campo. Pásalos tal como llegan:
+
+```ts
+// el cuerpo de la respuesta del backend
+{ "email": ["Ya está registrado", "Dominio no permitido"], "password": ["Muy corta"] }
+```
+
+```tsx
+const form = useSignUpForm({ serverErrors: signUpMutation.error?.body });
+```
+
+- **Las claves** son rutas de campo: `"email"`, campos anidados `"address.city"`, elementos de arrays `"items.0.name"`. Usa `"root"` o `"root.<nombre>"` para un error que no es de ningún campo; queda en `form.formState.errors.root`.
+- **Los valores** son un mensaje o un arreglo de mensajes. Los mensajes vacíos se ignoran, y un campo sin mensajes no recibe error.
+- **Lo que ve el usuario.** Cada campo recibe un error de tipo `"server"`. Su mensaje, el que el control muestra en su texto de ayuda, son los mensajes del campo unidos con `joinMessages` (por defecto, un espacio). `error.types.server` conserva el arreglo completo por si quieres mostrar una lista.
+
+```ts
+export const useSignUpForm = createFormHook({
+  schema: useSignUpSchema,
+  defaultValues: SIGN_UP_DEFAULTS,
+  joinMessages: (messages) => messages.join(". "), // "Ya está registrado. Dominio no permitido"
+});
+```
+
+**Otro formato → `parseServerErrors`.** Si tu backend envuelve los errores, dale al formulario un adaptador. `serverErrors` pasa a aceptar el tipo de entrada del adaptador, y TypeScript lo comprueba:
+
+```ts
+// Laravel: { message: "...", errors: { email: ["..."] } }
+parseServerErrors: (body: { message: string; errors: Record<string, string[]> }) => body.errors,
+
+// Una lista: [{ field: "email", message: "..." }]
+parseServerErrors: (issues: { field: string; message: string }[]) => {
+  const errors: Record<string, string[]> = {};
+  for (const { field, message } of issues) errors[field] = [...(errors[field] ?? []), message];
+  return errors;
+},
+
+// Un único mensaje para todo el formulario
+parseServerErrors: (body: { detail: string }) => ({ root: body.detail }),
+```
+
+**Reactivo o imperativo.**
+
+- `serverErrors` (reactivo) encaja con props o con el estado de error de una petición. Los errores se aplican **cada vez que llega un objeto nuevo**, así que una respuesta nueva con los mismos mensajes los vuelve a mostrar. El mismo objeto pasado en renders posteriores no se vuelve a aplicar, así que un error que el usuario corrigió no reaparece. Pasa un objeto estable (el error de la petición), nunca un literal escrito en el render (`serverErrors={{ email: [...] }}` sería un objeto nuevo en cada render). `undefined` deja los errores actuales como están.
+- `applyServerErrors(form, errors, { joinMessages?, parse? })` (imperativo) encaja en un callback:
+
+```ts
+signUpMutation.mutate(values, {
+  onError: (error) => applyServerErrors(form, error.body, { parse: (body: ApiErrorBody) => body.errors }),
+});
+```
+
+Un error del servidor desaparece como cualquier otro error: cuando react-hook-form vuelve a validar ese campo y es válido. Cambiar el idioma no lo borra.
+
+<Canvas of={SchemaFormStories.ServerErrors} />
+
+## Hooks de schema
+
+Escribir los schemas como hooks es el patrón recomendado: los mensajes vienen de i18next, y el schema se reconstruye solo cuando cambia el idioma.
+
+```ts
+export const useLoginSchema = () => {
+  const { t } = useTranslation("auth");
+  return useMemo(() => z.object({ /* reglas con mensajes t(...) */ }), [t]);
+};
+```
+
+- `useTranslation` da un `t` nuevo cuando cambia el idioma, así que `useMemo([t])` da un schema nuevo solo en ese momento.
+- El formulario ve el schema nuevo y vuelve a validar **solo los campos que muestran un error del schema**, así que sus mensajes cambian de idioma sin que el usuario haga nada. Los campos sin error no se tocan, y los errores del servidor se conservan.
+
+<Canvas of={SchemaFormStories.Multilanguage} />
+
+### Schemas con parámetros
+
+Un hook de schema puede recibir un parámetro para su propia lógica. Pásalo como `schemaParams` al usar el formulario:
+
+```ts
+export const useCompanySchema = ({ isEdit }: { isEdit: boolean }) => {
+  const { t } = useTranslation("companies");
+  return useMemo(
+    () =>
+      z.object({
+        name: z.string().trim().min(1, t("validation.name.required")),
+        taxId: isEdit ? z.string() : z.string().trim().min(1, t("validation.taxId.required")),
+      }),
+    [t, isEdit], // los parámetros SIEMPRE van en las dependencias
+  );
+};
+
+export const useCompanyForm = createFormHook({ schema: useCompanySchema, defaultValues: COMPANY_FORM_DEFAULTS });
+
+const form = useCompanyForm({ schemaParams: { isEdit: true }, values: company });
+```
+
+TypeScript sigue el parámetro del hook de schema:
+
+| Schema | `schemaParams` | Uso del hook de formulario |
+| --- | --- | --- |
+| Un schema de zod, o un hook sin parámetros | no se acepta | `useLoginForm()` |
+| Un hook con parámetro opcional | opcional | `useNoteForm()` o `useNoteForm({ schemaParams: { max: 10 } })` |
+| Un hook con parámetro obligatorio | obligatorio | `useCompanyForm({ schemaParams: { isEdit } })` |
+
+Cuando cambia un parámetro, el schema se reconstruye y los errores visibles se recalculan con las reglas nuevas, igual que después de un cambio de idioma.
+
+<Canvas of={SchemaFormStories.SchemaParams} />
+
+### Reglas para los hooks de schema
+
+- **Memoiza el schema** con `useMemo`, con `t` y todos los parámetros en las dependencias.
+- **Prefiere parámetros simples** (booleanos, números, strings). Un objeto o un array creado en el render (`schemaParams: { roles: ["admin"] }`) es nuevo en cada render. Con un parámetro así, pon el propio parámetro en las dependencias (`[t, options]`) solo si quien llama lo memoiza.
+- **Si el schema cambia en cada render**, la re-validación provocaría renders sin fin. El formulario lo detecta, se detiene y avisa una vez en desarrollo: `[useSchemaForm] The schema changed again while its errors were being re-validated…`. Corrige la memoización cuando lo veas.
+- **Ordena las reglas en zod 4.** Las comprobaciones se ejecutan en el orden escrito, y se muestra el primer mensaje que falla. Los tests de este paquete lo confirman:
+  - con `z.email(invalid).min(1, required).trim()`, un campo vacío muestra "inválido" en vez de "obligatorio";
+  - con ese mismo schema, `" ana@mail.com "` falla, porque el `.trim()` del final se ejecuta después de comprobar el formato.
+
+  Escribe trim, obligatorio y formato, en ese orden:
+
+```ts
+email: z.string().trim().min(1, t("validation.email.required")).pipe(z.email(t("validation.email.invalid"))),
+```
+
+- **Los tipos del formulario** salen del hook de schema: `z.input<ReturnType<typeof useLoginSchema>>` para los valores, `z.output<…>` para los datos enviados (el mismo tipo si el schema no tiene transformaciones).
+
+## Tipos de entrada y salida
+
+Los valores del formulario usan el tipo de **entrada** del schema, y `handleSubmit` recibe su tipo de **salida**. Los schemas con `transform`, `coerce` o `default` funcionan, y TypeScript comprueba `defaultValues` y `values` contra el tipo de entrada.
+
+```ts
+const ageSchema = z.object({ age: z.string().regex(/^\d+$/, t("validation.age")).transform(Number) });
+
+createFormHook({ schema: ageSchema, defaultValues: { age: "" } }); // la entrada es un string
+form.handleSubmit((data) => save(data.age)); // data.age es un número
+```
+
+Tipos exportados: `FormInput<S>`, `FormOutput<S>`, `SchemaFormReturn<S>`, `ServerErrors<Values>`, `FormHook`, `FormHookOptions`, `CreateFormHookConfig`, `SchemaFormOptions` y `FormSchema`.
+
+<Canvas of={SchemaFormStories.Transforms} />
+
+## Avisos de desarrollo y errores comunes
+
+Los avisos solo aparecen fuera de los builds de producción, una vez cada uno, y empiezan por el nombre entre corchetes.
+
+| Aviso o síntoma | Causa y solución |
+| --- | --- |
+| `[useSchemaForm] The schema changed again while…` | El schema no está memoizado, o un parámetro es un objeto nuevo en cada render. Memoízalo. |
+| `[useSchemaForm] Server error for "phone", which is not a field…` | Una clave del servidor que no está en los valores del formulario. Revisa la clave o añade el campo a `defaultValues`. El error se aplica igualmente. |
+| `[useSchemaForm] serverErrors must be an object…` | El cuerpo del backend no es `{ ruta: mensajes }`. Añade `parseServerErrors`. |
+| Un error del servidor reaparece una y otra vez | `serverErrors` es un literal escrito en el render. Pasa el objeto de error de la petición. |
+| Un control avisa de que su `name` es desconocido | Falta el campo en `defaultValues`. |
+| El formulario de edición pierde lo editado cuando los datos se recargan | Añade `resetOptions: { keepDirtyValues: true }`. |
+
+## Migración
+
+**Desde `useForm` + `zodResolver`:**
+
+```ts
+// antes
+const form = useForm({ resolver: zodResolver(schema), defaultValues: { username: "" } });
+// después
+const form = useSchemaForm(schema, { defaultValues: { username: "" } });
+```
+
+**Desde el `createFormHook` anterior (`use-generic-form` / `form-hook-factory`):**
+
+| Antes | Después |
+| --- | --- |
+| `createFormHook(useXSchema, (preset = {}) => ({ ...DEFAULTS, ...preset }))` | `createFormHook({ schema: useXSchema, defaultValues: DEFAULTS })` |
+| `useXForm(defaultValues ?? {}, errors)` | `useXForm({ values: defaultValues, serverErrors: errors })` |
+| `{ syncOnDefaultValuesChange: true }` | Nada: `values` siempre se mantiene sincronizado. |
+| `const { form, handleSubmit } = useXForm()` | `const form = useXForm()` y `form.handleSubmit` |
+| `resetForm()` / `setFieldError(name, message)` | `form.reset()` / `form.setError(name, { message })` |
+| `onBlur` y `shouldUnregister: true` incluidos por defecto | Los defaults de react-hook-form; pon `mode`, `reValidateMode` y `shouldUnregister` en cada formulario. |
+| `concatenateFieldErrors` (". ") | `joinMessages: (messages) => messages.join(". ")` |
+| Tipos `XFormPreset` | No hacen falta: `values` se tipa desde el schema. |
+
+## Referencia de API
+
+```ts
+createFormHook<Src, B>(config: CreateFormHookConfig<Src, B>): FormHook<Src, B>
+// config: { schema: Src; defaultValues: FormInput<S> } & opciones de useForm & { joinMessages?, parseServerErrors?, resolverOptions? }
+// useXForm(options?): SchemaFormReturn<S>
+//   options: { schemaParams?, values?, serverErrors? } & las mismas opciones, que sobrescriben en esa llamada
+
+useSchemaForm<S, B>(schema: S, options: SchemaFormOptions<S, B>): SchemaFormReturn<S>
+// options: { defaultValues: FormInput<S>; values?; serverErrors? } & opciones de useForm & { joinMessages?, parseServerErrors?, resolverOptions? }
+
+applyServerErrors<Values, B>(form, errors: B | null | undefined, options?: { joinMessages?; parse? }): void
+```
+
+- `SchemaFormReturn<S>` es `UseFormReturn<FormInput<S>, unknown, FormOutput<S>>`.
+- `ServerErrors<Values>` es un objeto de rutas de campo (o `root`) a un mensaje o un arreglo de mensajes.
+
+</Es>

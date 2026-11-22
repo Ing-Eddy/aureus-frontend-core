@@ -96,6 +96,8 @@ const preview: Preview = {
           "components",
           "utils",
           ["Date formats", ["Guide", "Catalog"], "Display", ["Guide", "Playground"]],
+          "hooks",
+          ["Schema form", ["Guide", "*"]],
           "Tools",
         ],
       },

@@ -191,6 +191,41 @@ packages/utils/src/
 - **Warnings** go through `warnOnce` (`internal/utils/helpers`), start with the module name (`display: …`), log once and only outside production.
 - **Tests** run in Node with `TZ=America/New_York` (a zone with daylight-saving changes). Type tests are `*-types-tests.ts` files with `@ts-expect-error`. ICU's narrow and no-break spaces are compared as plain spaces.
 
+## The hooks package
+
+`packages/hooks` (`@aureus-core/hooks`) holds reusable React hooks for every Aureus project. It is laid out like `packages/utils`: one module per folder, and each module is a public entry point.
+
+```
+packages/hooks/src/
+├─ schema-form/           # → @aureus-core/hooks/schema-form
+│  ├─ index.ts            # the module's only public entry point
+│  ├─ schema-form.ts      # <module>.ts: useSchemaForm, the engine
+│  ├─ factory/            index.ts, create-form-hook.ts
+│  ├─ hooks/              index.ts, use-merged-values.ts, use-server-errors.ts, use-schema-revalidation.ts
+│  ├─ types/              index.ts, schema-form-types.ts
+│  ├─ utils/helpers/      index.ts, merge-values.ts, normalize-server-errors.ts, apply-server-errors.ts
+│  └─ tests/              form-harness.tsx + *-tests.ts(x)
+└─ internal/              # private, never exported
+   └─ utils/{constants,helpers}/   is-dev.ts, warn-once.ts
+```
+
+- **A module is a folder** in `src/` with an `index.ts`. Its root holds only `index.ts` and `<module>.ts`. The rest goes in category folders (`factory/`, `hooks/`, `types/`, `utils/helpers/`, `tests/`), each with its own `index.ts` except `tests/`. The `./*` export is a wildcard and `check:package` discovers modules from `src/`, so a new module needs no `package.json` or script edit.
+- **Peers per module.** `react` is the only required peer. The libraries a module needs are peers marked optional in `peerDependenciesMeta` (for `schema-form`: `react-hook-form`, `zod`, `@hookform/resolvers`) and devDependencies for the tests. List them in the module's row of the package README.
+- **Configured per use, never globally.** A hook takes its options from its caller. There are no app-wide presets or providers, and defaults are the underlying library's (react-hook-form's for `schema-form`). Every option is opt-in and independent.
+- **No default texts.** Validation messages come from the consumer's schema or server errors. Development warnings go through `warnOnce` (`internal/utils/helpers`), start with the hook's name in brackets (`[useSchemaForm] …`), log once and only outside production.
+- **`schema-form` specifics:**
+  - The returned object is react-hook-form's own `UseFormReturn`. Do not wrap it.
+  - Errors are read through `getFieldState`, because the component owning the form may not subscribe to `formState`.
+  - The schema-change re-validation must keep its loop guard. `revalidation-tests.tsx` and `create-form-hook-tests.tsx` fail without it.
+  - The zod rule-order tests document the behavior that the guide states. Update the guide if they change.
+- **Tests** run in jsdom with Testing Library. Render real forms through `tests/form-harness.tsx` (inputs bound with `Controller`, the way the `*-control` components are), so the package does not depend on `@aureus-core/ui`. A hook rendered alone with `renderHook` is not re-rendered on form-state changes, so read errors with `getFieldState`. Type tests are `*-types-tests.ts` files with `@ts-expect-error`.
+- **Adding a module:**
+  1. `src/<module>/` with its tests.
+  2. The README row.
+  3. A bilingual guide `apps/storybook/src/stories/hooks/<module>.mdx` with live stories in `hooks/<module>/`, whose UI strings are typed `en`/`es` and checked in `hooks-strings-tests.ts`.
+  4. The `storySort` entry.
+  5. A changeset.
+
 ## Naming
 
 Pure kebab-case. Role suffixes use `-`, never `.`:

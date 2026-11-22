@@ -13,13 +13,14 @@ import { En, Es } from "@sb/i18n/localized";
 | --- | --- | --- |
 | `@aureus-core/ui` | The React component library: the full [shadcn/ui](https://ui.shadcn.com/) catalogue (62 components, radix-nova style) compiled, typed and verified, plus our own components. React 19 and Tailwind CSS v4. | **shadcn**, **components** |
 | `@aureus-core/utils` | Framework-free utilities with no dependencies: the shared date-format catalog and the `display` functions that show values the same way in every app. | **utils** |
+| `@aureus-core/hooks` | Reusable React hooks: `schema-form` creates react-hook-form form hooks from zod schemas, with edit values, backend errors and messages that follow the language. | **hooks** |
 
 ## How this site works
 
 - **Toolbar 🌐**: switch the documentation between English and Spanish. Component demos stay in English.
 - **Toolbar theme**: light and dark, using the same `.dark` class your app uses.
 - **Toolbar ⇄**: left-to-right or right-to-left, with `dir` on `<html>` and the `DirectionProvider`.
-- **Every utils page** explains a module, with live examples that follow the 🌐 toolbar.
+- **Every utils and hooks page** explains a module, with live examples that follow the 🌐 toolbar.
 - **Every component page** has the import line, when to use it, its anatomy, a Playground with controls, the API of each part, examples, keyboard and ARIA notes, and the theme tokens it uses.
 - **Every story is a test**: it renders in Chromium, runs its interaction script and passes an axe accessibility check in CI.
 
@@ -30,6 +31,7 @@ import { En, Es } from "@sb/i18n/localized";
 3. [Right-to-left](?path=/docs/guides-right-to-left--docs) and [Hooks & utilities](?path=/docs/guides-hooks-utilities--docs).
 4. [Foundations](?path=/docs/foundations-colors--docs): the color, radius and typography tokens.
 5. [Display](?path=/docs/utils-display--guide) and [Date formats](?path=/docs/utils-date-formats--guide): show values and dates the same way in every app.
+6. [Schema form](?path=/docs/hooks-schema-form--guide): create the hook of a form from its zod schema.
 
 </En>
 <Es>
@@ -42,13 +44,14 @@ import { En, Es } from "@sb/i18n/localized";
 | --- | --- | --- |
 | `@aureus-core/ui` | La librería de componentes React: todo el catálogo de [shadcn/ui](https://ui.shadcn.com/) (62 componentes, estilo radix-nova) compilado, tipado y verificado, más nuestros propios componentes. React 19 y Tailwind CSS v4. | **shadcn**, **components** |
 | `@aureus-core/utils` | Utilidades sin framework y sin dependencias: el catálogo compartido de formatos de fecha y las funciones `display`, que muestran los valores igual en todas las apps. | **utils** |
+| `@aureus-core/hooks` | Hooks de React reutilizables: `schema-form` crea hooks de formulario de react-hook-form a partir de schemas de zod, con valores de edición, errores del backend y mensajes que siguen el idioma. | **hooks** |
 
 ## Cómo funciona este sitio
 
 - **Barra 🌐**: cambia la documentación entre inglés y español. Las demos de los componentes siguen en inglés.
 - **Barra de tema**: claro y oscuro, con la misma clase `.dark` que usa tu app.
 - **Barra ⇄**: de izquierda a derecha o de derecha a izquierda, con `dir` en `<html>` y el `DirectionProvider`.
-- **Cada página de utils** explica un módulo, con ejemplos en vivo que siguen la barra 🌐.
+- **Cada página de utils y de hooks** explica un módulo, con ejemplos en vivo que siguen la barra 🌐.
 - **Cada página de componente** incluye la línea de import, cuándo usarlo, su anatomía, un Playground con controles, la API de cada parte, ejemplos, notas de teclado y ARIA, y los tokens del tema que usa.
 - **Cada historia es un test**: se renderiza en Chromium, ejecuta su guion de interacción y pasa una revisión de accesibilidad con axe en CI.
 
@@ -59,5 +62,6 @@ import { En, Es } from "@sb/i18n/localized";
 3. [Derecha a izquierda](?path=/docs/guides-right-to-left--docs) y [Hooks y utilidades](?path=/docs/guides-hooks-utilities--docs).
 4. [Fundamentos](?path=/docs/foundations-colors--docs): los tokens de color, radio y tipografía.
 5. [Display](?path=/docs/utils-display--guide) y [Formatos de fecha](?path=/docs/utils-date-formats--guide): muestra valores y fechas igual en todas las apps.
+6. [Schema form](?path=/docs/hooks-schema-form--guide): crea el hook de un formulario a partir de su schema de zod.
 
 </Es>

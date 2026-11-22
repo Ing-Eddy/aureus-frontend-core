@@ -6,6 +6,7 @@ Monorepo of shared frontend resources (React + TypeScript), published to npm und
 | -------------------------------------- | ------------------------------------------------------------------- |
 | [`@aureus-core/ui`](packages/ui)       | shadcn/ui base layer + custom components, Tailwind v4               |
 | [`@aureus-core/utils`](packages/utils) | Framework-free utilities: shared date-format catalog, value display |
+| [`@aureus-core/hooks`](packages/hooks) | React hooks: react-hook-form form hooks from zod schemas            |
 | `apps/storybook` (private)             | Component playground and docs                                       |
 | `tooling/typescript` (private)         | Shared tsconfig bases                                               |
 
@@ -455,17 +456,38 @@ display.number(invoice.total, { decimals: 2, padDecimals: true, grouping: true, 
 
 See [`packages/utils/README.md`](packages/utils/README.md) and the **utils** section of the documentation.
 
+## Using `@aureus-core/hooks` in a project
+
+```sh
+pnpm add @aureus-core/hooks react-hook-form zod @hookform/resolvers
+```
+
+Reusable React hooks, one entry point per module (`@aureus-core/hooks/<module>`). `react` is a required peer; each module's libraries are optional peers.
+
+- **`schema-form`**: `createFormHook({ schema, defaultValues, ...options })` creates the hook of one form, configured only by what you pass it. The schema can be a zod schema or a schema hook (with an optional `schemaParams` parameter). The hook takes edit `values` (merged over the defaults and kept in sync) and backend `serverErrors` (`{ field: string[] }`), and returns react-hook-form's form object. Messages follow the language when the schema hook memoizes on `t`.
+
+```ts
+import { createFormHook } from "@aureus-core/hooks/schema-form";
+
+export const useLoginForm = createFormHook({ schema: useLoginSchema, defaultValues: { email: "", password: "" }, mode: "onBlur" });
+
+const form = useLoginForm({ serverErrors: loginMutation.error?.body });
+<FormProvider {...form}>{/* TextControl, PasswordControl… */}</FormProvider>;
+```
+
+See [`packages/hooks/README.md`](packages/hooks/README.md) and the **hooks** section of the documentation.
+
 ## Development
 
 ```sh
 pnpm install
 pnpm --filter @aureus-core/storybook exec playwright install chromium   # once: browser for story tests
-pnpm dev             # ui and utils in watch mode + Storybook on http://localhost:6006
+pnpm dev             # ui, utils and hooks in watch mode + Storybook on http://localhost:6006
 pnpm build           # build everything
 pnpm lint            # biome
 pnpm typecheck
 pnpm test            # unit tests + every Storybook story in Chromium (interactions + axe)
-pnpm check:package   # verifies the built ui and utils packages (artifacts, aliases, publint, attw, tarball)
+pnpm check:package   # verifies the built ui, utils and hooks packages (artifacts, aliases, publint, attw, tarball)
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for conventions, including the story and docs contract.
