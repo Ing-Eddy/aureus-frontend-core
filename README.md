@@ -37,17 +37,17 @@ In your main CSS file, **replace** `@import "tailwindcss";` with:
 @import "@aureus-core/ui/styles.css";
 ```
 
-It brings Tailwind, the shadcn tokens, the Aureus theme overrides and an `@source` rule so Tailwind generates the classes the package components use.
+It brings Tailwind, the shadcn tokens, the Aureus theme overrides, the typography tokens and fonts (Geist and Geist Mono, bundled) and an `@source` rule so Tailwind generates the classes the package components use.
 
 ### Imports
 
-| What              | Import path                         | Example                                                          |
-| ----------------- | ----------------------------------- | ---------------------------------------------------------------- |
-| shadcn components | `@aureus-core/ui/shadcn/<name>`     | `import { Button } from "@aureus-core/ui/shadcn/button"`         |
-| Aureus components | `@aureus-core/ui/components/<name>` | `import { X } from "@aureus-core/ui/components/x"`               |
-| Hooks             | `@aureus-core/ui/hooks/<name>`      | `import { useIsMobile } from "@aureus-core/ui/hooks/use-mobile"` |
-| Utilities         | `@aureus-core/ui/lib/utils`         | `import { cn } from "@aureus-core/ui/lib/utils"`                 |
-| Styles            | `@aureus-core/ui/styles.css`        | `@import "@aureus-core/ui/styles.css";`                          |
+| What              | Import path                         | Example                                                              |
+| ----------------- | ----------------------------------- | -------------------------------------------------------------------- |
+| shadcn components | `@aureus-core/ui/shadcn/<name>`     | `import { Button } from "@aureus-core/ui/shadcn/button"`             |
+| Aureus components | `@aureus-core/ui/components/<name>` | `import { Typography } from "@aureus-core/ui/components/typography"` |
+| Hooks             | `@aureus-core/ui/hooks/<name>`      | `import { useIsMobile } from "@aureus-core/ui/hooks/use-mobile"`     |
+| Utilities         | `@aureus-core/ui/lib/utils`         | `import { cn } from "@aureus-core/ui/lib/utils"`                     |
+| Styles            | `@aureus-core/ui/styles.css`        | `@import "@aureus-core/ui/styles.css";`                              |
 
 Every component has its own entry point, so you only ship what you import.
 
@@ -72,6 +72,26 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 - `FormProvider` (from `react-hook-form`): wraps every form that uses `*-control` components.
 - `SidebarProvider` (`@aureus-core/ui/shadcn/sidebar`): wraps the layout that contains a Sidebar.
 - `DirectionProvider`: only needed for right-to-left languages.
+
+### Typography
+
+`Typography` (`@aureus-core/ui/components/typography`) renders text with one of 15 named styles: `display`, `h1`–`h6`, `lead`, `body-lg`, `body`, `body-sm`, `label`, `caption`, `overline` and `code`. Each variant renders its natural element (`h2` → `<h2>`, `body` → `<p>`, `caption` → `<span>`); `as` changes only the element and `asChild` styles the child. The modifiers `tone`, `weight`, `align`, `wrap`, `truncate` / `lineClamp`, `italic` and `tabularNums` are opt-in and independent, and `className` always wins. Without the component, use the `typography-<variant>` classes.
+
+```tsx
+import { Typography } from "@aureus-core/ui/components/typography";
+
+<header>
+  <Typography variant="overline" tone="muted">{t("billing.section")}</Typography>
+  <Typography variant="h1" wrap="balance">{t("billing.title")}</Typography>
+  <Typography variant="lead" tone="muted">{t("billing.subtitle")}</Typography>
+</header>
+<Typography variant="h2" as="h3">{t("billing.summary")}</Typography> {/* looks like h2, is an h3 */}
+<Typography variant="body-sm" lineClamp={2}>{invoice.notes}</Typography>
+<Typography variant="caption" as="time" dateTime={iso} tabularNums>{formatted}</Typography>
+<Typography variant="label" as="label" htmlFor="email">{t("form.email")}</Typography>
+<Typography variant="code">pnpm add</Typography>
+<Typography asChild variant="body" tone="primary"><a href="/help">{t("help")}</a></Typography>
+```
 
 ### Fields & controls
 
@@ -361,7 +381,15 @@ Set `dir="rtl"` (and `lang`) on `<html>` and pass `dir="rtl"` to `DirectionProvi
 
 ### Theming
 
-Override tokens after the package import, light values on `:root` and dark values on `.dark`:
+The quickest way: download `theme.css` from **Tools › Theme Builder** (colors, radius, shadows, spacing) and `typography.css` from **Tools › Typography Builder** (fonts and text styles) in the documentation, put them next to your main CSS file, install the fonts with the `pnpm add` command the Typography Builder shows, and import both after the package:
+
+```css
+@import "@aureus-core/ui/styles.css";
+@import "./theme.css";
+@import "./typography.css";
+```
+
+Both files only set values; the rules that use them stay in the package. By hand, override tokens after the package import, light values on `:root` and dark values on `.dark`:
 
 ```css
 @import "@aureus-core/ui/styles.css";
@@ -374,6 +402,28 @@ Override tokens after the package import, light values on `:root` and dark value
   --primary: oklch(0.72 0.15 260);
 }
 ```
+
+#### Fonts and text sizes
+
+Typography is driven by the `--typography-*` variables: four font roles (`--typography-font-sans`, `-heading`, `-serif`, `-mono`) and six variables per variant (`--typography-<variant>-font`, `-size`, `-line-height`, `-weight`, `-tracking`, `-transform`). To use other fonts, install them with Fontsource and point the roles at them, after the package import:
+
+```sh
+pnpm add @fontsource-variable/inter @fontsource-variable/jetbrains-mono
+```
+
+```css
+@import "@aureus-core/ui/styles.css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
+:root {
+  --typography-font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --typography-font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  --typography-h1-weight: 800;
+}
+```
+
+`font-sans`, `font-heading`, `font-serif` and `font-mono` follow the roles, so shadcn titles change too. See Foundations › Typography in the documentation for the catalog and every default. To try fonts and sizes visually, use **Tools › Typography Builder** in the documentation: it exports this file and the `pnpm add` command. (The Theme Builder exports colors, radius, shadows and spacing only.)
 
 When a token is not enough: pass `className` (merged last with `cn`), target the `data-slot` / `data-variant` attributes, or wrap the component in your own. See the Theming guide in the documentation for the full list of tokens.
 

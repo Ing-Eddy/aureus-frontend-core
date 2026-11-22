@@ -4,8 +4,8 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@aureus-core/ui
 import { Input } from "@aureus-core/ui/shadcn/input";
 import { Textarea } from "@aureus-core/ui/shadcn/textarea";
 import { useId, useState } from "react";
+import { fill } from "../../shared/i18n";
 import { type ImportReport, importTheme, parseThemeCss } from "../core/parse-theme";
-import { fill } from "../i18n/theme-builder-strings";
 import { Section, type SectionProps } from "./section";
 
 type Outcome = { ok: true; report: ImportReport } | { ok: false } | undefined;
@@ -82,6 +82,11 @@ export function ImportSection({ draft, dispatch, t }: SectionProps) {
               {outcome.report.ignored.length ? (
                 <FieldDescription>
                   {fill(t.importIgnored, { list: outcome.report.ignored.join(", ") })}
+                </FieldDescription>
+              ) : null}
+              {outcome.report.typography ? (
+                <FieldDescription data-testid="import-typography-hint">
+                  {t.importTypographyHint}
                 </FieldDescription>
               ) : null}
             </AlertDescription>

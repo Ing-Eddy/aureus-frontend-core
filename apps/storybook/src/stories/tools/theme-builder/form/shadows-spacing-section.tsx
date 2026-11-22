@@ -1,5 +1,5 @@
 import { FieldGroup } from "@aureus-core/ui/shadcn/field";
-import { fill } from "../i18n/theme-builder-strings";
+import { fill } from "../../shared/i18n";
 import { ColorField, NumberField, SliderField } from "./fields";
 import { Section, type SectionProps } from "./section";
 
@@ -84,15 +84,6 @@ export function ShadowsSpacingSection({ draft, dispatch, t }: SectionProps) {
           step={0.01}
           unit="rem"
           onChange={(value) => dispatch({ type: "input", key: "spacing", value })}
-        />
-        <NumberField
-          label={t.tracking}
-          value={inputs.tracking}
-          min={-0.1}
-          max={0.2}
-          step={0.005}
-          unit="em"
-          onChange={(value) => dispatch({ type: "input", key: "tracking", value })}
         />
       </FieldGroup>
     </Section>

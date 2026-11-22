@@ -2,9 +2,9 @@ import { Button } from "@aureus-core/ui/shadcn/button";
 import type { Locale } from "@sb/i18n/locale-types";
 import { RotateCcwIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import { PreviewFrame } from "../shared/preview";
 import { checkContrast } from "./core/contrast";
 import { browserStorage, type DraftStorage } from "./core/draft-storage";
-import { googleFontsUrl } from "./core/font-options";
 import { resolveTheme } from "./core/generate-theme";
 import { serializeTheme } from "./core/serialize-theme";
 import { ColorsSection } from "./form/colors-section";
@@ -13,10 +13,9 @@ import { ExportSection } from "./form/export-section";
 import { ImportSection } from "./form/import-section";
 import { OverridesSection } from "./form/overrides-section";
 import { ShadowsSpacingSection } from "./form/shadows-spacing-section";
-import { TypographySection } from "./form/typography-section";
+import { TypographyLink } from "./form/typography-link";
 import { themeBuilderStrings } from "./i18n/theme-builder-strings";
 import { previewCss } from "./preview/preview-css";
-import { PreviewFrame } from "./preview/preview-frame";
 import { PreviewSample } from "./preview/preview-sample";
 import { useThemeDraft } from "./use-theme-draft";
 
@@ -39,7 +38,6 @@ export function ThemeBuilder({ locale, storage = browserStorage() }: ThemeBuilde
   const contrast = useMemo(() => checkContrast(theme), [theme]);
   const css = useMemo(() => serializeTheme(theme), [theme]);
   const frameCss = useMemo(() => previewCss(theme), [theme]);
-  const fontsUrl = googleFontsUrl(theme.fonts);
   const sectionProps = { draft, dispatch, t };
 
   return (
@@ -78,7 +76,7 @@ export function ThemeBuilder({ locale, storage = browserStorage() }: ThemeBuilde
         <div className="flex min-w-0 flex-col gap-4">
           <ColorsSection {...sectionProps} />
           <OverridesSection {...sectionProps} theme={theme} contrast={contrast} />
-          <TypographySection {...sectionProps} />
+          <TypographyLink t={t} />
           <ShadowsSpacingSection {...sectionProps} />
           <ImportSection {...sectionProps} />
           <ExportSection {...sectionProps} css={css} contrast={contrast} />
@@ -87,10 +85,10 @@ export function ThemeBuilder({ locale, storage = browserStorage() }: ThemeBuilde
         <div className="flex min-w-0 flex-col gap-4">
           <ContrastSummary contrast={contrast} t={t} />
           <section aria-label={t.preview} className="grid gap-4 xl:grid-cols-2">
-            <PreviewFrame mode="light" title={t.previewLight} css={frameCss} fontsUrl={fontsUrl}>
+            <PreviewFrame mode="light" title={t.previewLight} css={frameCss}>
               <PreviewSample />
             </PreviewFrame>
-            <PreviewFrame mode="dark" title={t.previewDark} css={frameCss} fontsUrl={fontsUrl}>
+            <PreviewFrame mode="dark" title={t.previewDark} css={frameCss}>
               <PreviewSample />
             </PreviewFrame>
           </section>

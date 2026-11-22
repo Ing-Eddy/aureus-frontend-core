@@ -1,8 +1,9 @@
 import { Alert, AlertDescription, AlertTitle } from "@aureus-core/ui/shadcn/alert";
 import { CircleCheckIcon, TriangleAlertIcon } from "lucide-react";
+import { fill } from "../../shared/i18n";
 import { type ContrastResult, failingPairs } from "../core/contrast";
 import { type Mode, modes } from "../core/theme-types";
-import { fill, type ThemeBuilderStrings } from "../i18n/theme-builder-strings";
+import type { ThemeBuilderStrings } from "../i18n/theme-builder-strings";
 
 /** `--muted-foreground on --muted (light) 3.2:1` */
 export function describeFailure(result: ContrastResult, t: ThemeBuilderStrings): string {

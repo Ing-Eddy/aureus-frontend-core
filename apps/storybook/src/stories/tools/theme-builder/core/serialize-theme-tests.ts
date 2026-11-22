@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createDefaultDraft } from "./default-theme";
 import { resolveTheme } from "./generate-theme";
-import { fontsToLoad, serializeTheme, shadowValues, toFileName } from "./serialize-theme";
+import { lightSelector, serializeTheme, shadowValues } from "./serialize-theme";
 import { colorTokens, type ThemeDraft } from "./theme-types";
 
 const draft = (): ThemeDraft => ({
@@ -12,11 +12,6 @@ const draft = (): ThemeDraft => ({
     ...createDefaultDraft().inputs,
     achromaticPrimary: false,
     primary: "oklch(0.6 0.15 220)",
-    fonts: {
-      sans: "Inter, sans-serif",
-      serif: "Georgia, serif",
-      mono: "'JetBrains Mono', monospace",
-    },
   },
 });
 
@@ -34,13 +29,30 @@ describe("serializeTheme", () => {
     expect(serializeTheme(resolveTheme(draft()))).toBe(css);
   });
 
-  it("writes a header naming the theme and the fonts to load", () => {
+  it("writes a header naming the theme and pointing to the Typography Builder", () => {
     expect(css.startsWith("/* Ocean Breeze — shadcn theme for Tailwind CSS v4.")).toBe(true);
-    expect(css).toContain('Fonts: load "Inter", "JetBrains Mono" in your app.');
+    expect(css).toContain("export them with the Aureus Typography Builder");
+  });
+
+  it("is named theme by default and says how to use it with @aureus-core/ui", () => {
+    const plain = serializeTheme(resolveTheme(createDefaultDraft()));
+    expect(createDefaultDraft().name).toBe("theme");
+    expect(plain.startsWith("/* theme — shadcn theme")).toBe(true);
+    expect(plain).toContain('import this file after @import "@aureus-core/ui/styles.css"');
+  });
+
+  it("writes the light block so it beats the package's light-only overrides", () => {
+    expect(lightSelector).toBe(":root, :root:not(.dark)");
+    expect(css.indexOf(`${lightSelector} {`)).toBeLessThan(css.indexOf(".dark {"));
+  });
+
+  it("contains no typography", () => {
+    const declarations = css.replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(declarations).not.toMatch(/--font-|--tracking-|letter-spacing/);
   });
 
   it("declares every color token in :root and .dark, all in OKLCH", () => {
-    for (const selector of [":root", ".dark"]) {
+    for (const selector of [lightSelector, ".dark"]) {
       const body = blockOf(css, selector);
       for (const token of colorTokens) expect(body).toMatch(new RegExp(`--${token}: oklch\\(`));
     }
@@ -53,17 +65,14 @@ describe("serializeTheme", () => {
     expect(body).toContain("--color-primary: var(--primary);");
     expect(body).toContain("--radius-lg: var(--radius);");
     expect(body).toContain("--radius-xl: calc(var(--radius) * 1.4);");
-    expect(body).toContain("--font-sans: var(--font-sans);");
     expect(body).toContain("--shadow-md: var(--shadow-md);");
-    expect(body).toContain("--tracking-tight: calc(var(--tracking-normal) - 0.025em);");
   });
 
-  it("exports the raw shadow parameters, spacing and tracking", () => {
-    const root = blockOf(css, ":root");
+  it("exports the raw shadow parameters and spacing", () => {
+    const root = blockOf(css, lightSelector);
     expect(root).toContain("--shadow-opacity: 0.1;");
     expect(root).toContain("--shadow-offset-y: 1px;");
     expect(root).toContain("--spacing: 0.25rem;");
-    expect(root).toContain("--tracking-normal: 0em;");
     expect(root).toContain("--radius: 0.625rem;");
   });
 });
@@ -76,22 +85,5 @@ describe("shadowValues", () => {
     );
     expect(values["2xs"]).toBe("0px 1px 3px 0px oklch(0 0 0 / 5%)");
     expect(values["2xl"]).toBe("0px 1px 3px 0px oklch(0 0 0 / 25%)");
-  });
-});
-
-describe("toFileName", () => {
-  it.each([
-    ["Ocean Breeze", "ocean-breeze.css"],
-    ["  Café  Noir!! ", "cafe-noir.css"],
-    ["", "custom.css"],
-    ["***", "custom.css"],
-  ])("%j → %s", (name, file) => {
-    expect(toFileName(name)).toBe(file);
-  });
-});
-
-describe("fontsToLoad", () => {
-  it("skips system and generic families", () => {
-    expect(fontsToLoad(resolveTheme(createDefaultDraft()))).toEqual(["Geist Variable"]);
   });
 });

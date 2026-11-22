@@ -52,24 +52,6 @@ The user SHALL be able to override any single color token, in either mode, with 
 - **WHEN** a user types `not-a-color` into a token's input
 - **THEN** an error message is shown next to the input, and the token keeps its previous value
 
-### Requirement: Radius, typography, shadows and spacing
-Besides colors, the builder SHALL let the user set:
-- the base radius;
-- the sans, serif and mono font stacks, chosen from a curated list or entered as free text;
-- a shadow scale defined by color, opacity, blur, spread and x/y offset, from which every shadow step is derived;
-- the base spacing unit;
-- the base letter spacing.
-
-These values apply to both modes, except the shadow color, which can differ per mode. The preview MUST reflect each change.
-
-#### Scenario: Changing the radius
-- **WHEN** a user sets the radius to 0
-- **THEN** buttons, inputs and cards in the preview show square corners
-
-#### Scenario: Choosing a curated font
-- **WHEN** a user picks a font from the curated list for the sans stack
-- **THEN** the preview text renders in that font, and the export sets `--font-sans` to that font followed by a generic fallback
-
 ### Requirement: Contrast validation
 The builder SHALL show the WCAG 2 contrast ratio of every surface/foreground pair in both modes. The pairs are:
 - background, card, popover, primary, secondary, muted, accent, sidebar, sidebar-primary and sidebar-accent against their foreground;
@@ -97,13 +79,17 @@ The preview SHALL render real `@aureus-core/ui` components with the edited theme
 The user SHALL be able to load a theme by pasting CSS or by choosing a `.css` file. The import MUST:
 - read custom-property declarations from `:root` (or `:root:not(.dark)`) for light mode and from `.dark` for dark mode;
 - accept color values in hex, rgb, hsl, oklch, or bare shadcn HSL channels (`222.2 84% 4.9%`), and convert them to OKLCH;
-- read the radius, font, shadow, spacing and letter-spacing tokens when present.
+- read the radius, shadow and spacing tokens when present.
 
-Imported color tokens are treated as overrides. Tokens missing from the file keep their current values. The builder MUST then report how many tokens were imported, which recognized tokens were missing, and which declarations were ignored. Input with no recognizable token MUST be rejected with a message, and the theme MUST stay unchanged.
+Font and letter-spacing declarations (`--font-*`, `--tracking-normal`, `--letter-spacing`) MUST be reported as ignored, with a hint that typography is edited in the Typography Builder. Imported color tokens are treated as overrides. Tokens missing from the file keep their current values. The builder MUST then report how many tokens were imported, which recognized tokens were missing, and which declarations were ignored. Input with no recognizable token MUST be rejected with a message, and the theme MUST stay unchanged.
 
 #### Scenario: Importing a theme exported earlier
 - **WHEN** a user imports a file the builder exported
 - **THEN** every token in the builder equals the value in the file, and the report shows no ignored declarations
+
+#### Scenario: Importing an older export with fonts
+- **WHEN** a user imports a theme file that also sets `--font-sans` and `--tracking-normal`
+- **THEN** the colors, radius, shadows and spacing are imported, and the report lists the font and tracking declarations as ignored with a pointer to the Typography Builder
 
 #### Scenario: Importing an HSL theme
 - **WHEN** a user pastes a theme whose colors are written as `--primary: 222.2 47.4% 11.2%;`
@@ -115,12 +101,12 @@ Imported color tokens are treated as overrides. Tokens missing from the file kee
 
 ### Requirement: Standalone CSS export
 The builder SHALL export the theme as one CSS file containing:
-- a header comment with the theme name and the generator;
-- a `:root` block with every light token;
+- a header comment with the theme name, the generator and how to import the file in an `@aureus-core/ui` app and in any other shadcn app;
+- a light block with every light token, whose selector is `:root, :root:not(.dark)` so it also overrides the package's light-only `:root:not(.dark)` tokens;
 - a `.dark` block with every dark color token and the dark shadow tokens;
-- an `@theme inline` block that maps colors, radius steps, fonts, shadows and letter spacing to Tailwind theme variables, as shadcn's own stylesheet does.
+- an `@theme inline` block that maps colors, radius steps and shadows to Tailwind theme variables, as shadcn's own stylesheet does.
 
-All colors MUST be written in OKLCH. The file MUST be usable on its own in a Tailwind CSS v4 shadcn app that imports `tailwindcss` and uses the `.dark` class for dark mode, without `@aureus-core/ui`. The user MUST be able to set the theme name, which defaults to "custom". The user MUST be able to download the file as `<theme-name>.css`, with the name in kebab-case, and copy the same content to the clipboard. The output MUST also be shown in a read-only code view. If any contrast pair fails, the export actions MUST stay enabled but show a warning that names the failing pairs.
+The file MUST NOT contain font or letter-spacing variables. Typography is exported by the Typography Builder. All colors MUST be written in OKLCH. The file MUST be usable on its own in a Tailwind CSS v4 shadcn app that imports `tailwindcss` and uses the `.dark` class for dark mode, without `@aureus-core/ui`. The user MUST be able to set the theme name, which defaults to "theme", so the file downloads as `theme.css`. The user MUST be able to download the file as `<theme-name>.css`, with the name in kebab-case, and copy the same content to the clipboard. The output MUST also be shown in a read-only code view. If any contrast pair fails, the export actions MUST stay enabled but show a warning that names the failing pairs.
 
 #### Scenario: Downloading the theme
 - **WHEN** a user named the theme "Ocean Breeze" and selects "Download"
@@ -132,14 +118,22 @@ All colors MUST be written in OKLCH. The file MUST be usable on its own in a Tai
 
 #### Scenario: Exported file works in a fresh app
 - **WHEN** the exported file is imported after `tailwindcss` in a Tailwind CSS v4 project and compiled
-- **THEN** `bg-primary`, `text-muted-foreground`, `rounded-lg`, `shadow-md`, `font-sans` and the spacing utilities resolve to the theme's values in light mode and, under `.dark`, to the dark values
+- **THEN** `bg-primary`, `text-muted-foreground`, `rounded-lg`, `shadow-md` and the spacing utilities resolve to the theme's values in light mode and, under `.dark`, to the dark values
+
+#### Scenario: Exported file works after the package stylesheet
+- **WHEN** an app imports `@aureus-core/ui/styles.css` and then the exported file, which sets a custom light `--muted-foreground`
+- **THEN** light mode uses the exported `--muted-foreground` instead of the package's accessibility value, and dark mode uses the exported dark values
+
+#### Scenario: No typography in the theme file
+- **WHEN** a user exports any theme
+- **THEN** the file contains no `--font-` or `--tracking-` declaration and no `letter-spacing` rule
 
 #### Scenario: Round trip
 - **WHEN** a theme is exported and then imported again
 - **THEN** every token value is unchanged
 
 ### Requirement: Draft persistence
-The builder SHALL save the current draft (inputs, overrides and theme name) in the browser on every change and restore it on the next visit. If the stored draft is unreadable, or storage is unavailable, the builder MUST start from the default theme and stay fully usable.
+The builder SHALL save the current draft (inputs, overrides and theme name) in the browser on every change and restore it on the next visit. If the stored draft is unreadable, or storage is unavailable, the builder MUST start from the default theme and stay fully usable. A draft saved by an earlier version that still contains fonts and letter spacing MUST be migrated: those values are discarded and every other input, override and the name are kept.
 
 #### Scenario: Reload keeps work
 - **WHEN** a user edits the primary color and reloads the page
@@ -148,3 +142,23 @@ The builder SHALL save the current draft (inputs, overrides and theme name) in t
 #### Scenario: Storage unavailable
 - **WHEN** browser storage throws on access
 - **THEN** the builder starts from the default theme, and editing and export still work
+
+#### Scenario: Migrating an older draft
+- **WHEN** the browser holds a draft from the previous version with a custom primary color and a custom sans font
+- **THEN** the builder restores the primary color and its overrides, and no font setting remains
+
+### Requirement: Radius, shadows and spacing
+Besides colors, the builder SHALL let the user set:
+- the base radius;
+- a shadow scale defined by color, opacity, blur, spread and x/y offset, from which every shadow step is derived;
+- the base spacing unit.
+
+These values apply to both modes, except the shadow color, which can differ per mode. The preview MUST reflect each change. Fonts and letter spacing are not part of the theme. The builder MUST show a link to "Tools › Typography Builder" where the typography section used to be.
+
+#### Scenario: Changing the radius
+- **WHEN** a user sets the radius to 0
+- **THEN** buttons, inputs and cards in the preview show square corners
+
+#### Scenario: Typography lives in its own tool
+- **WHEN** a user looks for the font settings in the theme builder
+- **THEN** the builder shows a link to the Typography Builder and no font or letter-spacing input

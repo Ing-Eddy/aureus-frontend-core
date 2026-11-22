@@ -1,20 +1,14 @@
+import { createStore, type DraftStorage } from "../../shared/storage";
 import { normalizeColor } from "./color";
 import { createDefaultDraft } from "./default-theme";
 import { chartModes, colorTokens, modes, neutralPalettes, type ThemeDraft } from "./theme-types";
 
-/** Versioned so that a future format can discard or migrate old drafts (design D10). */
-export const draftStorageKey = "aureus-theme-builder:draft:v1";
+export { browserStorage, type DraftStorage } from "../../shared/storage";
 
-export type DraftStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
-
-/** `localStorage`, or `undefined` where even touching it throws (privacy modes, sandboxes). */
-export function browserStorage(): DraftStorage | undefined {
-  try {
-    return globalThis.localStorage ?? undefined;
-  } catch {
-    return undefined;
-  }
-}
+/** Versioned so that a later format can migrate or discard this one (design D10, D9). */
+export const draftStorageKey = "aureus-theme-builder:draft:v2";
+/** Drafts saved before the Typography Builder: they still hold fonts and letter spacing. */
+export const legacyDraftStorageKey = "aureus-theme-builder:draft:v1";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -28,15 +22,16 @@ const oneOf = <T extends string>(values: readonly T[], value: unknown): value is
 
 /** The draft if `value` has exactly the expected shape and every color is valid. */
 export function validateDraft(value: unknown): ThemeDraft | undefined {
-  if (!isRecord(value) || value.version !== 1 || !isString(value.name)) return undefined;
+  if (!isRecord(value) || value.version !== 2 || !isString(value.name)) return undefined;
   const { base, inputs, overrides } = value;
   if (!isRecord(base)) return undefined;
   if (!(base.kind === "generated" || (base.kind === "preset" && base.id === "aureus"))) {
     return undefined;
   }
   if (!isRecord(inputs) || !isRecord(overrides)) return undefined;
-  const { fonts, shadow } = inputs;
-  if (!isRecord(fonts) || !isRecord(shadow) || !isRecord(shadow.color)) return undefined;
+  if ("fonts" in inputs || "tracking" in inputs) return undefined;
+  const { shadow } = inputs;
+  if (!isRecord(shadow) || !isRecord(shadow.color)) return undefined;
 
   const valid =
     isColor(inputs.primary) &&
@@ -48,14 +43,10 @@ export function validateDraft(value: unknown): ThemeDraft | undefined {
     isColor(inputs.destructive) &&
     oneOf(chartModes, inputs.chartMode) &&
     isNumber(inputs.radius) &&
-    isString(fonts.sans) &&
-    isString(fonts.serif) &&
-    isString(fonts.mono) &&
     isColor(shadow.color.light) &&
     isColor(shadow.color.dark) &&
     [shadow.opacity, shadow.blur, shadow.spread, shadow.x, shadow.y].every(isNumber) &&
     isNumber(inputs.spacing) &&
-    isNumber(inputs.tracking) &&
     modes.every((mode) => {
       const set = overrides[mode];
       return (
@@ -66,54 +57,32 @@ export function validateDraft(value: unknown): ThemeDraft | undefined {
   return valid ? (value as unknown as ThemeDraft) : undefined;
 }
 
-/** The stored draft, or the default one when there is none, it is invalid or storage fails. */
-export function loadDraft(storage: DraftStorage | undefined): ThemeDraft {
-  try {
-    const raw = storage?.getItem(draftStorageKey);
-    if (raw) return validateDraft(JSON.parse(raw)) ?? createDefaultDraft();
-  } catch {
-    // Corrupt JSON or a throwing storage: start fresh.
-  }
-  return createDefaultDraft();
+/**
+ * A v1 draft as v2: fonts and letter spacing are dropped (the Typography Builder owns them) and
+ * everything else is kept. `validateDraft` then checks the result like any stored draft.
+ */
+export function migrateDraftV1(value: unknown): ThemeDraft | undefined {
+  if (!isRecord(value) || value.version !== 1 || !isRecord(value.inputs)) return undefined;
+  const { fonts: _fonts, tracking: _tracking, ...inputs } = value.inputs;
+  return validateDraft({ ...value, version: 2, inputs });
 }
 
-export function saveDraft(storage: DraftStorage | undefined, draft: ThemeDraft): void {
-  try {
-    storage?.setItem(draftStorageKey, JSON.stringify(draft));
-  } catch {
-    // Quota exceeded or storage disabled: the builder keeps working without persistence.
-  }
-}
+const store = (storage: DraftStorage | undefined) =>
+  createStore(storage, {
+    key: draftStorageKey,
+    validate: validateDraft,
+    create: createDefaultDraft,
+    legacy: [{ key: legacyDraftStorageKey, migrate: migrateDraftV1 }],
+  });
 
-export function clearDraft(storage: DraftStorage | undefined): void {
-  try {
-    storage?.removeItem(draftStorageKey);
-  } catch {
-    // Same as above.
-  }
-}
+/** The stored draft (migrating a v1 one), or the default when there is none, it is invalid or storage fails. */
+export const loadDraft = (storage: DraftStorage | undefined): ThemeDraft => store(storage).load();
+
+export const saveDraft = (storage: DraftStorage | undefined, draft: ThemeDraft): void =>
+  store(storage).save(draft);
+
+export const clearDraft = (storage: DraftStorage | undefined): void => store(storage).clear();
 
 /** Saves at most once per `delay` ms; `flush` writes the pending draft immediately. */
-export function createDraftSaver(storage: DraftStorage | undefined, delay = 300) {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  let pending: ThemeDraft | undefined;
-  const flush = () => {
-    if (timer) clearTimeout(timer);
-    timer = undefined;
-    if (pending) saveDraft(storage, pending);
-    pending = undefined;
-  };
-  return {
-    save(draft: ThemeDraft) {
-      pending = draft;
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(flush, delay);
-    },
-    flush,
-    cancel() {
-      if (timer) clearTimeout(timer);
-      timer = undefined;
-      pending = undefined;
-    },
-  };
-}
+export const createDraftSaver = (storage: DraftStorage | undefined, delay = 300) =>
+  store(storage).saver(delay);

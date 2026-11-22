@@ -17,6 +17,9 @@ const en = {
   sectionColors: "Colors",
   sectionTokens: "Tokens",
   sectionTypography: "Typography",
+  typographyMoved:
+    "Fonts, text sizes and letter spacing are edited in their own tool, which exports the typography variables of @aureus-core/ui.",
+  typographyOpen: "Open the Typography Builder",
   sectionEffects: "Shape & effects",
   sectionImport: "Import",
   sectionExport: "Export",
@@ -51,15 +54,6 @@ const en = {
   ratio: "{ratio}:1",
   ratioFails: "{ratio}:1, below 4.5:1",
 
-  fontSans: "Sans-serif font",
-  fontSerif: "Serif font",
-  fontMono: "Monospace font",
-  fontStack: "{label} stack",
-  fontCustom: "Custom stack",
-  fontHelp: "Pick a font or type any CSS font-family stack.",
-  fontNetworkNote:
-    "Web fonts load from Google Fonts only when you pick one. In your app, install the font yourself (for example with Fontsource).",
-
   radius: "Radius",
   radiusValue: "{value} rem",
   shadowColorLight: "Shadow color (light)",
@@ -73,7 +67,6 @@ const en = {
   percentValue: "{value}%",
   spacing: "Spacing unit",
   spacingHelp: "Tailwind multiplies it for every spacing utility (p-4 = 4 × unit).",
-  tracking: "Letter spacing",
   emValue: "{value} em",
 
   contrastTitle: "Contrast",
@@ -89,6 +82,8 @@ const en = {
   importOk: "Imported {count} values.",
   importMissing: "Not in the file, kept as they were: {list}",
   importIgnored: "Ignored: {list}",
+  importTypographyHint:
+    "Fonts and letter spacing are not part of a theme: edit and export them in Tools › Typography Builder.",
   importError: "No shadcn theme tokens found. Nothing was changed.",
 
   themeName: "Theme name",
@@ -120,6 +115,9 @@ const es: Record<ThemeBuilderStringKey, string> = {
   sectionColors: "Colores",
   sectionTokens: "Tokens",
   sectionTypography: "Tipografía",
+  typographyMoved:
+    "Las fuentes, los tamaños de texto y el espaciado entre letras se editan en su propia herramienta, que exporta las variables de tipografía de @aureus-core/ui.",
+  typographyOpen: "Abrir el Creador de tipografía",
   sectionEffects: "Forma y efectos",
   sectionImport: "Importar",
   sectionExport: "Exportar",
@@ -156,15 +154,6 @@ const es: Record<ThemeBuilderStringKey, string> = {
   ratio: "{ratio}:1",
   ratioFails: "{ratio}:1, por debajo de 4.5:1",
 
-  fontSans: "Fuente sans-serif",
-  fontSerif: "Fuente serif",
-  fontMono: "Fuente monoespaciada",
-  fontStack: "Pila de fuentes ({label})",
-  fontCustom: "Pila personalizada",
-  fontHelp: "Elige una fuente o escribe cualquier pila de font-family de CSS.",
-  fontNetworkNote:
-    "Las fuentes web se cargan desde Google Fonts solo cuando eliges una. En tu app, instala la fuente tú mismo (por ejemplo con Fontsource).",
-
   radius: "Radio",
   radiusValue: "{value} rem",
   shadowColorLight: "Color de sombra (claro)",
@@ -178,7 +167,6 @@ const es: Record<ThemeBuilderStringKey, string> = {
   percentValue: "{value} %",
   spacing: "Unidad de espaciado",
   spacingHelp: "Tailwind la multiplica en cada utilidad de espaciado (p-4 = 4 × unidad).",
-  tracking: "Espaciado entre letras",
   emValue: "{value} em",
 
   contrastTitle: "Contraste",
@@ -194,6 +182,8 @@ const es: Record<ThemeBuilderStringKey, string> = {
   importOk: "Se importaron {count} valores.",
   importMissing: "No están en el archivo, se mantienen como estaban: {list}",
   importIgnored: "Ignorados: {list}",
+  importTypographyHint:
+    "Las fuentes y el espaciado entre letras no forman parte del tema: edítalos y expórtalos en Herramientas › Creador de tipografía.",
   importError: "No se encontraron tokens de un tema de shadcn. No se cambió nada.",
 
   themeName: "Nombre del tema",
@@ -211,15 +201,3 @@ const es: Record<ThemeBuilderStringKey, string> = {
 };
 
 export const themeBuilderStrings: Record<Locale, ThemeBuilderStrings> = { en, es };
-
-/** `{name}` placeholders of a template, sorted. */
-export function placeholders(template: string): string[] {
-  return [...template.matchAll(/\{(\w+)\}/g)].map((match) => match[1] ?? "").sort();
-}
-
-/** Replaces `{name}` placeholders. Unknown placeholders are left as they are. */
-export function fill(template: string, values: Record<string, string | number>): string {
-  return template.replace(/\{(\w+)\}/g, (whole, name: string) =>
-    name in values ? String(values[name]) : whole,
-  );
-}

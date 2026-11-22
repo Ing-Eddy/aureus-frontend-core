@@ -29,7 +29,17 @@ In your main CSS file, **replace** `@import "tailwindcss";` with:
 @import "@aureus-core/ui/styles.css";
 ```
 
-This one import brings Tailwind, the shadcn tokens, the Aureus theme overrides, and an `@source` rule so Tailwind generates the classes the package components use.
+This one import brings Tailwind, the shadcn tokens, the Aureus theme overrides, the typography styles and fonts, and an `@source` rule so Tailwind generates the classes the package components use.
+
+To give the app its own look, download `theme.css` from [Tools › Theme Builder](?path=/story/tools-theme-builder--default) (colors, radius, shadows, spacing) and `typography.css` from [Tools › Typography Builder](?path=/story/tools-typography-builder--default) (fonts and text styles), put them next to your main CSS file and import them after the package. Install the fonts with the `pnpm add` command the Typography Builder shows.
+
+```css
+@import "@aureus-core/ui/styles.css";
+@import "./theme.css";
+@import "./typography.css";
+```
+
+Both files only set values: the rules that use them come from the package, so updating `@aureus-core/ui` never requires exporting them again.
 
 ## 3. Import components
 
@@ -101,7 +111,17 @@ En tu archivo CSS principal, **sustituye** `@import "tailwindcss";` por:
 @import "@aureus-core/ui/styles.css";
 ```
 
-Este único import trae Tailwind, los tokens de shadcn, los ajustes del tema de Aureus y una regla `@source` para que Tailwind genere las clases que usan los componentes del paquete.
+Este único import trae Tailwind, los tokens de shadcn, los ajustes del tema de Aureus, los estilos y fuentes de tipografía y una regla `@source` para que Tailwind genere las clases que usan los componentes del paquete.
+
+Para darle a la app su propio aspecto, descarga `theme.css` desde [Herramientas › Creador de temas](?path=/story/tools-theme-builder--default) (colores, radio, sombras, espaciado) y `typography.css` desde [Herramientas › Creador de tipografía](?path=/story/tools-typography-builder--default) (fuentes y estilos de texto), ponlos junto a tu CSS principal e impórtalos después del paquete. Instala las fuentes con el comando `pnpm add` que muestra el Creador de tipografía.
+
+```css
+@import "@aureus-core/ui/styles.css";
+@import "./theme.css";
+@import "./typography.css";
+```
+
+Los dos archivos solo definen valores: las reglas que los usan vienen del paquete, así que actualizar `@aureus-core/ui` nunca obliga a exportarlos de nuevo.
 
 ## 3. Importa los componentes
 

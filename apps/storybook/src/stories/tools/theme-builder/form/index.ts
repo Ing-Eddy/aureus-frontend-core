@@ -6,4 +6,4 @@ export * from "./import-section";
 export * from "./overrides-section";
 export * from "./section";
 export * from "./shadows-spacing-section";
-export * from "./typography-section";
+export * from "./typography-link";

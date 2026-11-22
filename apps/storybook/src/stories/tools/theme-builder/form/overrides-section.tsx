@@ -2,9 +2,9 @@ import { Badge } from "@aureus-core/ui/shadcn/badge";
 import { Button } from "@aureus-core/ui/shadcn/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aureus-core/ui/shadcn/tabs";
 import { RotateCcwIcon } from "lucide-react";
+import { fill } from "../../shared/i18n";
 import type { ContrastResult } from "../core/contrast";
 import { colorTokens, type Mode, modes, type ResolvedTheme } from "../core/theme-types";
-import { fill } from "../i18n/theme-builder-strings";
 import { ColorField } from "./fields";
 import { Section, type SectionProps } from "./section";
 

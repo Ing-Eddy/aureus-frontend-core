@@ -1,15 +1,12 @@
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-  FieldTitle,
-} from "@aureus-core/ui/shadcn/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@aureus-core/ui/shadcn/field";
 import { Input } from "@aureus-core/ui/shadcn/input";
-import { Slider } from "@aureus-core/ui/shadcn/slider";
 import { type ReactNode, useEffect, useId, useState } from "react";
+
+export { NumberField, SliderField } from "../../shared/form";
+
+import { fill } from "../../shared/i18n";
 import { normalizeColor, toHex } from "../core/color";
-import { fill, type ThemeBuilderStrings } from "../i18n/theme-builder-strings";
+import type { ThemeBuilderStrings } from "../i18n/theme-builder-strings";
 
 interface ColorFieldProps {
   label: string;
@@ -90,111 +87,6 @@ export function ColorField({
         <FieldDescription id={`${id}-description`}>{description}</FieldDescription>
       ) : null}
       {invalid ? <FieldError id={`${id}-error`}>{t.invalidColor}</FieldError> : null}
-    </Field>
-  );
-}
-
-interface NumberFieldProps {
-  label: string;
-  value: number;
-  onChange: (value: number) => void;
-  min: number;
-  max: number;
-  step: number;
-  unit: string;
-  description?: ReactNode;
-}
-
-/** A number input with its unit; out-of-range or empty input is not committed. */
-export function NumberField({
-  label,
-  value,
-  onChange,
-  min,
-  max,
-  step,
-  unit,
-  description,
-}: NumberFieldProps) {
-  const id = useId();
-  const [text, setText] = useState(String(value));
-  useEffect(() => {
-    setText((current) => (Number(current) === value ? current : String(value)));
-  }, [value]);
-
-  return (
-    <Field>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
-      <div className="flex items-center gap-2">
-        <Input
-          id={id}
-          type="number"
-          inputMode="decimal"
-          min={min}
-          max={max}
-          step={step}
-          value={text}
-          aria-describedby={description ? `${id}-description` : undefined}
-          onChange={(event) => {
-            setText(event.target.value);
-            const next = event.target.valueAsNumber;
-            if (Number.isFinite(next) && next >= min && next <= max) onChange(next);
-          }}
-          className="w-28"
-        />
-        <span className="text-sm text-muted-foreground">{unit}</span>
-      </div>
-      {description ? (
-        <FieldDescription id={`${id}-description`}>{description}</FieldDescription>
-      ) : null}
-    </Field>
-  );
-}
-
-interface SliderFieldProps {
-  label: string;
-  /** 0–1. */
-  value: number;
-  onChange: (value: number) => void;
-  /** Visible value, e.g. "40%". */
-  display: string;
-  description?: ReactNode;
-  disabled?: boolean;
-}
-
-/** A 0–100 % slider whose thumb carries the field's accessible name. */
-export function SliderField({
-  label,
-  value,
-  onChange,
-  display,
-  description,
-  disabled,
-}: SliderFieldProps) {
-  const id = useId();
-  const nameThumb = (root: HTMLSpanElement | null) => {
-    const thumb = root?.querySelector('[role="slider"]');
-    thumb?.setAttribute("aria-labelledby", `${id}-label`);
-    if (description) thumb?.setAttribute("aria-describedby", `${id}-description`);
-  };
-  return (
-    <Field data-disabled={disabled || undefined}>
-      <div className="flex items-center justify-between gap-2">
-        <FieldTitle id={`${id}-label`}>{label}</FieldTitle>
-        <span className="text-sm text-muted-foreground tabular-nums">{display}</span>
-      </div>
-      <Slider
-        ref={nameThumb}
-        min={0}
-        max={100}
-        step={1}
-        disabled={disabled}
-        value={[Math.round(value * 100)]}
-        onValueChange={([next]) => onChange((next ?? 0) / 100)}
-      />
-      {description ? (
-        <FieldDescription id={`${id}-description`}>{description}</FieldDescription>
-      ) : null}
     </Field>
   );
 }

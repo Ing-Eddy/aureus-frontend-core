@@ -126,6 +126,17 @@ The shared props (`FieldBaseProps`, `FieldTexts`, `FieldActionProps`, `FieldClas
 - **Scrolling.** The root is `h-svh overflow-hidden`; only `AppLayoutSidebarContent` and `AppLayoutMain` scroll. `AppLayoutMain` is a tab stop while its content overflows (`hooks/use-scrollable.ts`), so a page without focusable content can still be scrolled with the keyboard.
 - **Testing.** `tests/render-app-layout.tsx` renders a complete layout and mocks `matchMedia` with a settable width. In stories, links must not reload the page (the test iframe navigates away): the stories pass a `renderLink` that calls `preventDefault`, like a router.
 
+## Typography
+
+`Typography` (`src/components/typography/`) and `src/styles/typography.css` are the single source of text styles.
+
+- **Use the catalog, not ad-hoc sizes.** New components render text with `Typography` or the `typography-<variant>` classes instead of combining `text-*`, `font-*`, `leading-*` and `tracking-*` utilities. A shadcn part that already sets its own title classes (`font-heading` titles in `card.tsx`, `dialog.tsx`…) keeps them: those follow the heading font through the `@theme inline` mapping.
+- **Three tiers of tokens.** Font roles (`--typography-font-{sans,heading,serif,mono}`) → six variables per variant (`--typography-<variant>-{font,size,line-height,weight,tracking,transform}`) → one `.typography-<variant>` class. Every value is a runtime variable in an unlayered `:root`, so apps override them in a stylesheet loaded after the package. Do not add Tailwind `--text-*` tokens for variants: they cannot carry the family or the transform, and they share the `text-*` namespace with colors.
+- **Classes stay in `@layer components`.** That is what makes every utility (from a modifier or from `className`) win over a variant style, whatever the class order; `cn` cannot resolve conflicts with custom classes. Never move them to `@utility` or to the utilities layer.
+- **Adding or changing a variant** means changing, together: `typographyVariants` and `naturalElements` (`typography/utils/typography-variants.ts`), `variantClassNames`, the six variables and the class in `typography.css`, the catalog table in `Foundations/Typography`, and the docs. `tests/typography-styles-tests.ts` fails on any drift between the CSS and the list.
+- **Modifiers are independent.** Each one maps to one utility class in `utils/typography-classes.ts` and changes only its own property; `variant` picks the style and the natural element, and `as` changes only the element. `tests/typography-independence-tests.tsx` proves it for every modifier: add a case for each new one.
+- **Fluid sizes keep a `rem` term** (`clamp(min-rem, rem + vw, max-rem)`), so text scales with zoom. The styles test checks it.
+
 ## Data table
 
 `DataTable` (`src/components/data-table/`) is built on TanStack Table v9 (`@tanstack/react-table`, an **optional** peer dependency of the package) and the shadcn table parts.

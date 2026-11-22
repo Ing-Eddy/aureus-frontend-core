@@ -33,8 +33,6 @@ describe("exported theme compiled with Tailwind CSS v4", () => {
     ["bg-primary", "background-color: var(--primary)"],
     ["text-muted-foreground", "color: var(--muted-foreground)"],
     ["rounded-lg", "border-radius: var(--radius)"],
-    ["font-sans", "font-family: var(--font-sans)"],
-    ["tracking-tight", "letter-spacing: calc(var(--tracking-normal) - 0.025em)"],
     ["p-4", "padding: calc(var(--spacing) * 4)"],
   ])("%s → %s", async (className, declaration) => {
     expect(rule(await build([className]), className)).toContain(declaration);
@@ -56,5 +54,31 @@ describe("exported theme compiled with Tailwind CSS v4", () => {
     const css = await build([]);
     expect(css).toContain("--spacing: 0.3rem;");
     expect(css).toMatch(/\.dark \{\s*--background: oklch\(0\.145 0 0\);/);
+  });
+
+  it("overrides the package's light-only tokens when imported after @aureus-core/ui/styles.css", async () => {
+    const stylesDir = fileURLToPath(
+      new URL("../../../../../../../packages/ui/src/styles/", import.meta.url),
+    );
+    const draft = createDefaultDraft();
+    const exported = serializeTheme(
+      resolveTheme({
+        ...draft,
+        overrides: { light: { "muted-foreground": "oklch(0.4 0.1 250)" }, dark: {} },
+      }),
+    );
+    const compiler = await compile(`@import "./index.css";\n${exported}`, {
+      base: stylesDir,
+      onDependency: () => {},
+    });
+    const css = compiler.build([]);
+    // The package's AA override uses :root:not(.dark) (0,2,0); the export repeats that selector
+    // later in the file, so it wins in light mode, and its .dark block still follows.
+    const packageAt = css.indexOf(":root:not(.dark) {");
+    const exportAt = css.lastIndexOf(":root, :root:not(.dark) {");
+    expect(packageAt).toBeGreaterThanOrEqual(0);
+    expect(exportAt).toBeGreaterThan(packageAt);
+    expect(css.slice(exportAt)).toContain("--muted-foreground: oklch(0.4 0.1 250);");
+    expect(css.indexOf(".dark {", exportAt)).toBeGreaterThan(exportAt);
   });
 });

@@ -1,4 +1,4 @@
-import type { ColorSet, FontStacks, Mode, ThemeDraft, ThemeInputs } from "./theme-types";
+import type { ColorSet, Mode, ThemeDraft, ThemeInputs } from "./theme-types";
 
 /**
  * The Aureus preset: the exact tokens of `@aureus-core/ui/styles.css`, i.e. stock shadcn
@@ -74,17 +74,10 @@ export const aureusColors: Record<Mode, ColorSet> = {
   },
 };
 
-/** The package's `--font-sans` and Tailwind's default serif and mono stacks. */
-export const defaultFonts: FontStacks = {
-  sans: "'Geist Variable', sans-serif",
-  serif: "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
-  mono: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-};
-
 /**
  * Inputs that match the preset as closely as the generator allows: neutral palette, black/white
  * primary, no tint, the Aureus red and monochrome charts. Non-color values are the package's
- * (radius) and Tailwind's defaults (shadow ≈ `shadow-sm`, spacing, letter spacing).
+ * (radius) and Tailwind's defaults (shadow ≈ `shadow-sm`, spacing).
  */
 export const aureusInputs: ThemeInputs = {
   primary: "oklch(0.546 0.245 262.881)",
@@ -94,7 +87,6 @@ export const aureusInputs: ThemeInputs = {
   destructive: "oklch(0.51 0.2 27.325)",
   chartMode: "monochrome",
   radius: 0.625,
-  fonts: defaultFonts,
   shadow: {
     color: { light: "oklch(0 0 0)", dark: "oklch(0 0 0)" },
     opacity: 0.1,
@@ -104,14 +96,14 @@ export const aureusInputs: ThemeInputs = {
     y: 1,
   },
   spacing: 0.25,
-  tracking: 0,
 };
 
-export const defaultThemeName = "custom";
+/** Downloads as `theme.css`, the name apps import next to their global CSS. */
+export const defaultThemeName = "theme";
 
 export function createDefaultDraft(): ThemeDraft {
   return {
-    version: 1,
+    version: 2,
     name: defaultThemeName,
     base: { kind: "preset", id: "aureus" },
     inputs: structuredClone(aureusInputs),

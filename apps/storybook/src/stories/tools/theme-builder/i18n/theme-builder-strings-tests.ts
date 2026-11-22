@@ -1,6 +1,7 @@
 import { locales } from "@sb/i18n/locale-types";
 import { describe, expect, it } from "vitest";
-import { fill, placeholders, themeBuilderStrings } from "./theme-builder-strings";
+import { fill, placeholders } from "../../shared/i18n";
+import { themeBuilderStrings } from "./theme-builder-strings";
 
 const english = themeBuilderStrings.en;
 const keys = Object.keys(english) as (keyof typeof english)[];

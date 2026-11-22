@@ -1,0 +1,97 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+
+<Meta title="Guides/Typography builder" />
+
+<En>
+
+# Typography builder
+
+[Tools › Typography Builder](?path=/story/tools-typography-builder--default) edits every font and text style of `@aureus-core/ui` on the real components and gives you two things to take to your app: a CSS file and the command that installs its fonts. It starts from the Aureus defaults, and your draft stays in this browser until you select **Reset**.
+
+## 1. Choose the fonts
+
+- **Pairings** set the text, heading and monospace fonts in one click (Geist + Geist Mono is the default). They never change sizes or your overrides.
+- **Fonts** sets each role on its own: the bundled default, the system font, a font from the catalog, or any other Google Fonts family typed by name. For a typed family, the builder proposes a Fontsource package and marks it as unverified: check it on [fontsource.org](https://fontsource.org/).
+- **Font explorer** shows the 51 catalog fonts in their own face. Filter by category and by variable or static, type your own sample text, pick a weight, and open the size waterfall of a font before assigning it to a role.
+
+## 2. Tune the scale
+
+Pick a base size (14–20 px) and a ratio. Every size is generated from them: body is the base, headings grow by the ratio, small text shrinks by half steps and never goes below 12 px. Headings also get a tighter line height and letter spacing as they grow. **Fluid headings** makes `display`, `h1` and `h2` grow between two viewport widths with a `clamp()` that keeps a `rem` term, so text still follows zoom.
+
+## 3. Override variants
+
+Open any of the 15 variants to change its font role, size (fixed, or `clamp()` with a minimum and a maximum), line height, weight, letter spacing or text transform. Overridden values are marked, keep their value when you change the scale, and can be reset one by one.
+
+## 4. Read the checks
+
+The readability panel warns, without blocking export, when body text is below 16 px, a reading line height is below 1.4, a heading is smaller than the level below it, a weight is not provided by its font, or a fluid size stops growing with zoom.
+
+## 5. Preview
+
+The preview renders the specimen, a long article and an interface sample with the package components. Switch between light and dark, and between 360, 768 and 1280 px to check fluid sizes. Only the preview and the explorer load fonts from Google Fonts; your app never does.
+
+## 6. Export and install
+
+The file is named `typography.css` by default (change it in **Name**). Select **Download .css** or **Copy**. The file starts with the Fontsource `@import` lines and sets every `--typography-*` variable in `:root`. Install the fonts with the command shown in the export section, then load the file after the package:
+
+```bash
+pnpm add @fontsource-variable/inter @fontsource-variable/jetbrains-mono
+```
+
+```css
+@import "@aureus-core/ui/styles.css";
+@import "./typography.css";
+```
+
+With the default fonts no install is needed. To keep editing later, paste the file in **Import**.
+
+The Google Fonts preview and a self-hosted Fontsource package can differ slightly in version, so check the final result in your app.
+
+</En>
+<Es>
+
+# Creador de tipografía
+
+[Herramientas › Creador de tipografía](?path=/story/tools-typography-builder--default) edita todas las fuentes y estilos de texto de `@aureus-core/ui` sobre los componentes reales y te da dos cosas para llevar a tu app: un archivo CSS y el comando que instala sus fuentes. Empieza con los valores de Aureus, y tu borrador se guarda en este navegador hasta que pulses **Restablecer**.
+
+## 1. Elige las fuentes
+
+- **Pares de fuentes** cambia en un clic las fuentes de texto, de títulos y monoespaciada (Geist + Geist Mono es el valor por defecto). Nunca cambia los tamaños ni tus ajustes.
+- **Fuentes** cambia cada rol por separado: la fuente incluida, la del sistema, una fuente del catálogo o cualquier otra familia de Google Fonts escrita por su nombre. Para una familia escrita a mano, el creador propone un paquete de Fontsource y lo marca como sin verificar: compruébalo en [fontsource.org](https://fontsource.org/).
+- **Explorador de fuentes** muestra las 51 fuentes del catálogo con su propia letra. Filtra por categoría y por variable o estática, escribe tu propio texto de muestra, elige un peso y abre la cascada de tamaños de una fuente antes de asignarla a un rol.
+
+## 2. Ajusta la escala
+
+Elige un tamaño base (14–20 px) y una proporción. Todos los tamaños se generan a partir de ellos: el cuerpo es la base, los títulos crecen según la proporción, el texto pequeño baja en medios pasos y nunca queda por debajo de 12 px. Los títulos también ajustan el interlineado y el espaciado entre letras a medida que crecen. **Títulos fluidos** hace que `display`, `h1` y `h2` crezcan entre dos anchos de ventana con un `clamp()` que conserva un término en `rem`, así que el texto sigue respetando el zoom.
+
+## 3. Ajusta las variantes
+
+Abre cualquiera de las 15 variantes para cambiar su rol de fuente, su tamaño (fijo, o `clamp()` con mínimo y máximo), interlineado, peso, espaciado entre letras o transformación. Los valores ajustados se marcan, conservan su valor cuando cambias la escala y se pueden restablecer uno a uno.
+
+## 4. Lee las comprobaciones
+
+El panel de legibilidad avisa, sin bloquear la exportación, cuando el texto de cuerpo baja de 16 px, un interlineado de lectura baja de 1.4, un título es más pequeño que el nivel inferior, un peso no lo tiene su fuente o un tamaño fluido deja de crecer con el zoom.
+
+## 5. Vista previa
+
+La vista previa muestra el muestrario, un artículo largo y una muestra de interfaz con los componentes del paquete. Cambia entre claro y oscuro, y entre 360, 768 y 1280 px para revisar los tamaños fluidos. Solo la vista previa y el explorador cargan fuentes desde Google Fonts; tu app nunca lo hace.
+
+## 6. Exporta e instala
+
+El archivo se llama `typography.css` por defecto (puedes cambiarlo en **Nombre**). Pulsa **Descargar .css** o **Copiar**. El archivo empieza con las líneas `@import` de Fontsource y define todas las variables `--typography-*` en `:root`. Instala las fuentes con el comando que aparece en la sección de exportación y carga el archivo después del paquete:
+
+```bash
+pnpm add @fontsource-variable/inter @fontsource-variable/jetbrains-mono
+```
+
+```css
+@import "@aureus-core/ui/styles.css";
+@import "./typography.css";
+```
+
+Con las fuentes por defecto no hace falta instalar nada. Para seguir editando más tarde, pega el archivo en **Importar**.
+
+La vista previa con Google Fonts y un paquete de Fontsource alojado en tu app pueden diferir un poco de versión, así que revisa el resultado final en tu app.
+
+</Es>

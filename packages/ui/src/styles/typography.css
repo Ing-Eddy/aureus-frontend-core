@@ -1,0 +1,291 @@
+/*
+ * Typography tokens and text styles (see Foundations/Typography in Storybook).
+ *
+ * Every value below is a runtime CSS variable. To customise typography, load a stylesheet after
+ * `@aureus-core/ui/styles.css` that redefines the variables you want in `:root`, for example:
+ *   :root {
+ *     --typography-font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+ *     --typography-h1-weight: 800;
+ *   }
+ * and install the font package it references (for example `@fontsource-variable/inter`).
+ *
+ * Tiers: font roles (--typography-font-*) -> six properties per variant (--typography-<variant>-*)
+ * -> one `.typography-<variant>` class per variant. The classes live in the `components` layer, so
+ * any Tailwind utility on the same element (font-bold, text-lg, uppercase...) always wins.
+ */
+
+@import "@fontsource-variable/geist-mono";
+
+:root {
+  /* Font roles. Tailwind's font-sans/heading/serif/mono utilities resolve to these. */
+  --typography-font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --typography-font-heading: var(--typography-font-sans);
+  --typography-font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --typography-font-mono:
+    "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Base letter spacing of the page; Tailwind's tracking-* steps are offsets from it. */
+  --typography-tracking-normal: 0em;
+
+  --typography-display-font: var(--typography-font-heading);
+  --typography-display-size: clamp(2.5rem, 1.75rem + 2.5vw, 3.75rem);
+  --typography-display-line-height: 1.1;
+  --typography-display-weight: 700;
+  --typography-display-tracking: -0.03em;
+  --typography-display-transform: none;
+
+  --typography-h1-font: var(--typography-font-heading);
+  --typography-h1-size: clamp(2rem, 1.6rem + 1.5vw, 2.5rem);
+  --typography-h1-line-height: 1.15;
+  --typography-h1-weight: 700;
+  --typography-h1-tracking: -0.025em;
+  --typography-h1-transform: none;
+
+  --typography-h2-font: var(--typography-font-heading);
+  --typography-h2-size: clamp(1.625rem, 1.4rem + 0.9vw, 1.875rem);
+  --typography-h2-line-height: 1.2;
+  --typography-h2-weight: 600;
+  --typography-h2-tracking: -0.02em;
+  --typography-h2-transform: none;
+
+  --typography-h3-font: var(--typography-font-heading);
+  --typography-h3-size: 1.5rem;
+  --typography-h3-line-height: 1.3;
+  --typography-h3-weight: 600;
+  --typography-h3-tracking: -0.015em;
+  --typography-h3-transform: none;
+
+  --typography-h4-font: var(--typography-font-heading);
+  --typography-h4-size: 1.25rem;
+  --typography-h4-line-height: 1.4;
+  --typography-h4-weight: 600;
+  --typography-h4-tracking: -0.01em;
+  --typography-h4-transform: none;
+
+  --typography-h5-font: var(--typography-font-heading);
+  --typography-h5-size: 1.125rem;
+  --typography-h5-line-height: 1.45;
+  --typography-h5-weight: 600;
+  --typography-h5-tracking: -0.005em;
+  --typography-h5-transform: none;
+
+  --typography-h6-font: var(--typography-font-heading);
+  --typography-h6-size: 1rem;
+  --typography-h6-line-height: 1.5;
+  --typography-h6-weight: 600;
+  --typography-h6-tracking: 0em;
+  --typography-h6-transform: none;
+
+  --typography-lead-font: var(--typography-font-sans);
+  --typography-lead-size: 1.25rem;
+  --typography-lead-line-height: 1.6;
+  --typography-lead-weight: 400;
+  --typography-lead-tracking: -0.005em;
+  --typography-lead-transform: none;
+
+  --typography-body-lg-font: var(--typography-font-sans);
+  --typography-body-lg-size: 1.125rem;
+  --typography-body-lg-line-height: 1.65;
+  --typography-body-lg-weight: 400;
+  --typography-body-lg-tracking: 0em;
+  --typography-body-lg-transform: none;
+
+  --typography-body-font: var(--typography-font-sans);
+  --typography-body-size: 1rem;
+  --typography-body-line-height: 1.6;
+  --typography-body-weight: 400;
+  --typography-body-tracking: 0em;
+  --typography-body-transform: none;
+
+  --typography-body-sm-font: var(--typography-font-sans);
+  --typography-body-sm-size: 0.875rem;
+  --typography-body-sm-line-height: 1.5;
+  --typography-body-sm-weight: 400;
+  --typography-body-sm-tracking: 0em;
+  --typography-body-sm-transform: none;
+
+  --typography-label-font: var(--typography-font-sans);
+  --typography-label-size: 0.875rem;
+  --typography-label-line-height: 1.25;
+  --typography-label-weight: 500;
+  --typography-label-tracking: 0em;
+  --typography-label-transform: none;
+
+  --typography-caption-font: var(--typography-font-sans);
+  --typography-caption-size: 0.75rem;
+  --typography-caption-line-height: 1.4;
+  --typography-caption-weight: 400;
+  --typography-caption-tracking: 0.01em;
+  --typography-caption-transform: none;
+
+  --typography-overline-font: var(--typography-font-sans);
+  --typography-overline-size: 0.75rem;
+  --typography-overline-line-height: 1.4;
+  --typography-overline-weight: 600;
+  --typography-overline-tracking: 0.08em;
+  --typography-overline-transform: uppercase;
+
+  --typography-code-font: var(--typography-font-mono);
+  --typography-code-size: 0.875em;
+  --typography-code-line-height: inherit;
+  --typography-code-weight: 400;
+  --typography-code-tracking: 0em;
+  --typography-code-transform: none;
+}
+
+@theme inline {
+  --font-sans: var(--typography-font-sans);
+  --font-heading: var(--typography-font-heading);
+  --font-serif: var(--typography-font-serif);
+  --font-mono: var(--typography-font-mono);
+
+  --tracking-tighter: calc(var(--typography-tracking-normal) - 0.05em);
+  --tracking-tight: calc(var(--typography-tracking-normal) - 0.025em);
+  --tracking-normal: var(--typography-tracking-normal);
+  --tracking-wide: calc(var(--typography-tracking-normal) + 0.025em);
+  --tracking-wider: calc(var(--typography-tracking-normal) + 0.05em);
+  --tracking-widest: calc(var(--typography-tracking-normal) + 0.1em);
+}
+
+@layer base {
+  body {
+    letter-spacing: var(--tracking-normal);
+  }
+}
+
+@layer components {
+  .typography-display {
+    font-family: var(--typography-display-font);
+    font-size: var(--typography-display-size);
+    line-height: var(--typography-display-line-height);
+    font-weight: var(--typography-display-weight);
+    letter-spacing: var(--typography-display-tracking);
+    text-transform: var(--typography-display-transform);
+  }
+
+  .typography-h1 {
+    font-family: var(--typography-h1-font);
+    font-size: var(--typography-h1-size);
+    line-height: var(--typography-h1-line-height);
+    font-weight: var(--typography-h1-weight);
+    letter-spacing: var(--typography-h1-tracking);
+    text-transform: var(--typography-h1-transform);
+  }
+
+  .typography-h2 {
+    font-family: var(--typography-h2-font);
+    font-size: var(--typography-h2-size);
+    line-height: var(--typography-h2-line-height);
+    font-weight: var(--typography-h2-weight);
+    letter-spacing: var(--typography-h2-tracking);
+    text-transform: var(--typography-h2-transform);
+  }
+
+  .typography-h3 {
+    font-family: var(--typography-h3-font);
+    font-size: var(--typography-h3-size);
+    line-height: var(--typography-h3-line-height);
+    font-weight: var(--typography-h3-weight);
+    letter-spacing: var(--typography-h3-tracking);
+    text-transform: var(--typography-h3-transform);
+  }
+
+  .typography-h4 {
+    font-family: var(--typography-h4-font);
+    font-size: var(--typography-h4-size);
+    line-height: var(--typography-h4-line-height);
+    font-weight: var(--typography-h4-weight);
+    letter-spacing: var(--typography-h4-tracking);
+    text-transform: var(--typography-h4-transform);
+  }
+
+  .typography-h5 {
+    font-family: var(--typography-h5-font);
+    font-size: var(--typography-h5-size);
+    line-height: var(--typography-h5-line-height);
+    font-weight: var(--typography-h5-weight);
+    letter-spacing: var(--typography-h5-tracking);
+    text-transform: var(--typography-h5-transform);
+  }
+
+  .typography-h6 {
+    font-family: var(--typography-h6-font);
+    font-size: var(--typography-h6-size);
+    line-height: var(--typography-h6-line-height);
+    font-weight: var(--typography-h6-weight);
+    letter-spacing: var(--typography-h6-tracking);
+    text-transform: var(--typography-h6-transform);
+  }
+
+  .typography-lead {
+    font-family: var(--typography-lead-font);
+    font-size: var(--typography-lead-size);
+    line-height: var(--typography-lead-line-height);
+    font-weight: var(--typography-lead-weight);
+    letter-spacing: var(--typography-lead-tracking);
+    text-transform: var(--typography-lead-transform);
+  }
+
+  .typography-body-lg {
+    font-family: var(--typography-body-lg-font);
+    font-size: var(--typography-body-lg-size);
+    line-height: var(--typography-body-lg-line-height);
+    font-weight: var(--typography-body-lg-weight);
+    letter-spacing: var(--typography-body-lg-tracking);
+    text-transform: var(--typography-body-lg-transform);
+  }
+
+  .typography-body {
+    font-family: var(--typography-body-font);
+    font-size: var(--typography-body-size);
+    line-height: var(--typography-body-line-height);
+    font-weight: var(--typography-body-weight);
+    letter-spacing: var(--typography-body-tracking);
+    text-transform: var(--typography-body-transform);
+  }
+
+  .typography-body-sm {
+    font-family: var(--typography-body-sm-font);
+    font-size: var(--typography-body-sm-size);
+    line-height: var(--typography-body-sm-line-height);
+    font-weight: var(--typography-body-sm-weight);
+    letter-spacing: var(--typography-body-sm-tracking);
+    text-transform: var(--typography-body-sm-transform);
+  }
+
+  .typography-label {
+    font-family: var(--typography-label-font);
+    font-size: var(--typography-label-size);
+    line-height: var(--typography-label-line-height);
+    font-weight: var(--typography-label-weight);
+    letter-spacing: var(--typography-label-tracking);
+    text-transform: var(--typography-label-transform);
+  }
+
+  .typography-caption {
+    font-family: var(--typography-caption-font);
+    font-size: var(--typography-caption-size);
+    line-height: var(--typography-caption-line-height);
+    font-weight: var(--typography-caption-weight);
+    letter-spacing: var(--typography-caption-tracking);
+    text-transform: var(--typography-caption-transform);
+  }
+
+  .typography-overline {
+    font-family: var(--typography-overline-font);
+    font-size: var(--typography-overline-size);
+    line-height: var(--typography-overline-line-height);
+    font-weight: var(--typography-overline-weight);
+    letter-spacing: var(--typography-overline-tracking);
+    text-transform: var(--typography-overline-transform);
+  }
+
+  .typography-code {
+    font-family: var(--typography-code-font);
+    font-size: var(--typography-code-size);
+    line-height: var(--typography-code-line-height);
+    font-weight: var(--typography-code-weight);
+    letter-spacing: var(--typography-code-tracking);
+    text-transform: var(--typography-code-transform);
+  }
+}

@@ -8,14 +8,14 @@ import { En, Es } from "@sb/i18n/localized";
 
 # Typography
 
-The package ships **Geist** (variable font, bundled through `@fontsource-variable/geist`) as `--font-sans`, and headings use `--font-heading`, which defaults to the same family. Sizes are Tailwind's scale; components use `text-sm` for most UI text and `text-xs` for secondary text.
+Text in the package uses a fixed catalog of **15 named styles**. Use them through the [Typography](?path=/docs/components-data-display-typography--docs) component (`<Typography variant="h2">`) or the `typography-<variant>` classes. Every property of every style is a runtime CSS variable, so an app changes fonts and sizes without touching component code.
 
 </En>
 <Es>
 
 # Tipografía
 
-El paquete incluye **Geist** (fuente variable, empaquetada con `@fontsource-variable/geist`) como `--font-sans`, y los títulos usan `--font-heading`, que por defecto es la misma familia. Los tamaños son la escala de Tailwind; los componentes usan `text-sm` para casi todo el texto de interfaz y `text-xs` para el secundario.
+El texto del paquete usa un catálogo fijo de **15 estilos con nombre**. Úsalos con el componente [Typography](?path=/docs/components-data-display-typography--docs) (`<Typography variant="h2">`) o con las clases `typography-<variant>`. Cada propiedad de cada estilo es una variable CSS en tiempo de ejecución, así que una app cambia fuentes y tamaños sin tocar el código de los componentes.
 
 </Es>
 
@@ -23,47 +23,147 @@ El paquete incluye **Geist** (fuente variable, empaquetada con `@fontsource-vari
 
 <En>
 
-| Utility     | Size      | Typical use                         |
-| ----------- | --------- | ----------------------------------- |
-| `text-xs`   | 0.75rem   | Descriptions, badges, shortcuts     |
-| `text-sm`   | 0.875rem  | Buttons, inputs, menus, body of UI  |
-| `text-base` | 1rem      | Long-form text                      |
-| `text-lg`+  | 1.125rem+ | Headings                            |
+## The catalog
 
-## Change the font
+| Variant    | Element | Font    | Size                     | Line height | Weight | Tracking  | Typical use                          |
+| ---------- | ------- | ------- | ------------------------ | ----------- | ------ | --------- | ------------------------------------ |
+| `display`  | `h1`    | heading | 2.5rem → 3.75rem (fluid) | 1.1         | 700    | -0.03em   | Hero and landing titles              |
+| `h1`       | `h1`    | heading | 2rem → 2.5rem (fluid)    | 1.15        | 700    | -0.025em  | Page title                           |
+| `h2`       | `h2`    | heading | 1.625rem → 1.875rem      | 1.2         | 600    | -0.02em   | Section title                        |
+| `h3`       | `h3`    | heading | 1.5rem                   | 1.3         | 600    | -0.015em  | Subsection, card title               |
+| `h4`       | `h4`    | heading | 1.25rem                  | 1.4         | 600    | -0.01em   | Group title                          |
+| `h5`       | `h5`    | heading | 1.125rem                 | 1.45        | 600    | -0.005em  | Small title                          |
+| `h6`       | `h6`    | heading | 1rem                     | 1.5         | 600    | 0         | Smallest title                       |
+| `lead`     | `p`     | sans    | 1.25rem                  | 1.6         | 400    | -0.005em  | Intro paragraph under a title        |
+| `body-lg`  | `p`     | sans    | 1.125rem                 | 1.65        | 400    | 0         | Long-form reading                    |
+| `body`     | `p`     | sans    | 1rem                     | 1.6         | 400    | 0         | Default text                         |
+| `body-sm`  | `p`     | sans    | 0.875rem                 | 1.5         | 400    | 0         | Dense UI text, table cells           |
+| `label`    | `span`  | sans    | 0.875rem                 | 1.25        | 500    | 0         | Labels next to values                |
+| `caption`  | `span`  | sans    | 0.75rem                  | 1.4         | 400    | 0.01em    | Hints, timestamps, footnotes         |
+| `overline` | `span`  | sans    | 0.75rem                  | 1.4         | 600    | 0.08em    | Uppercase eyebrow above a title      |
+| `code`     | `code`  | mono    | 0.875em (of the parent)  | inherit     | 400    | 0         | Inline code, keys, identifiers       |
+
+The fluid sizes grow with the viewport width between their two values. Every size keeps a `rem` term, so text follows the browser's font size and page zoom.
+
+## Font roles
+
+| Variable                    | Default                                  | Used by                                         |
+| --------------------------- | ---------------------------------------- | ----------------------------------------------- |
+| `--typography-font-sans`    | Geist Variable (bundled)                 | Body styles, `font-sans`, the page              |
+| `--typography-font-heading` | `var(--typography-font-sans)`            | `display`, `h1`–`h6`, `font-heading` (shadcn titles) |
+| `--typography-font-serif`   | System serif stack                       | `font-serif`                                    |
+| `--typography-font-mono`    | Geist Mono Variable (bundled)            | `code`, `font-mono`                             |
+
+`--typography-tracking-normal` (default `0em`) is the base letter spacing of the page, and Tailwind's `tracking-*` steps are offsets from it.
+
+## Override in your app
+
+Each variant reads six variables: `--typography-<variant>-font`, `-size`, `-line-height`, `-weight`, `-tracking` and `-transform`. Redefine any of them in `:root`, in a stylesheet loaded **after** the package:
 
 ```css
 @import "@aureus-core/ui/styles.css";
 
-@theme inline {
-  --font-sans: "Inter Variable", sans-serif;
-  --font-heading: "Fraunces Variable", serif;
+:root {
+  --typography-h1-weight: 800;
+  --typography-body-line-height: 1.7;
+  --typography-overline-font: var(--typography-font-mono);
 }
 ```
 
-Load the font yourself (for example with `@fontsource-variable/inter`).
+## Change the fonts
+
+The quickest way is [Tools › Typography Builder](?path=/story/tools-typography-builder--default): try fonts and sizes on the real components, then export the file and the install command ([guide](?path=/docs/guides-typography-builder--docs)). By hand:
+
+Install the font with [Fontsource](https://fontsource.org/), so it is served from your own app, then point the roles at it:
+
+```bash
+pnpm add @fontsource-variable/inter @fontsource-variable/fraunces
+```
+
+```css
+@import "@aureus-core/ui/styles.css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/fraunces";
+
+:root {
+  --typography-font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --typography-font-heading: "Fraunces Variable", ui-serif, Georgia, serif;
+}
+```
+
+A theme exported by the Theme Builder before this catalog existed contains `--font-sans`, `--font-serif` and `--font-mono` lines. Move those values to the `--typography-font-*` variables, otherwise `font-sans` and the typography styles can end up with different families. Current Theme Builder exports contain no fonts.
 
 </En>
 <Es>
 
-| Utilidad    | Tamaño    | Uso habitual                              |
-| ----------- | --------- | ----------------------------------------- |
-| `text-xs`   | 0.75rem   | Descripciones, badges, atajos             |
-| `text-sm`   | 0.875rem  | Botones, inputs, menús, texto de interfaz |
-| `text-base` | 1rem      | Texto largo                               |
-| `text-lg`+  | 1.125rem+ | Títulos                                   |
+## El catálogo
 
-## Cambia la fuente
+| Variante   | Elemento | Fuente  | Tamaño                    | Interlineado | Peso | Tracking  | Uso habitual                          |
+| ---------- | -------- | ------- | ------------------------- | ------------ | ---- | --------- | ------------------------------------- |
+| `display`  | `h1`     | heading | 2.5rem → 3.75rem (fluido) | 1.1          | 700  | -0.03em   | Títulos de portada                    |
+| `h1`       | `h1`     | heading | 2rem → 2.5rem (fluido)    | 1.15         | 700  | -0.025em  | Título de página                      |
+| `h2`       | `h2`     | heading | 1.625rem → 1.875rem       | 1.2          | 600  | -0.02em   | Título de sección                     |
+| `h3`       | `h3`     | heading | 1.5rem                    | 1.3          | 600  | -0.015em  | Subsección, título de tarjeta         |
+| `h4`       | `h4`     | heading | 1.25rem                   | 1.4          | 600  | -0.01em   | Título de grupo                       |
+| `h5`       | `h5`     | heading | 1.125rem                  | 1.45         | 600  | -0.005em  | Título pequeño                        |
+| `h6`       | `h6`     | heading | 1rem                      | 1.5          | 600  | 0         | El título más pequeño                 |
+| `lead`     | `p`      | sans    | 1.25rem                   | 1.6          | 400  | -0.005em  | Párrafo de introducción bajo un título |
+| `body-lg`  | `p`      | sans    | 1.125rem                  | 1.65         | 400  | 0         | Lectura larga                         |
+| `body`     | `p`      | sans    | 1rem                      | 1.6          | 400  | 0         | Texto por defecto                     |
+| `body-sm`  | `p`      | sans    | 0.875rem                  | 1.5          | 400  | 0         | Texto denso de interfaz, celdas       |
+| `label`    | `span`   | sans    | 0.875rem                  | 1.25         | 500  | 0         | Etiquetas junto a valores             |
+| `caption`  | `span`   | sans    | 0.75rem                   | 1.4          | 400  | 0.01em    | Pistas, fechas, notas                 |
+| `overline` | `span`   | sans    | 0.75rem                   | 1.4          | 600  | 0.08em    | Antetítulo en mayúsculas              |
+| `code`     | `code`   | mono    | 0.875em (del padre)       | inherit      | 400  | 0         | Código en línea, teclas, identificadores |
+
+Los tamaños fluidos crecen con el ancho de la ventana entre sus dos valores. Todos conservan un término en `rem`, así que el texto sigue el tamaño de fuente del navegador y el zoom.
+
+## Roles de fuente
+
+| Variable                    | Por defecto                              | La usan                                         |
+| --------------------------- | ---------------------------------------- | ----------------------------------------------- |
+| `--typography-font-sans`    | Geist Variable (incluida)                | Estilos de cuerpo, `font-sans`, la página       |
+| `--typography-font-heading` | `var(--typography-font-sans)`            | `display`, `h1`–`h6`, `font-heading` (títulos de shadcn) |
+| `--typography-font-serif`   | Pila serif del sistema                   | `font-serif`                                    |
+| `--typography-font-mono`    | Geist Mono Variable (incluida)           | `code`, `font-mono`                             |
+
+`--typography-tracking-normal` (por defecto `0em`) es el espaciado entre letras base de la página, y los pasos `tracking-*` de Tailwind son desplazamientos a partir de él.
+
+## Sustitúyelos en tu app
+
+Cada variante lee seis variables: `--typography-<variant>-font`, `-size`, `-line-height`, `-weight`, `-tracking` y `-transform`. Redefine las que quieras en `:root`, en una hoja de estilos cargada **después** del paquete:
 
 ```css
 @import "@aureus-core/ui/styles.css";
 
-@theme inline {
-  --font-sans: "Inter Variable", sans-serif;
-  --font-heading: "Fraunces Variable", serif;
+:root {
+  --typography-h1-weight: 800;
+  --typography-body-line-height: 1.7;
+  --typography-overline-font: var(--typography-font-mono);
 }
 ```
 
-Carga la fuente tú mismo (por ejemplo con `@fontsource-variable/inter`).
+## Cambia las fuentes
+
+La forma más rápida es [Herramientas › Creador de tipografía](?path=/story/tools-typography-builder--default): prueba fuentes y tamaños sobre los componentes reales y exporta el archivo y el comando de instalación ([guía](?path=/docs/guides-typography-builder--docs)). A mano:
+
+Instala la fuente con [Fontsource](https://fontsource.org/), para que se sirva desde tu propia app, y apunta los roles a ella:
+
+```bash
+pnpm add @fontsource-variable/inter @fontsource-variable/fraunces
+```
+
+```css
+@import "@aureus-core/ui/styles.css";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/fraunces";
+
+:root {
+  --typography-font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --typography-font-heading: "Fraunces Variable", ui-serif, Georgia, serif;
+}
+```
+
+Un tema exportado con el Creador de temas antes de que existiera este catálogo contiene líneas `--font-sans`, `--font-serif` y `--font-mono`. Pasa esos valores a las variables `--typography-font-*`; si no, `font-sans` y los estilos de tipografía pueden acabar con familias distintas. Las exportaciones actuales del Creador de temas no contienen fuentes.
 
 </Es>

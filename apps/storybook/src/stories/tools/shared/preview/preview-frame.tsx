@@ -1,15 +1,23 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { Mode } from "../core/theme-types";
+
+/** Color scheme of a preview frame: `dark` adds the `.dark` class to the frame's `<html>`. */
+export type PreviewMode = "light" | "dark";
 
 interface PreviewFrameProps {
-  mode: Mode;
+  mode: PreviewMode;
   /** Accessible name of the iframe. */
   title: string;
   /** Theme variables and adapter rules (`previewCss`). */
   css: string;
   /** Google Fonts stylesheet to load inside the frame, if any. */
   fontsUrl?: string;
+  /**
+   * Fixed frame width in CSS pixels, so viewport units (`vw`, media queries) inside the frame see
+   * that width. The frame is centred and the column scrolls horizontally when it is narrower.
+   * Without it, the frame fills the column.
+   */
+  width?: number;
   children: ReactNode;
 }
 
@@ -44,7 +52,7 @@ function syncStylesheets(target: Document): Promise<void> {
  * gets `.dark` and the light one does not, whatever the playground toolbar says. The children are
  * rendered into it through a portal, so they share React state and context with the builder.
  */
-export function PreviewFrame({ mode, title, css, fontsUrl, children }: PreviewFrameProps) {
+export function PreviewFrame({ mode, title, css, fontsUrl, width, children }: PreviewFrameProps) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [frameDocument, setFrameDocument] = useState<Document>();
   const [ready, setReady] = useState(false);
@@ -132,17 +140,37 @@ export function PreviewFrame({ mode, title, css, fontsUrl, children }: PreviewFr
     return () => observer.disconnect();
   }, [frameDocument]);
 
-  return (
+  const frame = (
     <iframe
       ref={frameRef}
       title={title}
       srcDoc={emptyDocument}
       data-mode={mode}
       data-ready={ready ? "true" : undefined}
-      className="w-full rounded-lg border border-border bg-transparent"
-      style={{ height }}
+      data-width={width}
+      className={
+        width
+          ? "mx-auto block max-w-none shrink-0 rounded-lg border border-border bg-transparent"
+          : "w-full rounded-lg border border-border bg-transparent"
+      }
+      style={width ? { height, width } : { height }}
     >
       {frameDocument ? createPortal(children, frameDocument.body) : null}
     </iframe>
+  );
+  // Always the same wrapper, so changing `width` never remounts the iframe (and its document).
+  return width ? (
+    <section
+      aria-label={title}
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be keyboard-reachable.
+      tabIndex={0}
+      className="min-w-0 overflow-x-auto rounded-lg focus-visible:outline-2 focus-visible:outline-ring"
+    >
+      {frame}
+    </section>
+  ) : (
+    <section aria-label={title} className="min-w-0">
+      {frame}
+    </section>
   );
 }

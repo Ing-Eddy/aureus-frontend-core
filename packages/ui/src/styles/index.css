@@ -1,5 +1,6 @@
 @import "./shadcn.css";
 @import "./theme.css";
+@import "./typography.css";
 @import "./data-table.css";
 
 /* Resolved from dist/styles/: lets the consumer's Tailwind scan this package's built components. */

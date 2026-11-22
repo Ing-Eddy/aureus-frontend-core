@@ -137,6 +137,11 @@ export interface ImportReport {
   missing: string[];
   /** Declarations that were not used, e.g. `--destructive-foreground (light)`. */
   ignored: string[];
+  /**
+   * Some ignored declarations are fonts or letter spacing (an export from before the Typography
+   * Builder). The import section then points to that tool.
+   */
+  typography: boolean;
 }
 
 export type ImportResult = { ok: true; draft: ThemeDraft; report: ImportReport } | { ok: false };
@@ -154,11 +159,6 @@ function toPx(value: string): number | undefined {
   return match ? Number(match[1]) : undefined;
 }
 
-function toEm(value: string): number | undefined {
-  const match = /^(-?\d*\.?\d+)(em)?$/.exec(value.trim());
-  return match ? Number(match[1]) : undefined;
-}
-
 function toOpacity(value: string): number | undefined {
   const match = /^(\d*\.?\d+)(%)?$/.exec(value.trim());
   if (!match) return undefined;
@@ -170,7 +170,6 @@ const colorTokenSet: ReadonlySet<string> = new Set(colorTokens);
 
 /** Names that are recognized but carry nothing the draft stores (derived by the export itself). */
 const derivedNames = new Set([
-  "--font-heading",
   ...shadowSteps.map((step) => (step ? `--shadow-${step}` : "--shadow")),
 ]);
 
@@ -181,7 +180,7 @@ const derivedNames = new Set([
  */
 export function importTheme(draft: ThemeDraft, parsed: ParsedTheme): ImportResult {
   const next: ThemeDraft = structuredClone(draft);
-  const report: ImportReport = { imported: 0, missing: [], ignored: [] };
+  const report: ImportReport = { imported: 0, missing: [], ignored: [], typography: false };
   let recognized = 0;
 
   for (const mode of modes) {
@@ -189,6 +188,13 @@ export function importTheme(draft: ThemeDraft, parsed: ParsedTheme): ImportResul
       const token = name.slice(2);
       const label = `${name} (${mode})`;
       let applied = false;
+      if (isTypographyName(name)) {
+        // Typography belongs to the Typography Builder (design D9): recognized, never applied.
+        recognized++;
+        report.ignored.push(label);
+        report.typography = true;
+        continue;
+      }
       if (colorTokenSet.has(token)) {
         recognized++;
         const color = normalizeColor(raw);
@@ -229,19 +235,18 @@ export function importTheme(draft: ThemeDraft, parsed: ParsedTheme): ImportResul
   return { ok: true, draft: next, report };
 }
 
+/** Fonts and letter spacing written by older theme exports, now owned by the Typography Builder. */
+const isTypographyName = (name: string) =>
+  name.startsWith("--font-") || name.startsWith("--tracking-") || name === "--letter-spacing";
+
 const inputNames = new Set([
   "--radius",
-  "--font-sans",
-  "--font-serif",
-  "--font-mono",
   "--shadow-opacity",
   "--shadow-blur",
   "--shadow-spread",
   "--shadow-offset-x",
   "--shadow-offset-y",
   "--spacing",
-  "--tracking-normal",
-  "--letter-spacing",
 ]);
 const isInputName = (name: string) => inputNames.has(name);
 
@@ -257,14 +262,6 @@ function applyInput(draft: ThemeDraft, name: string, raw: string): boolean {
       return set(toRem(raw), (value) => {
         inputs.radius = value;
       });
-    case "--font-sans":
-    case "--font-serif":
-    case "--font-mono": {
-      const stack = raw.trim();
-      if (!stack || stack.includes("var(")) return false;
-      inputs.fonts[name.slice("--font-".length) as "sans" | "serif" | "mono"] = stack;
-      return true;
-    }
     case "--shadow-opacity":
       return set(toOpacity(raw), (value) => {
         inputs.shadow.opacity = value;
@@ -288,11 +285,6 @@ function applyInput(draft: ThemeDraft, name: string, raw: string): boolean {
     case "--spacing":
       return set(toRem(raw), (value) => {
         inputs.spacing = value;
-      });
-    case "--tracking-normal":
-    case "--letter-spacing":
-      return set(toEm(raw), (value) => {
-        inputs.tracking = value;
       });
     default:
       return false;

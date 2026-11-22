@@ -224,8 +224,8 @@ export function resolveTheme(draft: ThemeDraft): ResolvedTheme {
     light: { ...base("light"), ...draft.overrides.light },
     dark: { ...base("dark"), ...draft.overrides.dark },
   };
-  const { radius, fonts, shadow, spacing, tracking } = draft.inputs;
-  return { name: draft.name, colors, radius, fonts, shadow, spacing, tracking };
+  const { radius, shadow, spacing } = draft.inputs;
+  return { name: draft.name, colors, radius, shadow, spacing };
 }
 
 /** Base value of one token, ignoring its override (what "Reset token" restores). */

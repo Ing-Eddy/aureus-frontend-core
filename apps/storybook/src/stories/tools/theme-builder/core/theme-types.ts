@@ -52,12 +52,6 @@ export type ChartMode = (typeof chartModes)[number];
 /** Every color token of one mode, as normalized `oklch(...)` strings. */
 export type ColorSet = Record<ColorToken, string>;
 
-export interface FontStacks {
-  sans: string;
-  serif: string;
-  mono: string;
-}
-
 /** One shadow definition; every `--shadow-*` step is derived from it. Lengths are in px. */
 export interface ShadowInputs {
   color: Record<Mode, string>;
@@ -81,12 +75,9 @@ export interface ThemeInputs {
   chartMode: ChartMode;
   /** rem. */
   radius: number;
-  fonts: FontStacks;
   shadow: ShadowInputs;
   /** Base spacing unit, rem. */
   spacing: number;
-  /** Base letter spacing, em. */
-  tracking: number;
 }
 
 /** The inputs that drive color generation: changing one of them leaves the preset. */
@@ -101,8 +92,9 @@ export const colorInputKeys = [
 
 export type ThemeBase = { kind: "preset"; id: "aureus" } | { kind: "generated" };
 
+/** Version 2 has no fonts or letter spacing: the Typography Builder owns them (design D9). */
 export interface ThemeDraft {
-  version: 1;
+  version: 2;
   name: string;
   base: ThemeBase;
   inputs: ThemeInputs;
@@ -114,8 +106,6 @@ export interface ResolvedTheme {
   name: string;
   colors: Record<Mode, ColorSet>;
   radius: number;
-  fonts: FontStacks;
   shadow: ShadowInputs;
   spacing: number;
-  tracking: number;
 }

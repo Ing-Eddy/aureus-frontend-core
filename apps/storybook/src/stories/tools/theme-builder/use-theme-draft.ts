@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useReducer, useRef } from "react";
 import { createDefaultDraft } from "./core/default-theme";
 import { clearDraft, createDraftSaver, type DraftStorage, loadDraft } from "./core/draft-storage";
-import type { FontRole } from "./core/font-options";
 import {
   type ColorToken,
   colorInputKeys,
@@ -11,11 +10,10 @@ import {
   type ThemeInputs,
 } from "./core/theme-types";
 
-type ScalarInputKey = Exclude<keyof ThemeInputs, "fonts" | "shadow">;
+type ScalarInputKey = Exclude<keyof ThemeInputs, "shadow">;
 
 export type DraftAction =
   | { type: "input"; key: ScalarInputKey; value: ThemeInputs[ScalarInputKey] }
-  | { type: "font"; role: FontRole; stack: string }
   | { type: "shadow"; patch: Partial<Omit<ShadowInputs, "color">> }
   | { type: "shadowColor"; mode: Mode; color: string }
   | { type: "override"; mode: Mode; token: ColorToken; value: string | undefined }
@@ -33,11 +31,6 @@ export function draftReducer(draft: ThemeDraft, action: DraftAction): ThemeDraft
         // Editing a color input leaves the preset: colors are generated from now on (design D2).
         base: colorInputs.has(action.key) ? { kind: "generated" } : draft.base,
         inputs: { ...draft.inputs, [action.key]: action.value },
-      };
-    case "font":
-      return {
-        ...draft,
-        inputs: { ...draft.inputs, fonts: { ...draft.inputs.fonts, [action.role]: action.stack } },
       };
     case "shadow":
       return {

@@ -7,7 +7,7 @@ import { En, Es } from "@sb/i18n/localized";
 
 # Theming
 
-Every color, radius and font in the components comes from CSS custom properties (tokens). Change the tokens and every component follows; you never have to edit component code.
+Every color, radius, font and text size in the components comes from CSS custom properties (tokens). Change the tokens and every component follows; you never have to edit component code.
 
 ## Override tokens in your app
 
@@ -34,10 +34,14 @@ The tokens are listed, with live swatches, under [Foundations › Colors](?path=
 
 Rather than writing the values by hand, open [Tools › Theme Builder](?path=/story/tools-theme-builder--default). Pick a primary color, a neutral palette and a radius, override any token, and watch the real components and the WCAG contrast of every text pair update live in light and dark mode. You can also paste a theme you already have (from ui.shadcn.com, tweakcn or an earlier export) to keep editing it.
 
-- **Download .css** saves a standalone theme file (`:root`, `.dark` and `@theme inline`, all in OKLCH) for any Tailwind CSS v4 shadcn app.
+- **Download .css** saves a standalone theme file (`:root`, `.dark` and `@theme inline`, all in OKLCH) for any Tailwind CSS v4 shadcn app. It contains no fonts or letter spacing: those come from the Typography Builder.
 - **Copy** puts the same content on the clipboard.
 
-In an app built on this package, add the file's `:root` and `.dark` blocks after `@import "@aureus-core/ui/styles.css"`. In any other shadcn app, the file replaces the theme blocks of your global CSS, after `@import "tailwindcss"`. Your draft is kept in this browser until you select **Reset**.
+The file is named `theme.css` by default. In an app built on this package, import it after `@import "@aureus-core/ui/styles.css"` (its light block uses `:root, :root:not(.dark)`, so it also overrides the package's accessibility adjustments). In any other shadcn app, the file replaces the theme blocks of your global CSS, after `@import "tailwindcss"`. Your draft is kept in this browser until you select **Reset**.
+
+## Typography
+
+Fonts, sizes, weights and line heights are tokens too: the `--typography-*` variables. Override them after the package import exactly like colors. See [Foundations › Typography](?path=/docs/foundations-typography--docs) for the catalog, every variable and how to install other fonts with Fontsource, or edit them visually in [Tools › Typography Builder](?path=/story/tools-typography-builder--default) (see the [Typography builder guide](?path=/docs/guides-typography-builder--docs)). The Theme Builder does not handle fonts or letter spacing.
 
 ## The customization ladder
 
@@ -51,7 +55,7 @@ When a token is not enough, go one step further, and only as far as you need:
 
 ## What this package already changed
 
-Three tokens were adjusted to pass WCAG AA contrast; override them to restore the stock shadcn look:
+Three tokens were adjusted to pass WCAG AA contrast; override them to restore the stock shadcn look. The light values are set on `:root:not(.dark)`, so override them with that selector (or `:root, :root:not(.dark)`, as Theme Builder exports do); a plain `:root` loses to it:
 
 | Token                | Stock shadcn               | Aureus                   | Why                                              |
 | -------------------- | -------------------------- | ------------------------ | ------------------------------------------------ |
@@ -64,7 +68,7 @@ Three tokens were adjusted to pass WCAG AA contrast; override them to restore th
 
 # Temas
 
-Todos los colores, radios y fuentes de los componentes vienen de propiedades personalizadas de CSS (tokens). Cambia los tokens y todos los componentes los siguen; nunca tienes que editar el código de un componente.
+Todos los colores, radios, fuentes y tamaños de texto de los componentes vienen de propiedades personalizadas de CSS (tokens). Cambia los tokens y todos los componentes los siguen; nunca tienes que editar el código de un componente.
 
 ## Sustituye tokens en tu app
 
@@ -91,10 +95,14 @@ Los tokens están listados, con muestras en vivo, en [Fundamentos › Colores](?
 
 En lugar de escribir los valores a mano, abre [Herramientas › Creador de temas](?path=/story/tools-theme-builder--default). Elige un color primario, una paleta neutra y un radio, sustituye cualquier token y mira cómo se actualizan en vivo los componentes reales y el contraste WCAG de cada pareja de texto, en modo claro y oscuro. También puedes pegar un tema que ya tengas (de ui.shadcn.com, tweakcn o una exportación anterior) para seguir editándolo.
 
-- **Descargar .css** guarda un archivo de tema independiente (`:root`, `.dark` y `@theme inline`, todo en OKLCH) para cualquier app con shadcn y Tailwind CSS v4.
+- **Descargar .css** guarda un archivo de tema independiente (`:root`, `.dark` y `@theme inline`, todo en OKLCH) para cualquier app con shadcn y Tailwind CSS v4. No contiene fuentes ni espaciado entre letras: vienen del Creador de tipografía.
 - **Copiar** pone el mismo contenido en el portapapeles.
 
-En una app basada en este paquete, añade los bloques `:root` y `.dark` del archivo después de `@import "@aureus-core/ui/styles.css"`. En cualquier otra app con shadcn, el archivo sustituye los bloques del tema de tu CSS global, después de `@import "tailwindcss"`. Tu borrador se guarda en este navegador hasta que pulses **Restablecer**.
+El archivo se llama `theme.css` por defecto. En una app basada en este paquete, impórtalo después de `@import "@aureus-core/ui/styles.css"` (su bloque claro usa `:root, :root:not(.dark)`, así que también sustituye los ajustes de accesibilidad del paquete). En cualquier otra app con shadcn, el archivo sustituye los bloques del tema de tu CSS global, después de `@import "tailwindcss"`. Tu borrador se guarda en este navegador hasta que pulses **Restablecer**.
+
+## Tipografía
+
+Las fuentes, los tamaños, los pesos y los interlineados también son tokens: las variables `--typography-*`. Sustitúyelas después del import del paquete igual que los colores. Mira [Fundamentos › Tipografía](?path=/docs/foundations-typography--docs) para el catálogo, todas las variables y cómo instalar otras fuentes con Fontsource, o edítalas visualmente en [Herramientas › Creador de tipografía](?path=/story/tools-typography-builder--default) (mira la [guía del creador de tipografía](?path=/docs/guides-typography-builder--docs)). El Creador de temas no gestiona fuentes ni espaciado entre letras.
 
 ## La escalera de personalización
 
@@ -108,7 +116,7 @@ Cuando un token no basta, sube un peldaño, y solo hasta donde lo necesites:
 
 ## Lo que este paquete ya cambió
 
-Se ajustaron tres tokens para cumplir el contraste WCAG AA; sustitúyelos para recuperar el aspecto original de shadcn:
+Se ajustaron tres tokens para cumplir el contraste WCAG AA; sustitúyelos para recuperar el aspecto original de shadcn. Los valores claros se definen en `:root:not(.dark)`, así que sustitúyelos con ese selector (o `:root, :root:not(.dark)`, como hacen las exportaciones del Creador de temas); un `:root` a secas pierde contra él:
 
 | Token                | shadcn original            | Aureus                   | Motivo                                           |
 | -------------------- | -------------------------- | ------------------------ | ------------------------------------------------ |

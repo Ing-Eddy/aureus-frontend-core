@@ -5,6 +5,7 @@ import {
   createDraftSaver,
   type DraftStorage,
   draftStorageKey,
+  legacyDraftStorageKey,
   loadDraft,
   saveDraft,
 } from "./draft-storage";
@@ -61,7 +62,11 @@ describe("draft storage", () => {
   });
 
   const corrupt: [string, (draft: ThemeDraft) => unknown][] = [
-    ["a wrong version", (draft) => ({ ...draft, version: 2 })],
+    ["a wrong version", (draft) => ({ ...draft, version: 3 })],
+    [
+      "fonts still in the inputs",
+      (draft) => ({ ...draft, inputs: { ...draft.inputs, fonts: { sans: "Inter" } } }),
+    ],
     ["an unknown palette", (draft) => ({ ...draft, inputs: { ...draft.inputs, neutral: "pink" } })],
     ["an unknown base", (draft) => ({ ...draft, base: { kind: "preset", id: "other" } })],
     [
@@ -112,5 +117,35 @@ describe("draft storage", () => {
     saver.cancel();
     vi.advanceTimersByTime(300);
     expect(loadDraft(storage).name).toBe("b");
+  });
+
+  it("migrates a v1 draft: keeps colors and overrides, drops fonts and tracking", () => {
+    const storage = memoryStorage();
+    const v2 = edited();
+    const v1 = {
+      ...v2,
+      version: 1,
+      inputs: {
+        ...v2.inputs,
+        fonts: { sans: "Inter, sans-serif", serif: "serif", mono: "monospace" },
+        tracking: 0.01,
+      },
+    };
+    storage.setItem(legacyDraftStorageKey, JSON.stringify(v1));
+    const loaded = loadDraft(storage);
+    expect(loaded).toEqual(v2);
+    expect("fonts" in loaded.inputs).toBe(false);
+    expect(storage.data.has(legacyDraftStorageKey)).toBe(false);
+    expect(JSON.parse(storage.data.get(draftStorageKey) ?? "")).toEqual(v2);
+  });
+
+  it("discards a v1 draft that is invalid once migrated", () => {
+    const storage = memoryStorage();
+    storage.setItem(
+      legacyDraftStorageKey,
+      JSON.stringify({ ...edited(), version: 1, inputs: { ...edited().inputs, primary: "nope" } }),
+    );
+    expect(loadDraft(storage)).toEqual(createDefaultDraft());
+    expect(storage.data.has(legacyDraftStorageKey)).toBe(false);
   });
 });

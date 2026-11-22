@@ -68,6 +68,13 @@ export const GenerateAndExport: Story = {
       "Meets WCAG AA for text contrast",
     );
 
+    await step("Typography lives in its own tool", async () => {
+      const link = canvas.getByRole("link", { name: /Open the Typography Builder/ });
+      await expect(link).toHaveAttribute("href", "?path=/story/tools-typography-builder--default");
+      await expect(canvas.queryByLabelText(/Sans-serif font|Letter spacing/)).toBeNull();
+      await expect(codeText(canvasElement)).not.toMatch(/--font-sans:|--tracking-normal:/);
+    });
+
     await step("Change the primary color", async () => {
       const primary = canvas.getByLabelText("Primary color");
       await userEvent.clear(primary);
@@ -100,6 +107,7 @@ export const GenerateAndExport: Story = {
     });
 
     await step("Download the file", async () => {
+      await expect(canvas.getByText("The file is saved as theme.css.")).toBeVisible();
       const name = canvas.getByLabelText("Theme name");
       await userEvent.clear(name);
       await userEvent.type(name, "Ocean Breeze");
@@ -149,6 +157,7 @@ const sampleTheme = `:root {
   --primary-foreground: oklch(1 0 0);
   --destructive-foreground: oklch(1 0 0);
   --radius: 0.5rem;
+  --font-sans: Inter, sans-serif;
 }
 .dark {
   --background: oklch(0.15 0.02 260);
@@ -169,7 +178,12 @@ export const Import: Story = {
       await userEvent.paste(sampleTheme);
       await userEvent.click(canvas.getByRole("button", { name: "Import pasted CSS" }));
       await expect(report).toHaveTextContent("Imported 7 values.");
-      await expect(report).toHaveTextContent("Ignored: --destructive-foreground (light)");
+      await expect(report).toHaveTextContent(
+        "Ignored: --destructive-foreground (light), --font-sans (light)",
+      );
+      await expect(canvas.getByTestId("import-typography-hint")).toHaveTextContent(
+        "Tools › Typography Builder",
+      );
       await expect(report).toHaveTextContent("--sidebar (dark)");
       await expect(codeText(canvasElement)).toContain("--primary: oklch(0.6 0.18 250);");
       await expect(codeText(canvasElement)).toContain("--radius: 0.5rem;");

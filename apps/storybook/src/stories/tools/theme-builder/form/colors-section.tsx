@@ -8,13 +8,13 @@ import {
 import { NativeSelect, NativeSelectOption } from "@aureus-core/ui/shadcn/native-select";
 import { Switch } from "@aureus-core/ui/shadcn/switch";
 import { useId } from "react";
+import { fill } from "../../shared/i18n";
 import {
   type ChartMode,
   chartModes,
   type NeutralPalette,
   neutralPalettes,
 } from "../core/theme-types";
-import { fill } from "../i18n/theme-builder-strings";
 import { ColorField, SliderField } from "./fields";
 import { Section, type SectionProps } from "./section";
 

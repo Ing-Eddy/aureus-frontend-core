@@ -102,7 +102,7 @@ const tweakcn = `
 `;
 
 describe("importTheme", () => {
-  it("imports a tweakcn theme: colors as overrides, the rest as inputs", () => {
+  it("imports a tweakcn theme: colors as overrides, the rest as inputs, fonts ignored", () => {
     const result = importTheme(createDefaultDraft(), parseThemeCss(tweakcn));
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -110,13 +110,17 @@ describe("importTheme", () => {
     expect(draft.overrides.light.primary).toBe("oklch(0.6 0.18 250)");
     expect(draft.overrides.dark.background).toBe("oklch(0.15 0.02 260)");
     expect(draft.inputs.radius).toBe(0.5);
-    expect(draft.inputs.fonts.sans).toBe("Inter, sans-serif");
     expect(draft.inputs.shadow).toMatchObject({ opacity: 0.18, blur: 4, y: 2 });
-    expect(draft.inputs.tracking).toBe(-0.01);
-    expect(report.ignored).toEqual(["--destructive-foreground (light)"]);
+    expect(report.ignored).toEqual([
+      "--destructive-foreground (light)",
+      "--font-sans (light)",
+      "--font-mono (light)",
+      "--letter-spacing (light)",
+    ]);
+    expect(report.typography).toBe(true);
     expect(report.missing).toContain("--sidebar (dark)");
     expect(report.missing).not.toContain("--primary (light)");
-    expect(report.imported).toBe(18);
+    expect(report.imported).toBe(15);
   });
 
   it("keeps the base, so tokens missing from the file keep their values", () => {
@@ -171,11 +175,6 @@ describe("importTheme", () => {
         tint: 0.6,
         chartMode: "primary",
         radius: 0.3,
-        fonts: {
-          sans: "'DM Sans', sans-serif",
-          serif: "Lora, serif",
-          mono: "'Fira Code', monospace",
-        },
         shadow: {
           color: { light: "oklch(0.3 0.05 150)", dark: "oklch(0 0 0)" },
           opacity: 0.2,
@@ -185,7 +184,6 @@ describe("importTheme", () => {
           y: 3,
         },
         spacing: 0.3,
-        tracking: 0.01,
       },
       overrides: { light: { accent: "oklch(0.9 0.05 90)" }, dark: {} },
     };
@@ -193,10 +191,22 @@ describe("importTheme", () => {
     const result = importTheme(createDefaultDraft(), parseThemeCss(css));
     if (!result.ok) throw new Error("import failed");
     expect(result.report.ignored).toEqual([]);
+    expect(result.report.typography).toBe(false);
     expect(result.report.missing).toEqual([]);
     const { name: _a, ...expected } = resolveTheme(source);
     const { name: _b, ...actual } = resolveTheme(result.draft);
     expect(actual).toEqual(expected);
     expect(serializeTheme(resolveTheme({ ...result.draft, name: source.name }))).toBe(css);
+  });
+
+  it("imports an older export with fonts: reports them as ignored and points to the typography tool", () => {
+    const older = `:root { --primary: oklch(0.5 0.2 260); --radius: 0.75rem; --font-sans: Inter, sans-serif; --tracking-normal: 0.01em; }
+@theme inline { --font-sans: var(--font-sans); --tracking-tight: calc(var(--tracking-normal) - 0.025em); }`;
+    const result = importTheme(createDefaultDraft(), parseThemeCss(older));
+    if (!result.ok) throw new Error("import failed");
+    expect(result.draft.overrides.light.primary).toBe("oklch(0.5 0.2 260)");
+    expect(result.draft.inputs.radius).toBe(0.75);
+    expect(result.report.ignored).toEqual(["--font-sans (light)", "--tracking-normal (light)"]);
+    expect(result.report.typography).toBe(true);
   });
 });

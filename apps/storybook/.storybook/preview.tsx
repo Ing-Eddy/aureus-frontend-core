@@ -74,6 +74,7 @@ const preview: Preview = {
             "Introduction",
             "Getting started",
             "Theming",
+            "Typography builder",
             "Dark mode",
             "Right-to-left",
             "Hooks & utilities",
