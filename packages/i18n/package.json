@@ -1,6 +1,6 @@
 {
   "name": "@aureus-core/i18n",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "i18next for Aureus projects: a Vite plugin that discovers locale namespaces and types t(), and a lazy-loading runtime",
   "license": "MIT",
   "type": "module",

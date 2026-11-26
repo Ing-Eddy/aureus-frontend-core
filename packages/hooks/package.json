@@ -1,6 +1,6 @@
 {
   "name": "@aureus-core/hooks",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Reusable React hooks for Aureus projects: schema-driven react-hook-form forms",
   "license": "MIT",
   "type": "module",

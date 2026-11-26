@@ -1,6 +1,6 @@
 {
   "name": "@aureus-core/utils",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Framework-free utilities for Aureus projects: a shared date-format catalog and value display helpers",
   "license": "MIT",
   "type": "module",

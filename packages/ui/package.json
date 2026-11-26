@@ -1,6 +1,6 @@
 {
   "name": "@aureus-core/ui",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "shadcn/ui base layer and custom React components for Aureus projects",
   "license": "MIT",
   "type": "module",
