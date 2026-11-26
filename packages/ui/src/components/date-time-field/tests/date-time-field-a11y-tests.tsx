@@ -38,7 +38,15 @@ describe("DateTimeField accessibility", () => {
   });
 
   it("marks the group busy and disabled while loading", () => {
-    renderField(<DateTimeField label="Fecha" loading loadingLabel="Cargando" {...calendarTexts} />);
+    renderField(
+      <DateTimeField
+        label="Fecha"
+        locale="es-ES"
+        loading
+        loadingLabel="Cargando"
+        {...calendarTexts}
+      />,
+    );
     const group = screen.getByRole("group", { name: "Fecha" });
     expect(group.getAttribute("aria-busy")).toBe("true");
     expect(screen.getByRole("status", { name: "Cargando" })).toBeTruthy();
