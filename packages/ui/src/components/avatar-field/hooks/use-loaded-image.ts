@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import type { ImageSize } from "../utils";
 
+/** An image ready to be edited. */
 export interface LoadedImage {
+  /** The decoded element. */
   image: HTMLImageElement;
+  /** Its natural size. */
   size: ImageSize;
 }
 

@@ -15,7 +15,11 @@ import {
 } from "../utils";
 import { AppLayoutSidebarRail } from "./app-layout-sidebar-rail";
 
-/** The desktop sidebar: a box whose width animates, with the content's container inside. */
+/**
+ * The desktop sidebar: a box whose width animates, with the content's container inside.
+ * `className`, `style` and other attributes go to the container. Collapsed off screen, the
+ * container is inert, so it takes no focus.
+ */
 export function AppLayoutSidebarDesktop({
   children,
   className,

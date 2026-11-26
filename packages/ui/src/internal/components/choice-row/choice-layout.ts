@@ -7,9 +7,13 @@ const columnClasses = {
   4: "grid grid-cols-1 gap-3 @sm:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4",
 } as const;
 
+/** How the options of a choice group are placed. */
 export interface ChoiceLayoutOptions {
+  /** One option per line, or options side by side that wrap. */
   orientation: "vertical" | "horizontal";
+  /** A grid with up to this many columns. No default. */
   columns?: 2 | 3 | 4;
+  /** Plain rows, or bordered cards (which sit closer together). */
   appearance: "plain" | "card";
   /** Indents the options (under a parent row, such as select all). */
   indent?: boolean;

@@ -7,7 +7,18 @@ export function scrollElementToTop(element: HTMLElement | null) {
   if (element) element.scrollTop = 0;
 }
 
-/** The main area of the surrounding `AppLayout`: its scrolling element and `scrollToTop`. */
+/**
+ * The main area of the surrounding `AppLayout`: its scrolling element and `scrollToTop`.
+ *
+ * ```tsx
+ * const { scrollToTop } = useAppLayoutMain();
+ *
+ * const changePage = (page: number) => {
+ *   setPage(page);
+ *   scrollToTop();
+ * };
+ * ```
+ */
 export function useAppLayoutMain(): UseAppLayoutMainResult {
   const { mainRef } = useAppLayoutContext("useAppLayoutMain");
   const scrollToTop = useCallback(() => scrollElementToTop(mainRef.current), [mainRef]);

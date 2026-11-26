@@ -5,18 +5,31 @@ export type SegmentType = "year" | "month" | "day" | "hour" | "minute" | "second
 
 /** A segment or the literal text between two segments, in the locale's order. */
 export type SegmentLayoutItem =
-  | { kind: "segment"; type: SegmentType }
-  | { kind: "literal"; text: string };
+  | {
+      /** An editable segment, or text between segments. */
+      kind: "segment";
+      /** Which part of the value the segment edits. */
+      type: SegmentType;
+    }
+  | {
+      kind: "literal";
+      /** The separator, as the locale writes it. */
+      text: string;
+    };
 
+/** Which segments `segmentLayout` returns. */
 export interface SegmentLayoutOptions {
   /** Day, month and year segments. */
   date: boolean;
   /** Hour and minute segments (and second, and the day period with a 12-hour cycle). */
   time: boolean;
+  /** 12 adds the day period segment. */
   hourCycle: 12 | 24;
+  /** `"second"` adds the seconds segment. */
   granularity: TimeGranularity;
 }
 
+/** The `Intl` part types that become segments. */
 const SEGMENT_TYPES = new Set<string>([
   "year",
   "month",
@@ -26,14 +39,16 @@ const SEGMENT_TYPES = new Set<string>([
   "second",
   "dayPeriod",
 ]);
-// Direction marks: the row is laid out left to right, so they are dropped.
+/** Direction marks: the row is laid out left to right, so they are dropped. */
 const BIDI_MARKS = /[‎‏؜]/g;
-// Every format here is Gregorian, whatever the locale's default calendar.
+/** Every format here is Gregorian, whatever the locale's default calendar. */
 const GREGORIAN = { calendar: "gregory" } as const;
-// A reference date whose parts are all two digits and distinct.
+/** A reference date whose parts are all two digits and distinct. */
 const REFERENCE = new Date(2026, 10, 23, 14, 35, 45);
 
+/** Layouts, digits and names by locale: they never change while the page is open. */
 const cache = new Map<string, unknown>();
+/** The cached result for `key`, created on first use. */
 function cached<T>(key: string, create: () => T): T {
   if (!cache.has(key)) cache.set(key, create());
   return cache.get(key) as T;
@@ -92,11 +107,13 @@ export function resolveHourCycle(locale: string | undefined, hourCycle?: 12 | 24
 
 /** Formats numbers with the locale's digits, and reads ASCII or locale digits back. */
 export interface LocaleDigits {
+  /** A number in the locale's digits, padded to `minimumIntegerDigits`, without grouping. */
   format: (value: number, minimumIntegerDigits?: number) => string;
   /** The digit 0–9 a typed character stands for, or `null`. */
   parse: (character: string) => number | null;
 }
 
+/** The cached `LocaleDigits` of a locale. */
 export function localeDigits(locale: string | undefined): LocaleDigits {
   return cached(`digits|${locale}`, () => {
     const formats = new Map<number, Intl.NumberFormat>();

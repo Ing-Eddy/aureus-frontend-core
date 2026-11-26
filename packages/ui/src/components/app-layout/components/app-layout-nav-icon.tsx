@@ -10,8 +10,11 @@ export function AppLayoutNavIcon({
   label,
   collapsed,
 }: {
+  /** The consumer's icon. */
   icon?: ReactNode;
+  /** Source of the letter shown when there is no icon. */
   label: string;
+  /** The letter is shown only while collapsed. */
   collapsed: boolean;
 }) {
   if (icon) {

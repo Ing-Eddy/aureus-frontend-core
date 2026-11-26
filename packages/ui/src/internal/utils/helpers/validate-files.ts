@@ -3,6 +3,7 @@ import { acceptMatches } from "./accept-matches";
 
 /** The restrictions a file field checks. Each is optional and independent. */
 export interface FileRestrictions {
+  /** Allowed types, as in the `accept` attribute (see `acceptMatches`). */
   accept?: string;
   /** Largest size of one file, in bytes. */
   maxSize?: number;
@@ -16,6 +17,7 @@ export interface FileRestrictions {
 
 /** What the value already holds, for the count and total-size limits. */
 export interface CurrentFiles {
+  /** Items already in the value. */
   count: number;
   /** Sum of the known sizes. */
   totalSize: number;

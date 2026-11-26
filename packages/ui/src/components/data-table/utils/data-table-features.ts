@@ -23,7 +23,9 @@ import type { DataTableColumn } from "../types/data-table-column-types";
 
 /** The reserved ids of the columns the table adds itself. */
 export const SELECT_COLUMN_ID = "__aureus_select";
+/** Id of the expand-button column. */
 export const EXPAND_COLUMN_ID = "__aureus_expand";
+/** Id of the row-actions column. */
 export const ACTIONS_COLUMN_ID = "__aureus_actions";
 
 /** The display columns the table adds itself. */
@@ -33,11 +35,14 @@ export const RESERVED_COLUMN_IDS: ReadonlySet<string> = new Set([
   ACTIONS_COLUMN_ID,
 ]);
 
+/** What a column is, which decides how its cells are drawn. */
 export type AureusColumnKind = "data" | "group" | "select" | "expand" | "actions";
 
 /** What every TanStack column carries in `columnDef.meta`. */
 export interface AureusColumnMeta {
+  /** Namespaced, so it cannot collide with other metadata. */
   aureus: {
+    /** What the column is. */
     kind: AureusColumnKind;
     /** The plain-text label (see `columnLabel`). */
     label: string;
@@ -76,4 +81,5 @@ export const dataTableFeatures = tableFeatures({
   columnMeta: {} as AureusColumnMeta,
 });
 
+/** The type of the table's feature set. */
 export type DataTableFeatures = typeof dataTableFeatures;

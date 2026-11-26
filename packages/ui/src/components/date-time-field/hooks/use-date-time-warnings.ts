@@ -6,22 +6,37 @@ import { type IsoMode, isIsoValue } from "@/internal/utils/helpers";
 
 /** The props the warnings read, all optional: untyped code can leave any of them out. */
 export interface DateTimeWarningSources extends FieldStatusInternal {
+  /** The visible label. */
   label?: ReactNode;
+  /** Accessible name without a label. */
   "aria-label"?: string;
+  /** Ids of the elements that name the field. */
   "aria-labelledby"?: string;
+  /** What the value holds. */
   mode?: IsoMode;
+  /** The field's locale. */
   locale?: string;
+  /** Name of the calendar button. */
   openCalendarLabel?: string;
+  /** Name of the previous-month button. */
   previousMonthLabel?: string;
+  /** Name of the next-month button. */
   nextMonthLabel?: string;
+  /** The presets. */
   presets?: readonly unknown[];
+  /** Name of their group. */
   presetsLabel?: string;
+  /** Controlled value. */
   value?: string | null;
+  /** Initial value. */
   defaultValue?: string | null;
+  /** Earliest value. */
   min?: string;
+  /** Latest value. */
   max?: string;
 }
 
+/** The expected format of each mode, for warnings. */
 const FORMATS: Record<IsoMode, string> = {
   date: "YYYY-MM-DD",
   time: "HH:mm[:ss]",

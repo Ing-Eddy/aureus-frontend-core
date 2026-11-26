@@ -33,17 +33,26 @@ function useWidth() {
   return [ref, width] as const;
 }
 
+/**
+ * The arrows point the other way in right-to-left pages, and the buttons are larger on touch
+ * screens.
+ */
 const navButtonClassName = "rtl:[&_svg]:rotate-180 pointer-coarse:size-10";
 
+/** A first, previous, next or last page button. */
 function NavButton({
   label,
   disabled,
   onClick,
   children,
 }: {
+  /** Accessible name; `undefined` only in untyped code that omits it. */
   label: string | undefined;
+  /** Whether there is no page to go to. */
   disabled: boolean;
+  /** Changes the page. */
   onClick: () => void;
+  /** The arrow icon. */
   children: ReactNode;
 }) {
   return (

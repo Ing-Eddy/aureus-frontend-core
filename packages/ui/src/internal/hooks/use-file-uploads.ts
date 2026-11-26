@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { FileItem, FileUploadContext, FileUploadState, NewFileItem } from "@/internal/types";
 
+/** Options of `useFileUploads`. */
 export interface UseFileUploadsOptions<E> {
+  /** Uploads one file. Without it, `start` does nothing. */
   upload?: (file: File, context: FileUploadContext) => Promise<E>;
+  /** Called when an upload fails, unless it was cancelled. */
   onUploadError?: (file: File, error: unknown) => void;
   /** Puts the uploaded item in place of the new one. */
   replace: (id: string, item: FileItem<E>) => void;

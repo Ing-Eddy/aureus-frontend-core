@@ -4,10 +4,25 @@ import { ModalContext, type ModalContextValue, useModalMode } from "./hooks";
 import type { ModalOpenChangeReason, ModalProps } from "./types";
 
 /**
- * A modal that is a centred dialog on wide viewports and a drawer on narrow ones. `Modal` holds
- * the state and behaviour and renders no element: compose it with `ModalTrigger`, `ModalContent`
- * and the sections. Only `ModalContent` changes when the mode changes, so the trigger and
- * everything beside the panel keep their DOM nodes. It renders no text of its own.
+ * A modal that is a centred dialog on wide viewports and a drawer on narrow ones. `Modal` holds the
+ * state and behaviour and renders no element: compose it with `ModalTrigger`, `ModalContent` and
+ * the sections. Only `ModalContent` changes when the mode changes, so the trigger and everything
+ * beside the panel keep their DOM nodes. It renders no text of its own.
+ *
+ * ```tsx
+ * <Modal open={isOpen} onOpenChange={(next) => setOpen(next)}>
+ *   <ModalTrigger>{t("users.create")}</ModalTrigger>
+ *   <ModalContent size="md" closeButton closeLabel={t("common.close")}>
+ *     <ModalHeader>
+ *       <ModalTitle>{t("users.createTitle")}</ModalTitle>
+ *     </ModalHeader>
+ *     <ModalBody>{form}</ModalBody>
+ *     <ModalFooter>
+ *       <ModalClose>{t("common.cancel")}</ModalClose>
+ *     </ModalFooter>
+ *   </ModalContent>
+ * </Modal>
+ * ```
  */
 export function Modal({
   children,

@@ -19,6 +19,7 @@
  * this .dark block), so set both, as Theme Builder exports do.
  */
 
+/* Light values of shadcn's color tokens, and of the brand colors. */
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
@@ -62,6 +63,7 @@
   --brand-gold-text: oklch(0.55 0.12 78);
 }
 
+/* The same tokens in dark mode, switched by this class on an ancestor. */
 .dark {
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
@@ -104,6 +106,7 @@
   --brand-gold-text: oklch(0.85 0.12 86);
 }
 
+/* Exposes the brand colors to Tailwind, so they work as color names in utilities. */
 @theme inline {
   --color-brand-blue: var(--brand-blue);
   --color-brand-gold: var(--brand-gold);

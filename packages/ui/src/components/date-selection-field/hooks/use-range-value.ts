@@ -3,15 +3,21 @@ import { useControllableState } from "@/internal/hooks";
 import { isIsoDate } from "@/internal/utils/helpers";
 import { type DateRangeValue, sortRange } from "../utils";
 
+/** Options of `useRangeValue`. */
 export interface UseRangeValueOptions {
+  /** Controlled range. */
   value?: DateRangeValue | null;
+  /** Initial range when uncontrolled. Defaults to `null`. */
   defaultValue?: DateRangeValue | null;
+  /** Called with the sorted range. */
   onValueChange?: (value: DateRangeValue | null) => void;
 }
 
 /** What the two groups of segments show: each end, `null` while incomplete. */
 export interface RangeDraft {
+  /** The start as typed. */
   from: string | null;
+  /** The end as typed. */
   to: string | null;
 }
 
@@ -23,9 +29,11 @@ export function validRange(value: unknown): DateRangeValue | null {
   return sortRange({ from, to });
 }
 
+/** Whether two ranges have the same ends. */
 export const sameRange = (a: DateRangeValue | null, b: DateRangeValue | null) =>
   a === b || (a !== null && b !== null && a.from === b.from && a.to === b.to);
 
+/** What the segments show for a value. */
 const draftOf = (value: DateRangeValue | null): RangeDraft => ({
   from: value?.from ?? null,
   to: value?.to ?? null,

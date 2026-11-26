@@ -1,8 +1,10 @@
 import { type KeyboardEvent, type RefObject, useCallback } from "react";
 
+/** Options of `useActionShortcut`. */
 export interface UseActionShortcutOptions {
   /** Whether the shortcut is on and there is an action to press. */
   enabled: boolean;
+  /** The action button the shortcut presses. */
   actionRef: RefObject<HTMLButtonElement | null>;
 }
 

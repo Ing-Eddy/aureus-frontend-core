@@ -16,24 +16,35 @@ export type SegmentValues = Record<SegmentType, number | null>;
 
 /** The segment values plus what is being typed in one segment. */
 export interface SegmentState {
+  /** The value of every segment. */
   values: SegmentValues;
   /** Digits typed so far in `bufferType`, cleared when the segment is complete or left. */
   buffer: string;
+  /** The segment being typed in, or `null`. */
   bufferType: SegmentType | null;
 }
 
+/** What the pure segment transitions need to know about the field. */
 export interface SegmentConfig {
   /** The segments shown, in order. */
   types: readonly SegmentType[];
+  /** Whether the value is a date, a time or both. */
   mode: IsoMode;
+  /** A 12 or 24-hour clock. */
   hourCycle: 12 | 24;
+  /** Whether the value has seconds. */
   granularity: TimeGranularity;
+  /** Arrow step of the minutes. */
   minuteStep: number;
+  /** Arrow step of the seconds. */
   secondStep: number;
+  /** Earliest ISO value. */
   min?: string | null;
+  /** Latest ISO value. */
   max?: string | null;
 }
 
+/** Every segment empty. */
 export const EMPTY_VALUES: SegmentValues = {
   year: null,
   month: null,
@@ -44,6 +55,7 @@ export const EMPTY_VALUES: SegmentValues = {
   dayPeriod: null,
 };
 
+/** A state showing `values`, with nothing being typed. */
 export const emptyState = (values: SegmentValues = EMPTY_VALUES): SegmentState => ({
   values,
   buffer: "",
@@ -71,12 +83,14 @@ export function valuesFromIso(
   };
 }
 
+/** The hour and day period segments of a 24-hour clock hour. */
 function hourValues(hour24: number, hourCycle: 12 | 24) {
   return hourCycle === 12
     ? { hour: hour24 % 12 || 12, dayPeriod: hour24 >= 12 ? 1 : 0 }
     : { hour: hour24, dayPeriod: null };
 }
 
+/** The 24-hour clock hour of the segments, or `null` while the hour or the day period is empty. */
 function hour24Of(values: SegmentValues, hourCycle: 12 | 24): number | null {
   if (values.hour === null) return null;
   if (hourCycle === 24) return values.hour;
@@ -221,6 +235,7 @@ function nowValue(type: SegmentType, now: Date, hourCycle: 12 | 24): number {
   }
 }
 
+/** The arrow step of a segment: the configured one for minutes and seconds (at least 1), else 1. */
 function stepOf(type: SegmentType, config: SegmentConfig): number {
   if (type === "minute") return Math.max(1, Math.floor(config.minuteStep));
   if (type === "second") return Math.max(1, Math.floor(config.secondStep));

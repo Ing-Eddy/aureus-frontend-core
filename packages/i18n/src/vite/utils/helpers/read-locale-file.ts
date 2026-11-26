@@ -15,6 +15,7 @@ export class LocaleFileError extends Error {
   }
 }
 
+/** The kind of a JSON value that is not an object, for the error message. */
 const describeValue = (value: unknown) =>
   value === null ? "null" : Array.isArray(value) ? "an array" : `a ${typeof value}`;
 

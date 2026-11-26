@@ -67,6 +67,10 @@ export function dataTableTextChecks<TData extends RowData>(
   return checks;
 }
 
+/**
+ * Logs once, in development, each missing text, each column without a plain label that needs one,
+ * and a table without an accessible name.
+ */
 export function useDataTableWarnings<TData extends RowData>(props: DataTableProps<TData>) {
   useMissingTexts("DataTable", dataTableTextChecks(props));
 }

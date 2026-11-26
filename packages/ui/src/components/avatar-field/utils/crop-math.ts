@@ -4,22 +4,30 @@ export interface CropState {
   zoom: number;
   /** Offset of the image's centre from the window's centre, as a fraction of the window side. */
   x: number;
+  /** Vertical offset, like `x`. */
   y: number;
   /** Clockwise rotation, in degrees. */
   rotation: 0 | 90 | 180 | 270;
   /** Mirrors what is shown, horizontally and vertically. */
   flipX: boolean;
+  /** Mirrors vertically. */
   flipY: boolean;
 }
 
+/** The size of an image, in pixels. */
 export interface ImageSize {
+  /** Width in pixels. */
   width: number;
+  /** Height in pixels. */
   height: number;
 }
 
+/** The image fills the window. */
 export const MIN_ZOOM = 1;
+/** Four times the minimum. */
 export const MAX_ZOOM = 4;
 
+/** The framing before any edit: centred, unrotated, unflipped. */
 export const initialCrop: CropState = {
   zoom: 1,
   x: 0,
@@ -41,6 +49,7 @@ export function visibleSize(state: CropState, size: ImageSize): ImageSize {
   return { width: rotated.width * base * state.zoom, height: rotated.height * base * state.zoom };
 }
 
+/** `value` limited to `[-limit, limit]`. */
 const clamp = (value: number, limit: number) => Math.min(limit, Math.max(-limit, value));
 
 /** The state with zoom in range and the offset limited so the image always covers the window. */
@@ -87,14 +96,19 @@ export function outputSide(state: CropState, size: ImageSize, outputSize: number
 
 /** The canvas operations that draw the framed image on a square canvas of side `side`. */
 export interface CropTransform {
+  /** Canvas position of the image's centre. */
   translateX: number;
+  /** Canvas position of the image's centre. */
   translateY: number;
+  /** Scale, negative to flip. */
   scaleX: number;
+  /** Scale, negative to flip. */
   scaleY: number;
   /** Radians, clockwise. */
   rotation: number;
   /** Where the untransformed image is drawn: centred on the origin. */
   drawX: number;
+  /** Vertical draw position. */
   drawY: number;
 }
 

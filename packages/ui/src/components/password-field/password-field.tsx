@@ -12,6 +12,16 @@ import type { PasswordFieldProps } from "./password-field-types";
  * A password input with the same label, required mark, info tooltip, helper text, error, loading
  * and disabled states as `TextField`, and a built-in show/hide toggle in place of an action. It
  * ships no default texts: the toggle's names are required.
+ *
+ * ```tsx
+ * <PasswordField
+ *   label={t("auth.password")}
+ *   name="password"
+ *   autoComplete="current-password"
+ *   showPasswordLabel={t("auth.showPassword")}
+ *   hidePasswordLabel={t("auth.hidePassword")}
+ * />
+ * ```
  */
 export function PasswordField({
   visible: visibleProp,

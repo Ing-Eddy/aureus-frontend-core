@@ -1,18 +1,28 @@
 import type { DragEvent, ReactNode } from "react";
 import { cn } from "@/shadcn/lib/utils";
 
+/** Props of `FileDropzone`. */
 export interface FileDropzoneProps {
+  /** The consumer's text inside the area. */
   text: ReactNode;
+  /** Files are being dragged over it. */
   dragging: boolean;
+  /** Disabled or loading. */
   disabled: boolean;
+  /** Drag events of the area. */
   handlers: {
+    /** Marks the area as dragged over. */
     onDragEnter: (event: DragEvent<HTMLElement>) => void;
+    /** Allows the drop. */
     onDragOver: (event: DragEvent<HTMLElement>) => void;
+    /** Ends the highlight when the drag leaves. */
     onDragLeave: (event: DragEvent<HTMLElement>) => void;
+    /** Adds the dropped files. */
     onDrop: (event: DragEvent<HTMLElement>) => void;
   };
   /** The choose button (and the action), which stays the main way in. */
   children: ReactNode;
+  /** Extra classes of the area. */
   className?: string;
 }
 

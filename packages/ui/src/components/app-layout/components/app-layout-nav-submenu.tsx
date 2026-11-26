@@ -27,8 +27,15 @@ import { AppLayoutNavIcon } from "./app-layout-nav-icon";
 
 /**
  * An expandable navigation row with `AppLayoutNavSubItem` children (two levels at most). It is
- * active when a sub-item is active, and an uncontrolled submenu opens when that happens. While
- * the sidebar is collapsed, activating it opens a flyout menu with the sub-items.
+ * active when a sub-item is active, and an uncontrolled submenu opens when that happens. While the
+ * sidebar is collapsed, activating it opens a flyout menu with the sub-items.
+ *
+ * ```tsx
+ * <AppLayoutNavSubmenu label={t("nav.sales")} icon={<ChartIcon />}>
+ *   <AppLayoutNavSubItem label={t("nav.invoices")} href="/sales/invoices" />
+ *   <AppLayoutNavSubItem label={t("nav.reports")} href="/sales/reports" />
+ * </AppLayoutNavSubmenu>
+ * ```
  */
 export function AppLayoutNavSubmenu({
   label,

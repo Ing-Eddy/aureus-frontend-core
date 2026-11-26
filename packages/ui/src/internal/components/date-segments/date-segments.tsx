@@ -15,17 +15,27 @@ export interface DateSegmentsHandle {
   getDatePart: () => string | null;
 }
 
+/** Props of `DateSegments`. */
 export interface DateSegmentsProps {
+  /** Whether it edits a date, a time or both. */
   mode: IsoMode;
+  /** Order, digits and segment names. Defaults to the browser's. */
   locale?: string;
   /** Resolved hour cycle. */
   hourCycle: 12 | 24;
+  /** Whether there is a seconds segment. Defaults to `"minute"`. */
   granularity?: TimeGranularity;
+  /** Arrow step of the minutes. Defaults to `1`. */
   minuteStep?: number;
+  /** Arrow step of the seconds. Defaults to `1`. */
   secondStep?: number;
+  /** Earliest ISO value: arrows and complete values stop at it. No default. */
   min?: string | null;
+  /** Latest ISO value: arrows and complete values stop at it. No default. */
   max?: string | null;
+  /** The ISO value, or `null`. A new value replaces what the segments show. */
   value: string | null;
+  /** Called when the complete value changes; `null` once it is incomplete. */
   onValueChange: (value: string | null) => void;
   /** Id of the first segment; the others get `${id}-${type}`. */
   id: string;
@@ -37,21 +47,28 @@ export interface DateSegmentsProps {
   loading?: boolean;
   /** Names the group. */
   "aria-label"?: string;
+  /** Ids of the elements that name the group. */
   "aria-labelledby"?: string;
   /** Describes each segment. */
   "aria-describedby"?: string;
+  /** Marks every segment as required. */
   "aria-required"?: boolean;
+  /** Marks every segment as invalid. */
   "aria-invalid"?: boolean;
   /** Reaches the first segment. */
   ref?: Ref<HTMLSpanElement>;
   /** Calendar picks and focus from the field. */
   handleRef?: Ref<DateSegmentsHandle>;
+  /** Extra classes of the group. */
   className?: string;
+  /** Extra classes of each segment. */
   segmentClassName?: string;
 }
 
+/** The segment types that belong to the time. */
 const TIME_TYPES = new Set(["hour", "minute", "second", "dayPeriod"]);
 
+/** The look of one segment. */
 const segmentClassName = [
   "rounded-sm px-0.5 tabular-nums caret-transparent outline-none select-none",
   "focus:bg-accent focus:text-accent-foreground",

@@ -260,6 +260,53 @@ packages/i18n/
   - For a change to the dev loop, also try a throwaway Vite + React app linked to the built package. The steps are in the change notes of `add-i18n-package`: edit a text, add a module, remove a key, `vite build`.
 - **Runtime tests** run in jsdom with Testing Library and in-memory resources (`createFakeResources`). React 19 shows Suspense fallbacks for at least about 300 ms, so tests that suspend take that long.
 
+## Doc comments
+
+All of our own code in `packages/` is documented with comments in **English**. Consumers read them in their editor: they ship in the packages' type declarations. `packages/ui/src/shadcn/**`, `styles/shadcn.css` and test files are not covered.
+
+**What gets a comment.** Every module-level declaration, exported or not, and every member of a declared type (`interface` or `type`), as a `/** … */` comment. Barrel `index.ts` files need none.
+
+**What it says.**
+
+- First, what it is, in one sentence.
+- Then only what the signature does not show:
+  - the default: `Defaults to "start".` or `No default.`;
+  - edge cases, side effects, development warnings and thrown errors;
+  - accessibility and text direction (RTL), where they matter;
+  - for internal code, **why** it exists or why it works that way.
+- An example (`@example`, or a fenced code block) on each public entry component, hook or function.
+- `@param` and `@returns` only when the name and the type are not enough.
+- Never repeat the name or the type (`/** The id. */` says nothing).
+- `//` inside a body only for decisions that are not obvious.
+
+**CSS and scripts** get a header per file and a comment per block or check.
+
+```ts
+// A public prop: what it is, and what happens by default.
+export interface ExampleProps {
+  /** Largest number of rows shown before the list scrolls. No default: every row is shown. */
+  maxRows?: number;
+}
+
+// An internal helper: why it exists.
+/**
+ * One `Intl.NumberFormat` per locale and options, because creating it is the expensive part of
+ * formatting a column of numbers.
+ */
+function numberFormatter(locale: string, options: Intl.NumberFormatOptions) {}
+```
+
+```css
+/* Pinned cells paint their own background, so the cells scrolling under them stay hidden. */
+```
+
+**Two hazards.**
+
+- `*/` ends a block comment, also inside a glob: write `src/**\/locales`.
+- In `packages/ui`, do not write literal Tailwind class names in comments. Apps scan the published files (`@source` in `styles.css`), so a class named in a comment can add CSS to their build.
+
+**The public API is checked.** Each package's `src/documentation-tests.ts` uses `@aureus-core/doc-guard` (`tooling/doc-guard`) and fails when a public export, or a property of an exported type, has no doc comment. It names the file, the line and the symbol. Only internal code relies on review.
+
 ## Naming
 
 Pure kebab-case. Role suffixes use `-`, never `.`:

@@ -7,6 +7,18 @@ import type { NumberControlProps } from "./number-control-types";
  * `NumberField` bound to the surrounding react-hook-form form. Render it inside a `FormProvider`:
  * the form holds a `number | null` (never a string), and its validation message is shown as
  * helper text.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <NumberControl
+ *   name="quantity"
+ *   label={t("order.quantity")}
+ *   min={1}
+ *   decimals={0}
+ *   incrementLabel={t("common.increase")}
+ *   decrementLabel={t("common.decrease")}
+ * />
+ * ```
  */
 export function NumberControl({
   name,

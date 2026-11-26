@@ -50,9 +50,13 @@ export type FieldTexts = FieldLoadingTexts & FieldInfoTexts;
  * consumer; inside the library every member is optional.
  */
 export interface FieldStatusInternal {
+  /** Whether the loading spinner is shown. */
   loading?: boolean;
+  /** Accessible name of the spinner. */
   loadingLabel?: string;
+  /** Content of the info tooltip; no info button without it. */
   info?: ReactNode;
+  /** Accessible name of the info button. */
   infoLabel?: string;
 }
 

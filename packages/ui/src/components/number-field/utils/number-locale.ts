@@ -6,7 +6,9 @@ export interface NumberSymbols {
   decimal: string;
 }
 
+/** Separators by locale. */
 const symbolsCache = new Map<string, NumberSymbols>();
+/** Currency symbols by locale, currency and display. */
 const currencyCache = new Map<string, string>();
 
 /** Group and decimal separators of `locale` (memoised). */
@@ -22,6 +24,7 @@ export function getNumberSymbols(locale: string): NumberSymbols {
   return symbols;
 }
 
+/** How a currency is shown, as in `Intl.NumberFormat`. */
 export type CurrencyDisplay = "symbol" | "narrowSymbol" | "code";
 
 /** The symbol (or code) of `currency` as `locale` displays it (memoised). */

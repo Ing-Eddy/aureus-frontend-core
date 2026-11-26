@@ -42,6 +42,20 @@ const sliderStyles = {
  * (`[low, high]`). Every extra is opt-in and independent, and there are no default texts: a single
  * thumb is named by the label, and `range` and `withInput` require the names of their thumbs and
  * inputs. Every slider key follows the props (`step`, `largeStep`, marks).
+ *
+ * ```tsx
+ * <SliderField
+ *   label={t("search.price")}
+ *   range
+ *   thumbLabels={[t("search.minPrice"), t("search.maxPrice")]}
+ *   min={0}
+ *   max={1000}
+ *   step={10}
+ *   formatOptions={{ style: "currency", currency: "BOB" }}
+ *   showValue="header"
+ *   onValueCommit={search}
+ * />
+ * ```
  */
 export function SliderField(props: SliderFieldProps) {
   const {

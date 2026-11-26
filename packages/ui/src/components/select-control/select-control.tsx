@@ -7,6 +7,18 @@ import type { SelectControlProps } from "./select-control-types";
  * `SelectField` bound to the surrounding react-hook-form form. Render it inside a `FormProvider`:
  * the form holds `string | null` (single) or `string[]` (multiple), and its validation message is
  * shown as helper text.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <SelectControl
+ *   name="tags"
+ *   label={t("product.tags")}
+ *   options={tags}
+ *   multiple
+ *   multipleDisplay="chips"
+ *   removeChipLabel={(tag) => t("common.remove", { name: tag.label })}
+ * />
+ * ```
  */
 export function SelectControl({
   name,

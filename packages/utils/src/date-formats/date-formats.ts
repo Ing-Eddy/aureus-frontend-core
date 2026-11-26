@@ -8,6 +8,7 @@ import type {
 import { dateFormatCatalog } from "./utils/constants";
 import { formatPattern, resolveDefinition, toDateValue } from "./utils/helpers";
 
+/** The catalog widened to plain string keys, so a name from untyped code can be looked up. */
 const catalog: Readonly<Record<string, DateFormatDefinition>> = dateFormatCatalog;
 
 /** Every name in the catalog, in catalog order. Frozen: the catalog is defined by the library. */
@@ -15,6 +16,7 @@ export const dateFormatNames: readonly DateFormatName[] = Object.freeze(
   Object.keys(dateFormatCatalog) as DateFormatName[],
 );
 
+/** How a value is written in a warning: strings are quoted, so blank ones are visible. */
 function describe(value: unknown): string {
   if (value instanceof Date) return "an invalid Date";
   return typeof value === "string" ? JSON.stringify(value) : String(value);
@@ -23,6 +25,10 @@ function describe(value: unknown): string {
 /**
  * A formatter for the library's date-format catalog. `locale` may be a getter, evaluated on every
  * call; omitted `locale` / `timeZone` mean the runtime's.
+ *
+ * An unknown name (untyped code) falls back to `short`, and an unreadable or unfit value gives
+ * `null`; both log a development warning. An invalid time zone or locale tag is not caught:
+ * `format` throws the `RangeError` of `Intl`.
  *
  * ```ts
  * const dates = createDateFormatter({ locale: () => i18n.resolvedLanguage });

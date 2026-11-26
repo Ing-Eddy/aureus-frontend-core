@@ -11,7 +11,15 @@ import {
   sidebarSectionCollapsedClassName,
 } from "../utils";
 
-/** The top of the sidebar. It stays in place while the content scrolls; collapsed, it centres. */
+/**
+ * The top of the sidebar. It stays in place while the content scrolls; collapsed, it centres.
+ *
+ * ```tsx
+ * <AppLayoutSidebarHeader>
+ *   <Logo />
+ * </AppLayoutSidebarHeader>
+ * ```
+ */
 export function AppLayoutSidebarHeader({ asChild, className, ...rest }: AppLayoutSectionProps) {
   useAppLayoutContext("AppLayoutSidebarHeader");
   const { collapsed } = useContext(SidebarPresentationContext);
@@ -29,7 +37,15 @@ export function AppLayoutSidebarHeader({ asChild, className, ...rest }: AppLayou
   );
 }
 
-/** The middle of the sidebar, usually the navigation. The only part of it that scrolls. */
+/**
+ * The middle of the sidebar, usually the navigation. The only part of it that scrolls.
+ *
+ * ```tsx
+ * <AppLayoutSidebarContent>
+ *   <AppLayoutNav items={items} />
+ * </AppLayoutSidebarContent>
+ * ```
+ */
 export function AppLayoutSidebarContent({ asChild, className, ...rest }: AppLayoutSectionProps) {
   useAppLayoutContext("AppLayoutSidebarContent");
   const { collapsed } = useContext(SidebarPresentationContext);
@@ -47,7 +63,15 @@ export function AppLayoutSidebarContent({ asChild, className, ...rest }: AppLayo
   );
 }
 
-/** The bottom of the sidebar. It stays in place while the content scrolls; collapsed, it centres. */
+/**
+ * The bottom of the sidebar. It stays in place while the content scrolls; collapsed, it centres.
+ *
+ * ```tsx
+ * <AppLayoutSidebarFooter>
+ *   <UserMenu />
+ * </AppLayoutSidebarFooter>
+ * ```
+ */
 export function AppLayoutSidebarFooter({ asChild, className, ...rest }: AppLayoutSectionProps) {
   useAppLayoutContext("AppLayoutSidebarFooter");
   const { collapsed } = useContext(SidebarPresentationContext);

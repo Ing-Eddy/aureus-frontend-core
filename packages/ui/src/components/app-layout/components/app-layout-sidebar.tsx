@@ -7,7 +7,21 @@ import { AppLayoutSidebarSheet } from "./app-layout-sidebar-sheet";
 /**
  * The navigation sidebar, with `AppLayoutSidebarHeader`, `AppLayoutSidebarContent` and
  * `AppLayoutSidebarFooter`. Below the layout's breakpoint it is a sheet on the same side. Its
- * content remounts when the viewport crosses the breakpoint.
+ * content remounts when the viewport crosses the breakpoint. Use one per layout: it tells the
+ * layout its `variant` and `collapsible`.
+ *
+ * ```tsx
+ * <AppLayoutSidebar
+ *   mobileTitle={t("layout.navigation")}
+ *   variant="floating"
+ *   rail
+ *   railLabel={t("layout.toggle")}
+ * >
+ *   <AppLayoutSidebarContent>
+ *     <AppLayoutNav items={items} />
+ *   </AppLayoutSidebarContent>
+ * </AppLayoutSidebar>
+ * ```
  */
 export function AppLayoutSidebar(props: AppLayoutSidebarProps) {
   const { variant = "sidebar", collapsible = "icon" } = props;

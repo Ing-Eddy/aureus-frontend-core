@@ -2,11 +2,15 @@ import { useCallback, useMemo, useState } from "react";
 import type { AppLayoutBreadcrumbItem } from "../types";
 import type { AppLayoutBreadcrumbContextValue } from "./use-app-layout-context";
 
+/** The trail one caller wants shown. */
 interface Layer {
+  /** Identifies the caller, so it can update and remove its own layer. */
   token: string;
+  /** That caller's trail. */
   items: readonly AppLayoutBreadcrumbItem[];
 }
 
+/** Token of the bottom layer, which is never removed. */
 const BASE = "base";
 
 /**

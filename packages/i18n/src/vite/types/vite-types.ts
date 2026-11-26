@@ -10,6 +10,11 @@ export interface AureusI18nOptions {
    * segment and `**` any number of segments. A matched folder is a namespace named after the
    * folder that contains it: `src/features/auth/locales` → `auth`.
    *
+  /**
+   * Folder globs searched for namespaces, relative to the Vite root. `*` matches one path segment
+   * and `**` any number of segments. A matched folder is a namespace named after the folder that
+   * contains it: `src/features/auth/locales` → `auth` (and `src/locales` → `src`).
+   *
    * @default ["src/**\/locales"]
    */
   include?: readonly string[];

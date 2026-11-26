@@ -9,51 +9,88 @@ import { cn } from "@/shadcn/lib/utils";
 import type { CheckboxGroupSelectAllState } from "../hooks";
 import type { CheckboxGroupFieldClassNames, CheckboxGroupOption } from "../types";
 
+/** The state of one option's box. */
 export interface CheckboxGroupBoxState {
+  /** Whether it is checked. */
   checked: boolean;
+  /** Whether it cannot be changed (disabled, loading or at the limit). */
   locked: boolean;
+  /** Called with the requested state. */
   onChange: (checked: boolean) => void;
 }
 
+/** Props of `CheckboxGroupOptions`. */
 export interface CheckboxGroupOptionsProps {
+  /** Prefix of each box's id. */
   baseId: string;
+  /** The choices, in order. */
   options: readonly CheckboxGroupOption[];
   /** State of each option's box. */
   boxState: (option: CheckboxGroupOption) => CheckboxGroupBoxState;
+  /** The parent box; absent without `selectAll`. */
   selectAll?: {
+    /** Text of the parent box. */
     label: ReactNode;
+    /** Whether all, some or none of the enabled options are checked. */
     state: CheckboxGroupSelectAllState;
+    /** Whether it cannot be changed. */
     locked: boolean;
+    /** Checks or unchecks every enabled option. */
     onToggle: () => void;
   };
   /** Shown in the status region while the limit is reached; nothing otherwise. */
   limitMessage?: ReactNode;
+  /** Name of the native checkboxes. */
   name?: string;
+  /** Marks the boxes as invalid. */
   error?: boolean;
+  /** Stacked or inline. */
   orientation: "vertical" | "horizontal";
+  /** A grid with up to this many columns. */
   columns?: 2 | 3 | 4;
+  /** Plain rows or cards. */
   appearance: "plain" | "card";
+  /** Side of the text each box is on. */
   checkboxPosition: "start" | "end";
+  /** Extra classes per part. */
   classNames?: CheckboxGroupFieldClassNames;
+  /** Reaches the container. */
   ref?: Ref<HTMLDivElement>;
+  /** Called when focus leaves the group. */
   onBlur?: (event: FocusEvent<HTMLDivElement>) => void;
 }
 
+/** Props of one option row (also used for the select-all row). */
 interface OptionRowProps {
+  /** Id of the box. */
   id: string;
+  /** Text that names the box. */
   label: ReactNode;
+  /** Second line that describes it. */
   description?: ReactNode;
+  /** Whether it is checked. */
   checked: boolean;
+  /** Shows the mixed state. */
   indeterminate?: boolean;
+  /** Whether it cannot be changed. */
   locked: boolean;
+  /** Called with the requested state. */
   onChange: (checked: boolean) => void;
+  /** Name of the native checkbox. */
   name?: string;
+  /** Value submitted by the native checkbox. */
   value?: string;
+  /** Marks the box as invalid. */
   error?: boolean;
+  /** Plain row or card. */
   appearance: "plain" | "card";
+  /** Side of the text the box is on. */
   position: "start" | "end";
+  /** Extra classes of the row. */
   className?: string;
+  /** Extra classes of the box. */
   checkboxClassName?: string;
+  /** Extra classes of the label. */
   labelClassName?: string;
 }
 

@@ -7,6 +7,16 @@ import type { PasswordControlProps } from "./password-control-types";
  * `PasswordField` bound to the surrounding react-hook-form form. Render it inside a
  * `FormProvider`: it reads its value from the form and shows the form's validation message as
  * helper text.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <PasswordControl
+ *   name="password"
+ *   label={t("auth.password")}
+ *   showPasswordLabel={t("auth.showPassword")}
+ *   hidePasswordLabel={t("auth.hidePassword")}
+ * />
+ * ```
  */
 export function PasswordControl({
   name,

@@ -4,14 +4,22 @@ import { cn } from "@/shadcn/lib/utils";
 import { useDataTableContext } from "../hooks/use-data-table-context";
 import type { DataTableFeatures } from "../utils";
 
+/** Pixels an arrow key adds to or removes from a column's width. */
 const STEP = 10;
 
+/** Props of `DataTableResizeHandle`. */
 export interface DataTableResizeHandleProps<TData extends RowData> {
+  /** The header of the column to resize. */
   header: Header<DataTableFeatures, TData, unknown>;
+  /** The column's plain-text label, passed to `resizeLabel`. */
   label: string;
 }
 
-/** A keyboard- and pointer-operable column separator (design decision 9). */
+/**
+ * A keyboard- and pointer-operable column separator (design decision 9): dragging resizes, the
+ * arrow keys move by 10px (mirrored in RTL), Home and End go to the minimum and maximum, and a
+ * double click restores the column's size.
+ */
 export function DataTableResizeHandle<TData extends RowData>({
   header,
   label,

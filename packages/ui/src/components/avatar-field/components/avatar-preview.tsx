@@ -4,6 +4,7 @@ import { cn } from "@/shadcn/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn/ui/avatar";
 import { initials } from "../utils";
 
+/** The sizes of an avatar. */
 export type AvatarSize = "sm" | "md" | "lg" | "xl";
 
 /** Side of each size, and the matching text size of the initials. */
@@ -18,14 +19,26 @@ export const avatarSizes: Record<AvatarSize, string> = {
 export const shapeClassName = (shape: "circle" | "square") =>
   shape === "circle" ? "rounded-full" : "rounded-lg";
 
+/** Props of `AvatarPreview`. */
 export interface AvatarPreviewProps {
+  /** The photo. */
   src?: string;
+  /** Circle or square mask. */
   shape: "circle" | "square";
+  /** Size of the avatar. */
   size: AvatarSize;
+  /** Shown without a photo. */
   fallback?: ReactNode;
+  /** Name whose initials are the next fallback. */
   initialsFrom?: string;
   /** Upload progress, from 0 to 100, with its accessible name; no ring without it. */
-  progress?: { value: number; label: string | undefined };
+  progress?: {
+    /** From 0 to 100. */
+    value: number;
+    /** Accessible name of the progress bar. */
+    label: string | undefined;
+  };
+  /** Extra classes of the avatar. */
   className?: string;
 }
 

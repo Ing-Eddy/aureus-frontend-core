@@ -122,6 +122,7 @@ export type FormHookOptions<
   B = ServerErrors<FormInput<SchemaOf<Src>>>,
 > = FormBehaviorOptions<SchemaOf<Src>, B> & FormDataOptions<SchemaOf<Src>, B>;
 
+/** The parameter list of a schema hook, or `[]` for a static schema. */
 type SchemaParamsOf<Src> = Src extends (...args: infer A) => unknown ? A : [];
 
 /**
@@ -137,7 +138,11 @@ export type FormHookArgs<Src extends SchemaSource, Opts> =
       ? [options: Opts & { /** Passed to the schema hook. */ schemaParams: P }]
       : SchemaParamsOf<Src> extends [(infer P)?]
         ? [options?: Opts & { /** Passed to the schema hook. */ schemaParams?: P }]
-        : [options?: Opts & { schemaParams?: unknown }];
+        : [
+            options?: Opts & {
+              /** The parameter, when its shape cannot be inferred. */ schemaParams?: unknown;
+            },
+          ];
 
 /** A form hook created with `createFormHook` (for example `useLoginForm`). */
 export type FormHook<Src extends SchemaSource, B = ServerErrors<FormInput<SchemaOf<Src>>>> = (

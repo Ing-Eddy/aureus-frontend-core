@@ -4,6 +4,7 @@ import type { ApplyServerErrorsOptions, JoinMessages, ServerErrors } from "../..
 import { isPlainObject } from "./merge-values";
 import { normalizeServerErrors } from "./normalize-server-errors";
 
+/** The default `joinMessages`. */
 const joinWithSpace: JoinMessages = (messages) => messages.join(" ");
 
 /** True when `path` (dot notation) points to an existing key of `values`. */
@@ -23,6 +24,7 @@ function hasPath(values: unknown, path: string): boolean {
   return true;
 }
 
+/** Form-level errors: they name no field, so they are not checked against the values. */
 const isRootPath = (name: string) => name === "root" || name.startsWith("root.");
 
 /**

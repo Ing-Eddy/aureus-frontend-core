@@ -11,7 +11,8 @@ import type { Display, DisplayConfig } from "./types";
 
 /**
  * The functions an app uses to show values. Configure it once; `locale` may be a getter, so the
- * output follows a language that changes at runtime.
+ * output follows a language that changes at runtime. Without an `empty` text (untyped code) a
+ * development warning is logged and `""` is used.
  *
  * ```ts
  * export const display = createDisplay({ empty: "-", locale: () => i18n.resolvedLanguage });

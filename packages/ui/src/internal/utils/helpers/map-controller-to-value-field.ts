@@ -4,8 +4,11 @@ import { mergeRefs } from "./merge-refs";
 
 /** Props of a value-based field that the control composes with react-hook-form's handlers. */
 export interface ComposableValueFieldProps<E extends HTMLElement, V> {
+  /** The consumer's handler, run after the form stores the value. */
   onValueChange?: (value: V) => void;
+  /** The consumer's handler, run after the form marks the field as touched. */
   onBlur?: (event: FocusEvent<E>) => void;
+  /** The consumer's ref, set together with the form's. */
   ref?: Ref<E>;
 }
 

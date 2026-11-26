@@ -7,21 +7,37 @@ import { validRange } from "./use-range-value";
 
 /** The props the warnings read, all optional: untyped code can leave any of them out. */
 export interface DateSelectionWarningSources extends FieldStatusInternal {
+  /** The visible label. */
   label?: ReactNode;
+  /** Accessible name without a label. */
   "aria-label"?: string;
+  /** Ids of the elements that name the field. */
   "aria-labelledby"?: string;
+  /** `"range"` or `"multiple"`. */
   selection?: string;
+  /** The field's locale. */
   locale?: string;
+  /** Name of the calendar button. */
   openCalendarLabel?: string;
+  /** Name of the previous-month button. */
   previousMonthLabel?: string;
+  /** Name of the next-month button. */
   nextMonthLabel?: string;
+  /** Name of the start segments. */
   startLabel?: string;
+  /** Name of the end segments. */
   endLabel?: string;
+  /** The presets. */
   presets?: readonly unknown[];
+  /** Name of their group. */
   presetsLabel?: string;
+  /** Controlled value. */
   value?: unknown;
+  /** Initial value. */
   defaultValue?: unknown;
+  /** Earliest day. */
   min?: string;
+  /** Latest day. */
   max?: string;
 }
 

@@ -16,35 +16,58 @@ import { selectStyles } from "./styles";
 
 /** Everything both roots render the same way. */
 export interface SelectViewProps {
+  /** Whether several options can be selected. */
   multiple: boolean;
+  /** The selected value or values. */
   value: string | null | string[];
+  /** Called with Base UI's next value, which may hold a synthetic row id. */
   onValueChange: (next: string | null | string[]) => void;
+  /** Whether the list is open. */
   open: boolean;
+  /** Called when the list asks to open or close, with Base UI's reason. */
   onOpenChange: (open: boolean, reason?: string) => void;
+  /** Disabled or loading. */
   disabled: boolean;
+  /** Name of the hidden form input. */
   name?: string;
   /** The frame: the popup is anchored to it, so it is as wide as the field. */
   frameRef: RefObject<HTMLDivElement | null>;
+  /** Classes of the frame. */
   frameClassName: string;
   /** Rendered in the frame before the button (chips). */
   beforeTrigger?: ReactNode;
   /** Rendered in the frame after the button (spinner, action, clear, chevron). */
   afterTrigger?: ReactNode;
+  /** Reaches the button. */
   triggerRef: Ref<HTMLButtonElement>;
+  /** Attributes and handlers of the button. */
   triggerProps: {
+    /** Id of the button. */
     id: string;
+    /** Classes of the button. */
     className: string;
+    /** Ids that describe it. */
     "aria-describedby"?: string;
+    /** Its name without a label. */
     "aria-label"?: string;
+    /** Ids of the elements that name it. */
     "aria-labelledby"?: string;
+    /** Marks it as invalid. */
     "aria-invalid"?: boolean;
+    /** Marks it as required. */
     "aria-required"?: boolean;
+    /** Marks it as loading. */
     "aria-busy"?: boolean;
+    /** Called when the button loses focus. */
     onBlur: (event: FocusEvent<HTMLButtonElement>) => void;
+    /** Key handler of the button. */
     onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
   };
+  /** What the button shows. */
   triggerContent: ReactNode;
+  /** Extra classes of the popup. */
   popupClassName?: string;
+  /** Extra classes of each row. */
   optionClassName?: string;
   /** Names the listbox: the field label's id, or the consumer's `aria-labelledby`. */
   listLabelledBy?: string;
@@ -54,19 +77,30 @@ export interface SelectViewProps {
   status: ReactNode;
   /** Shown above the list when the selection limit is reached. */
   limitMessage?: ReactNode;
+  /** The rows to render, in groups. */
   groups: ListGroup[];
+  /** Text of the select-all row. */
   selectAllLabel?: ReactNode;
+  /** Checked state of the select-all row. */
   selectAllState: SelectAllState;
+  /** Content of the create row for the typed text. */
   createLabel?: (query: string) => ReactNode;
+  /** The label of a value, for Base UI. */
   itemToStringLabel: (id: string) => string;
+  /** The search box; absent without `searchable`. */
   search?: {
+    /** Accessible name of the search box and of the popup. */
     label: string;
+    /** Hint inside the empty box. */
     placeholder?: string;
+    /** The search text. */
     query: string;
+    /** Called when the user types. */
     onQueryChange: (query: string) => void;
   };
 }
 
+/** The Base UI item value of a row: the option's value or a synthetic id. */
 function rowKey(row: ListRow) {
   return row.kind === "option"
     ? row.option.value
@@ -106,6 +140,7 @@ function RowContent({
   return <span className="min-w-0 flex-1 truncate">{createLabel?.(row.query)}</span>;
 }
 
+/** Extra attributes of a row: the select-all row exposes its checked state. */
 function rowProps(row: ListRow, selectAllState: SelectAllState) {
   if (row.kind === "select-all") {
     return {
@@ -115,6 +150,7 @@ function rowProps(row: ListRow, selectAllState: SelectAllState) {
   return {};
 }
 
+/** The limit message and the live status region above the list. */
 function StatusArea({ status, limitMessage }: Pick<SelectViewProps, "status" | "limitMessage">) {
   return (
     <>
@@ -135,6 +171,7 @@ function StatusArea({ status, limitMessage }: Pick<SelectViewProps, "status" | "
   );
 }
 
+/** Base UI Select's item text, which typeahead reads. */
 const SelectItemText: TextWrapper = ({ children, className }) => (
   <Select.ItemText className={className}>{children}</Select.ItemText>
 );

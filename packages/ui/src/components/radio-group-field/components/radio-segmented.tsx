@@ -17,13 +17,21 @@ export const segmentedStyles = {
   ].join(" "),
 } as const;
 
+/** Props of `RadioSegment`. */
 export interface RadioSegmentProps {
+  /** Id of the radio. */
   id: string;
+  /** Value of the radio. */
   value: string;
+  /** Content that names the segment. */
   label: ReactNode;
+  /** Disables the segment. */
   disabled?: boolean;
+  /** Marks it as invalid. */
   error?: boolean;
+  /** Extra classes of the segment. */
   className?: string;
+  /** Click handler, run before Radix's. */
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 

@@ -2,10 +2,15 @@ import type { ReactNode } from "react";
 import { TableCell, TableRow } from "@/shadcn/ui/table";
 import { rowResetClassName } from "../utils";
 
+/** Props of `DataTableDetailRow`. */
 export interface DataTableDetailRowProps {
+  /** Element id, referenced by the expand button's `aria-controls`. */
   id?: string;
+  /** Number of visible columns, so the cell spans the whole row. */
   colSpan: number;
+  /** The row's content. */
   children: ReactNode;
+  /** Replaces the cell's default padding and wrapping classes. */
   className?: string;
 }
 

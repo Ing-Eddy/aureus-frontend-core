@@ -16,6 +16,7 @@ function valuePaths(values: unknown, prefix = ""): string[] {
   });
 }
 
+/** An error set by validation: server errors have the type `"server"` and are left alone. */
 const isSchemaError = (error: unknown) =>
   isPlainObject(error) && typeof error.type === "string" && error.type !== "server";
 
@@ -39,12 +40,13 @@ function schemaErrorPaths(
 }
 
 /**
- * When the schema changes identity (the language changed, or the schema hook's parameters did), validates
- * again the fields that show a schema error, so their messages follow the new schema. Fields without an
- * error, and server errors, are left alone.
+ * When the schema changes identity (the language changed, or the schema hook's parameters did),
+ * validates again the fields that show a schema error, so their messages follow the new schema.
+ * Fields without an error, and server errors, are left alone. An error of the object as a whole (a
+ * refinement without a `path`) belongs to no field and is not validated again.
  *
- * A schema that changes on the renders caused by that re-validation (not memoized) is not chased: the
- * re-validation stops and a development warning explains why.
+ * A schema that changes on the renders caused by that re-validation (not memoized) is not chased:
+ * the re-validation stops and a development warning explains why.
  */
 export function useSchemaRevalidation<In extends FieldValues>(
   // biome-ignore lint/suspicious/noExplicitAny: any form, whatever its context and output types.

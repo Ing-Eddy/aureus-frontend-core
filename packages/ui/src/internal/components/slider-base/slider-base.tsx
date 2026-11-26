@@ -12,11 +12,15 @@ export type SliderBaseThumb = Omit<ComponentProps<typeof SliderPrimitive.Thumb>,
 
 /** Extra classes for the parts of the slider. Each one is merged after the default classes. */
 export interface SliderBaseClassNames {
+  /** The track. */
   track?: string;
+  /** The filled part of the track. */
   range?: string;
+  /** Every thumb. */
   thumb?: string;
 }
 
+/** Props of `SliderBase`: Radix's slider root with named thumbs. */
 export interface SliderBaseProps
   extends Omit<
     ComponentProps<typeof SliderPrimitive.Root>,
@@ -30,6 +34,7 @@ export interface SliderBaseProps
   thumbs: SliderBaseThumb[];
   /** Rendered inside the root after the thumbs (for example, marks drawn over the track). */
   children?: ReactNode;
+  /** Extra classes of the parts. */
   classNames?: SliderBaseClassNames;
 }
 

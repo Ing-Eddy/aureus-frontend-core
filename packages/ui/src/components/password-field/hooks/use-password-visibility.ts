@@ -8,9 +8,13 @@ import {
 } from "react";
 import { useControllableState } from "@/internal/hooks";
 
+/** Options of `usePasswordVisibility`. */
 export interface UsePasswordVisibilityOptions {
+  /** Controlled visibility. */
   visible?: boolean;
+  /** Initial visibility when uncontrolled. Defaults to `false`. */
   defaultVisible?: boolean;
+  /** Called with every requested change. */
   onVisibleChange?: (visible: boolean) => void;
   /** The password input. */
   inputRef: RefObject<HTMLInputElement | null>;

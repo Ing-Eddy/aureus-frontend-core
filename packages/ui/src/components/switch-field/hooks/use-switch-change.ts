@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+/** Options of `useSwitchChange`. */
 export interface UseSwitchChangeOptions<V> {
   /** Guard called with the value the switch would change to. */
   onBeforeChange?: (next: V) => boolean | Promise<boolean>;
@@ -9,12 +10,14 @@ export interface UseSwitchChangeOptions<V> {
   toValue: (checked: boolean) => V;
 }
 
+/** Whether the guard returned a promise. */
 const isThenable = (value: unknown): value is PromiseLike<boolean> =>
   typeof (value as PromiseLike<boolean> | null)?.then === "function";
 
 /**
  * The switch's change flow: immediate without a guard; with one, the change is applied only once it
- * confirms. While a returned promise is pending, `pending` is true and further requests are ignored.
+ * confirms. While a returned promise is pending, `pending` is true and further requests are
+ * ignored. A guard that throws or rejects keeps the state, and the error is not reported.
  */
 export function useSwitchChange<V>({ onBeforeChange, commit, toValue }: UseSwitchChangeOptions<V>) {
   const [pending, setPending] = useState(false);

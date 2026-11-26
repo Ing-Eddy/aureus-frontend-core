@@ -7,6 +7,7 @@ import { ControlField } from "@/internal/components";
 import { mapControllerToValueField } from "@/internal/utils/helpers";
 import type { DateSelectionControlProps } from "./date-selection-control-types";
 
+/** The value of either selection. */
 type SelectionValue = DateRangeValue | null | readonly string[];
 
 /**
@@ -14,6 +15,17 @@ type SelectionValue = DateRangeValue | null | readonly string[];
  * `FormProvider`: the form holds the range (`null` without a start) or the list of days, a missing
  * value behaves as `null` (`[]` for several days), and the validation message is shown as helper
  * text. Opening the calendar does not mark the field as touched.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>. The form stores an array of "YYYY-MM-DD".
+ * <DateSelectionControl
+ *   name="holidays"
+ *   label={t("calendar.holidays")}
+ *   selection="multiple"
+ *   previousMonthLabel={t("date.previousMonth")}
+ *   nextMonthLabel={t("date.nextMonth")}
+ * />
+ * ```
  */
 export function DateSelectionControl({
   name,

@@ -6,21 +6,35 @@ import { Dialog, DialogContent, DialogTitle } from "@/shadcn/ui/dialog";
 import { AvatarEditor, type AvatarEditorProps } from "./avatar-editor";
 import { AvatarViewer, type AvatarViewerProps } from "./avatar-viewer";
 
+/** The texts of the dialog. */
 export interface AvatarDialogTexts {
+  /** Title of the dialog. */
   dialogTitle: ReactNode;
+  /** Name of the close button. */
   closeLabel: string;
+  /** Text of the change button. */
   changeLabel: ReactNode;
+  /** Text of the edit button. */
   editLabel?: ReactNode;
+  /** Text of the remove button. */
   removeLabel?: ReactNode;
+  /** Text of the link to the original. */
   downloadLabel?: ReactNode;
 }
 
+/** Props of `AvatarDialog`. */
 export interface AvatarDialogProps {
+  /** Whether the dialog is open. */
   open: boolean;
+  /** Called when it asks to open or close. */
   onOpenChange: (open: boolean) => void;
+  /** Looking at the photo, or editing it. */
   view: "inspect" | "edit";
+  /** Switches the view. */
   onViewChange: (view: "inspect" | "edit") => void;
+  /** The dialog's texts. */
   texts: AvatarDialogTexts;
+  /** Props of the large photo. */
   viewer: AvatarViewerProps;
   /** The editor's props, with `editable`; no edit action without them. */
   editor?: Omit<AvatarEditorProps, "onCancel">;
@@ -34,7 +48,9 @@ export interface AvatarDialogProps {
   onPaste?: (event: ClipboardEvent<HTMLElement>) => void;
   /** Where focus goes when the dialog closes. */
   onCloseAutoFocus: NonNullable<ComponentProps<typeof DialogContent>["onCloseAutoFocus"]>;
+  /** Disables the actions. */
   disabled: boolean;
+  /** Extra classes of the dialog. */
   className?: string;
 }
 

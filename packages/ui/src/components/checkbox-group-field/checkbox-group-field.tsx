@@ -8,6 +8,16 @@ import type { CheckboxGroupFieldProps } from "./types";
  * Several checkboxes holding a `string[]`, with the shared field layout. The value always follows
  * the order of `options`. Every extra (select all, limit, layout, cards) is opt-in, and there are
  * no default texts.
+ *
+ * ```tsx
+ * <CheckboxGroupField
+ *   label={t("user.permissions")}
+ *   options={permissions}
+ *   selectAll={{ label: t("common.selectAll") }}
+ *   value={selected}
+ *   onValueChange={setSelected}
+ * />
+ * ```
  */
 export function CheckboxGroupField(props: CheckboxGroupFieldProps) {
   const {

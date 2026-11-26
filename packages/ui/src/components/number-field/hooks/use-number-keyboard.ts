@@ -1,8 +1,12 @@
 import type { KeyboardEvent } from "react";
 
+/** What the keys of the number input do. */
 export interface NumberKeyboardActions {
+  /** Moves the value by `step`, or by `largeStep` with `large`. */
   step: (direction: "increment" | "decrement", large: boolean) => void;
+  /** Sets the minimum; missing when there is none, so Home keeps its default. */
   toMin?: () => void;
+  /** Sets the maximum; missing when there is none, so End keeps its default. */
   toMax?: () => void;
   /** Commits the text; returns whether the text changed. */
   commit: () => boolean;

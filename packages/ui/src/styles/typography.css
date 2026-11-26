@@ -133,6 +133,7 @@
   --typography-code-transform: none;
 }
 
+/* Points Tailwind's font and tracking utilities at the variables above. */
 @theme inline {
   --font-sans: var(--typography-font-sans);
   --font-heading: var(--typography-font-heading);
@@ -147,12 +148,14 @@
   --tracking-widest: calc(var(--typography-tracking-normal) + 0.1em);
 }
 
+/* The page's base letter spacing. */
 @layer base {
   body {
     letter-spacing: var(--tracking-normal);
   }
 }
 
+/* One class per variant of `Typography`, applying its six variables. */
 @layer components {
   .typography-display {
     font-family: var(--typography-display-font);

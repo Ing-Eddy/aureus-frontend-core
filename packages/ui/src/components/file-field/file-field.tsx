@@ -38,8 +38,27 @@ import type {
  * changed (`diffFiles`). Files travel with the form, or, with `upload`, are uploaded as soon as
  * they are picked. It ships no default texts: `chooseLabel` and `removeLabel` are always required,
  * and every feature that needs a text requires it while it is on.
+ *
+ * ```tsx
+ * <FileField
+ *   label={t("invoice.attachments")}
+ *   multiple
+ *   accept="application/pdf,image/*"
+ *   maxSize={5 * 1024 * 1024}
+ *   chooseLabel={t("files.choose")}
+ *   removeLabel={(name) => t("files.remove", { name })}
+ *   rejectionMessage={(rejection) => t(`files.rejected.${rejection.reasons[0]}`)}
+ *   getFileInfo={(stored: Attachment) => ({ name: stored.name, url: stored.url })}
+ *   value={files}
+ *   onValueChange={setFiles}
+ * />
+ * ```
  */
 export function FileField<E = unknown>(props: FileFieldMultipleProps<E>): ReactElement;
+/**
+ * Without `multiple`: the value is one item or `null`, and picking a file replaces it. See the
+ * first signature for the whole behaviour.
+ */
 export function FileField<E = unknown>(props: FileFieldSingleProps<E>): ReactElement;
 export function FileField(props: FileFieldProps<unknown>): ReactElement {
   const {

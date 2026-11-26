@@ -3,16 +3,25 @@ import { fieldTextChecks, useMissingTexts } from "@/internal/hooks";
 import type { FieldStatusInternal } from "@/internal/types";
 import { isValidGroups } from "../utils";
 
+/** The props of an OTP field that can be misused. */
 export interface OtpWarningSources extends FieldStatusInternal {
+  /** A visible label. */
   label?: ReactNode;
+  /** Accessible name without a label. */
   "aria-label"?: string;
+  /** Ids of the elements that name the input. */
   "aria-labelledby"?: string;
+  /** Number of characters. */
   length: number;
+  /** Block sizes. */
   groups?: readonly number[];
+  /** Whether characters are hidden. */
   masked?: boolean;
+  /** The texts of the show/hide toggle. */
   reveal?: unknown;
-  /** The value given by the consumer, and the value after sanitising it. */
+  /** The value given by the consumer. */
   rawValue?: string;
+  /** `rawValue` after filtering and trimming; a difference is warned about. */
   sanitizedValue?: string;
 }
 

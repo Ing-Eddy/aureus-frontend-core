@@ -3,7 +3,9 @@ export type ToggleValue = string | number | boolean;
 
 /** The default: the value is `true` when on and `false` when off. */
 export interface ToggleBooleanValueProps {
+  /** Not given: the value is `true` when on. */
   checkedValue?: undefined;
+  /** Not given: the value is `false` when off. */
   uncheckedValue?: undefined;
   /** Controlled value. */
   value?: boolean;

@@ -23,16 +23,34 @@ import {
 /** The props as the implementation reads them, without the exclusive unions of the public type. */
 type ResolvedProps = TypographyStyleProps &
   ComponentPropsWithRef<"span"> & {
+    /** The element to render. */
     as?: TypographyElement;
+    /** Renders the only child instead. */
     asChild?: boolean;
+    /** One line with an ellipsis. */
     truncate?: boolean;
+    /** At most this many lines. */
     lineClamp?: TypographyLineClamp;
   };
 
 /**
  * Renders text with one of the catalog's styles. Each variant renders its natural element, which
- * `as` changes without changing the style; every modifier is opt-in and changes only its own property,
- * and `className` always wins.
+ * `as` changes without changing the style; every modifier is opt-in and changes only its own
+ * property, and `className` always wins.
+ *
+ * ```tsx
+ * <>
+ *   <Typography variant="h2" tone="muted">
+ *     {t("reports.title")}
+ *   </Typography>
+ *   <Typography as="label" variant="label" htmlFor="name">
+ *     {t("users.name")}
+ *   </Typography>
+ *   <Typography asChild variant="body-sm" truncate>
+ *     <a href={url}>{url}</a>
+ *   </Typography>
+ * </>
+ * ```
  */
 export function Typography<E extends TypographyElement = "span">(props: TypographyProps<E>) {
   const {

@@ -78,6 +78,7 @@ export interface SelectSingleProps {
   selectAll?: never;
 }
 
+/** The props both multiple displays share. */
 interface SelectMultipleCommon {
   /** Allows several options to be selected. Requires `multipleDisplay`. */
   multiple: true;
@@ -92,7 +93,10 @@ interface SelectMultipleCommon {
   /** Text shown above the list once `maxSelected` is reached. No default. */
   maxSelectedMessage?: ReactNode;
   /** Adds an option at the top that selects every enabled option (or none). */
-  selectAll?: { label: ReactNode };
+  selectAll?: {
+    /** Text of the option. */
+    label: ReactNode;
+  };
 }
 
 /** Multiple selection shown as removable chips. `removeChipLabel` names each remove button. */
@@ -147,6 +151,7 @@ export interface SelectNoSearchProps {
   onCreate?: never;
 }
 
+/** The props of a searchable select, with or without creating values. */
 interface SelectSearchCommon {
   /** Shows a search box above the list. */
   searchable: true;

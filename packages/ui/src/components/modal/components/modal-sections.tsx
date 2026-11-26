@@ -7,11 +7,18 @@ import { useModalPanelContext } from "../hooks";
 import type { ModalDescriptionProps, ModalSectionProps, ModalTitleProps } from "../types";
 import { sectionClassNames, visuallyHiddenClassName } from "../utils";
 
+/** Props of the shared section element. */
 interface SectionProps extends ModalSectionProps {
+  /** The public part's name, for the error outside `ModalContent`. */
   partName: string;
+  /** Which section, for its look and slot name. */
   section: keyof typeof sectionClassNames;
 }
 
+/**
+ * A section of the panel: one implementation for header, body and footer, with the look of the
+ * current mode.
+ */
 function Section({ partName, section, asChild = false, className, ...props }: SectionProps) {
   const { mode } = useModalPanelContext(partName);
   const Comp = asChild ? Slot.Root : "div";
@@ -24,22 +31,52 @@ function Section({ partName, section, asChild = false, className, ...props }: Se
   );
 }
 
-/** Groups the title and the description at the top of the panel. */
+/**
+ * Groups the title and the description at the top of the panel.
+ *
+ * ```tsx
+ * <ModalHeader>
+ *   <ModalTitle>{t("users.createTitle")}</ModalTitle>
+ *   <ModalDescription>{t("users.createHelp")}</ModalDescription>
+ * </ModalHeader>
+ * ```
+ */
 export function ModalHeader(props: ModalSectionProps) {
   return <Section partName="ModalHeader" section="header" {...props} />;
 }
 
-/** The panel's main content. It scrolls on its own when it is taller than the panel. */
+/**
+ * The panel's main content. It scrolls on its own when it is taller than the panel.
+ *
+ * ```tsx
+ * <ModalBody>{form}</ModalBody>
+ * ```
+ */
 export function ModalBody(props: ModalSectionProps) {
   return <Section partName="ModalBody" section="body" {...props} />;
 }
 
-/** The actions: a row at the inline end in the dialog, stacked in the drawer. */
+/**
+ * The actions: a row at the inline end in the dialog, stacked in the drawer.
+ *
+ * ```tsx
+ * <ModalFooter>
+ *   <ModalClose>{t("common.cancel")}</ModalClose>
+ *   <Button type="submit" form="user-form">{t("common.save")}</Button>
+ * </ModalFooter>
+ * ```
+ */
 export function ModalFooter(props: ModalSectionProps) {
   return <Section partName="ModalFooter" section="footer" {...props} />;
 }
 
-/** Names the dialog. Required in every `ModalContent`; `visuallyHidden` keeps the name only. */
+/**
+ * Names the dialog. Required in every `ModalContent`; `visuallyHidden` keeps the name only.
+ *
+ * ```tsx
+ * <ModalTitle>{t("users.createTitle")}</ModalTitle>
+ * ```
+ */
 export function ModalTitle({ visuallyHidden = false, className, ...props }: ModalTitleProps) {
   const { mode, registerTitle } = useModalPanelContext("ModalTitle");
   useLayoutEffect(registerTitle, [registerTitle]);
@@ -53,7 +90,13 @@ export function ModalTitle({ visuallyHidden = false, className, ...props }: Moda
   );
 }
 
-/** Describes the dialog. Optional; `visuallyHidden` keeps the description only. */
+/**
+ * Describes the dialog. Optional; `visuallyHidden` keeps the description only.
+ *
+ * ```tsx
+ * <ModalDescription>{t("users.createHelp")}</ModalDescription>
+ * ```
+ */
 export function ModalDescription({
   visuallyHidden = false,
   className,

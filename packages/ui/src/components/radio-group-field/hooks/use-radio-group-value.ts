@@ -6,10 +6,15 @@ import type { RadioGroupOption } from "../types";
 /** Radix value of the other option; a value can never collide with it. */
 export const OTHER_ID = "\u0000other";
 
+/** Options of `useRadioGroupValue`. */
 export interface UseRadioGroupValueOptions {
+  /** The choices. */
   options: readonly RadioGroupOption[];
+  /** Controlled value. */
   value?: string | null;
+  /** Initial value when uncontrolled. Defaults to `null`. */
   defaultValue?: string | null;
+  /** Called with every requested change. */
   onValueChange?: (value: string | null) => void;
   /** Whether the group has an other option (free text). */
   hasOther: boolean;

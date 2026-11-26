@@ -17,30 +17,52 @@ import { FileTypeIcon } from "./file-type-icon";
 
 /** The texts an item's actions and states need. */
 export interface FileItemTexts {
+  /** Name of the remove button. */
   removeLabel: (name: string) => string;
+  /** Name of the progress bar. */
   uploadProgressLabel?: (name: string) => string;
+  /** Name of the cancel button. */
   cancelUploadLabel?: (name: string) => string;
+  /** Name of the retry button. */
   retryUploadLabel?: (name: string) => string;
+  /** Text of a failed upload. */
   uploadErrorText?: (name: string) => ReactNode;
+  /** Name of the move handle. */
   moveLabel?: (name: string) => string;
 }
 
+/** Props of `FileItemView`. */
 export interface FileItemViewProps {
+  /** The item's id. */
   id: string;
+  /** Name, size, type and URL to show. */
   info: FileInfo;
   /** Image preview (an object URL for new images, or the stored URL of an existing image). */
   previewUrl?: string;
+  /** A row or a tile. */
   layout: "list" | "grid";
+  /** The upload in progress or failed. */
   upload?: FileUploadState;
+  /** Locale of the size. */
   locale?: string;
+  /** Disabled or loading. */
   disabled: boolean;
+  /** Texts of the actions. */
   texts: FileItemTexts;
+  /** Removes the item. */
   onRemove: () => void;
+  /** Cancels its upload. */
   onCancel: () => void;
+  /** Retries its upload. */
   onRetry: () => void;
   /** Props of the move handle; no handle without them. */
-  handleProps?: HTMLAttributes<HTMLElement> & { "data-file-handle": string };
+  handleProps?: HTMLAttributes<HTMLElement> & {
+    /** The item the handle moves. */
+    "data-file-handle": string;
+  };
+  /** Extra classes of the item. */
   className?: string;
+  /** Extra classes of the thumbnail. */
   previewClassName?: string;
 }
 

@@ -1,7 +1,10 @@
 /** The limits every slider value is normalized to. */
 export interface SliderLimits {
+  /** Lowest value. */
   min: number;
+  /** Highest value. */
   max: number;
+  /** Every value is a multiple of it from `min`. */
   step: number;
   /** Smallest distance between the two values of a range. `0` when not given. */
   minDistance?: number;
@@ -17,6 +20,7 @@ export function decimalsOf(value: number): number {
   return Math.max(0, fraction - Number(exponent ?? 0));
 }
 
+/** `value` moved into `[min, max]`. */
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }

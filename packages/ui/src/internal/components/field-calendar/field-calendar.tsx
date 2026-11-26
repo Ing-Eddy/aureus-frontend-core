@@ -15,11 +15,26 @@ import { calendarTexts, localeWeekStart } from "./calendar-intl";
 
 /** What the calendar shows as chosen. */
 export type FieldCalendarSelection =
-  | { mode: "single"; selected: string | null }
-  | { mode: "range"; selected: { from: string; to: string | null } | null }
+  | {
+      /** One day, a range of days, or any number of days. */
+      mode: "single";
+      /** The chosen ISO date or dates, as `mode` says. */
+      selected: string | null;
+    }
+  | {
+      mode: "range";
+      selected: {
+        /** First day of the range. */
+        from: string;
+        /** Last day, or `null` while only the first is chosen. */
+        to: string | null;
+      } | null;
+    }
   | { mode: "multiple"; selected: readonly string[] };
 
+/** Props of `FieldCalendar`: what is chosen, the limits and the field's texts. */
 export type FieldCalendarProps = FieldCalendarSelection & {
+  /** Language of every text and number. Defaults to the browser's. */
   locale?: string;
   /** First day of the week; defaults to the locale's. */
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -29,8 +44,11 @@ export type FieldCalendarProps = FieldCalendarSelection & {
   nextMonthLabel: string;
   /** Earliest and latest choosable days (ISO dates; a date-and-time is cut to its date). */
   min?: string | null;
+  /** Latest choosable day (a date-and-time is cut to its date). */
   max?: string | null;
+  /** ISO dates that cannot be chosen. */
   disabledDates?: readonly string[];
+  /** Returns `true` for a day that cannot be chosen. */
   isDateDisabled?: (date: string) => boolean;
   /** Extra days to disable, such as range ends that break its length. */
   isExtraDisabled?: (date: string) => boolean;
@@ -42,10 +60,13 @@ export type FieldCalendarProps = FieldCalendarSelection & {
   isPreview?: (date: string) => boolean;
   /** Focuses the chosen day, today or the first enabled day on mount. */
   autoFocus?: boolean;
+  /** Text direction of the calendar. */
   dir?: "ltr" | "rtl";
+  /** Extra classes of the calendar. */
   className?: string;
 };
 
+/** The ISO date of a local `Date`. */
 const iso = (date: Date) => fromLocalDate(date, "date");
 
 /** shadcn's day button, marking today with `aria-current` instead of a word in its name. */
@@ -53,17 +74,19 @@ function TodayAwareDayButton(props: ComponentProps<typeof CalendarDayButton>) {
   return <CalendarDayButton {...props} aria-current={props.modifiers.today ? "date" : undefined} />;
 }
 
-/*
- * shadcn's `Calendar` declares its `Root`, `Chevron` and `WeekNumber` inline, so every render of
+/**
+ * The parts of the calendar that can be replaced. shadcn's `Calendar` declares its `Root`, `Chevron` and `WeekNumber` inline, so every render of
  * the calendar gives them a new identity and remounts every day button: focus and hover are lost
  * on each pick. The same markup is passed here as stable components.
  */
 type DayPickerComponents = NonNullable<ComponentProps<typeof Calendar>["components"]>;
 
+/** shadcn's calendar root, with a stable identity. */
 const StableRoot: DayPickerComponents["Root"] = ({ className, rootRef, ...rest }) => (
   <div data-slot="calendar" ref={rootRef} className={cn(className)} {...rest} />
 );
 
+/** shadcn's month arrows, with a stable identity. */
 const StableChevron: DayPickerComponents["Chevron"] = ({ className, orientation, ...rest }) => {
   if (orientation === "left")
     return <ChevronLeftIcon className={cn("size-4", className)} {...rest} />;
@@ -73,6 +96,7 @@ const StableChevron: DayPickerComponents["Chevron"] = ({ className, orientation,
   return <ChevronDownIcon className={cn("size-4", className)} {...rest} />;
 };
 
+/** shadcn's week number cell, with a stable identity. */
 const StableWeekNumber: DayPickerComponents["WeekNumber"] = ({ children, ...rest }) => (
   <td {...rest}>
     <div className="flex size-(--cell-size) items-center justify-center text-center">
@@ -81,6 +105,7 @@ const StableWeekNumber: DayPickerComponents["WeekNumber"] = ({ children, ...rest
   </td>
 );
 
+/** The replaced parts, created once. */
 const calendarComponents: DayPickerComponents = {
   Root: StableRoot,
   Chevron: StableChevron,
@@ -100,6 +125,7 @@ export function openingMonth(
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
 
+/** The first chosen day, which the calendar opens at. */
 function firstSelected(selection: FieldCalendarSelection): string | null {
   if (selection.mode === "single") return selection.selected;
   if (selection.mode === "range") return selection.selected?.from ?? null;

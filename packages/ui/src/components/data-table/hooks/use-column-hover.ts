@@ -1,6 +1,7 @@
 import { type RefObject, useEffect } from "react";
 import { attributeSelector } from "../utils";
 
+/** The attribute the stylesheet paints. */
 const HOVER = "data-column-hover";
 
 /**

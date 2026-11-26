@@ -1,5 +1,6 @@
 import { type RefObject, useLayoutEffect, useState } from "react";
 
+/** What the table needs to know about its scroll container. */
 export interface ScrollArea {
   /** The content overflows the container in either axis. */
   scrollable: boolean;
@@ -7,6 +8,7 @@ export interface ScrollArea {
   width: number;
 }
 
+/** Before the first measure. */
 const INITIAL: ScrollArea = { scrollable: false, width: 0 };
 
 /**

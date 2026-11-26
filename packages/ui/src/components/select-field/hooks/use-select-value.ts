@@ -3,15 +3,23 @@ import { useControllableState } from "@/internal/hooks";
 import type { SelectOption } from "../types";
 import { isSentinel } from "./sentinels";
 
+/** Options of `useSelectValue`. */
 export interface UseSelectValueOptions {
+  /** Multiple selection. */
   multiple: boolean;
+  /** Every option. */
   options: readonly SelectOption[];
+  /** Controlled value. */
   value?: string | null | string[];
+  /** Initial value when uncontrolled. */
   defaultValue?: string | null | string[];
+  /** Called with every requested change. */
   onValueChange?: (value: string | null | string[]) => void;
+  /** Most selected options. No default. */
   maxSelected?: number;
 }
 
+/** Whether all, some or none of the enabled options are selected. */
 export type SelectAllState = "all" | "some" | "none";
 
 /**

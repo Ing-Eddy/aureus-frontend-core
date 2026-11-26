@@ -9,7 +9,9 @@ export type IsoMode = "date" | "time" | "datetime";
 /** Whether a time has seconds. */
 export type TimeGranularity = "minute" | "second";
 
+/** The parts of a calendar date. */
 export interface IsoDateParts {
+  /** From 1 to 9999. */
   year: number;
   /** 1–12. */
   month: number;
@@ -17,19 +19,27 @@ export interface IsoDateParts {
   day: number;
 }
 
+/** The parts of a 24-hour time. */
 export interface IsoTimeParts {
   /** 0–23. */
   hour: number;
+  /** 0–59. */
   minute: number;
+  /** 0–59; 0 when the value has no seconds. */
   second: number;
 }
 
+/** The parts of a date and a time together. */
 export type IsoDateTimeParts = IsoDateParts & IsoTimeParts;
 
+/** The shape of `YYYY-MM-DD`; the ranges are checked when parsing. */
 const DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+/** The shape of `HH:mm` or `HH:mm:ss`; the ranges are checked when parsing. */
 const TIME = /^(\d{2}):(\d{2})(?::(\d{2}))?$/;
+/** Milliseconds in a day of 24 hours. */
 const DAY_MS = 86_400_000;
 
+/** The Gregorian leap-year rule. */
 export function isLeapYear(year: number): boolean {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 }
@@ -96,12 +106,17 @@ export function isIsoValue(value: unknown, mode: IsoMode): value is string {
   return isIsoDateTime(value);
 }
 
+/** `value` with leading zeros up to `length` digits. */
 const pad = (value: number, length = 2) => String(value).padStart(length, "0");
 
+/** The `YYYY-MM-DD` of the parts, which are not validated. */
 export function formatIsoDate({ year, month, day }: IsoDateParts): string {
   return `${pad(year, 4)}-${pad(month)}-${pad(day)}`;
 }
 
+/**
+ * The `HH:mm`, or `HH:mm:ss` with `granularity: "second"`, of the parts, which are not validated.
+ */
 export function formatIsoTime(
   { hour, minute, second }: IsoTimeParts,
   granularity: TimeGranularity = "minute",
@@ -110,6 +125,7 @@ export function formatIsoTime(
   return granularity === "second" ? `${base}:${pad(second)}` : base;
 }
 
+/** The date and the time of the parts joined by `T`. */
 export function formatIsoDateTime(
   parts: IsoDateTimeParts,
   granularity: TimeGranularity = "minute",
@@ -124,6 +140,7 @@ function localDate(year: number, month: number, day: number, hour = 0, minute = 
   return date;
 }
 
+/** The local calendar date of a `Date`. */
 function datePartsOf(date: Date): IsoDateParts {
   return { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() };
 }

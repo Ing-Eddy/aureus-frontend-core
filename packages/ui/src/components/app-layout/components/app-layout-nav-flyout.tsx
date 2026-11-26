@@ -27,10 +27,15 @@ export function AppLayoutNavFlyout({
   active,
   children,
 }: {
+  /** The submenu's label: accessible name of its button and heading of the menu. */
   label: string;
+  /** Decorative icon; without it the first letter of `label` is shown. */
   icon?: ReactNode;
+  /** Tooltip content, or `false` for none. Defaults to `label`. */
   tooltip?: ReactNode | false;
+  /** Whether one of the sub-items is the current page. */
   active: boolean;
+  /** The sub-items, rendered as menu entries. */
   children?: ReactNode;
 }) {
   const { direction, physicalSide } = useAppLayoutContext("AppLayoutNavSubmenu");

@@ -1,3 +1,4 @@
+/** The base language of a tag, in lower case (`"es-MX"` → `"es"`). */
 const baseOf = (code: string) => code.toLowerCase().split(/[-_]/)[0] ?? "";
 
 /**

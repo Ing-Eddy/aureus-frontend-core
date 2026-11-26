@@ -20,8 +20,33 @@ import { rootClassName, selectedStatusClassName } from "./utils/data-table-class
 /**
  * A data table on TanStack Table v9 and the shadcn table parts. Every feature is an opt-in object
  * prop (`search`, `sorting`, `selection`, `pagination`…) whose state is controllable through
- * `value` / `defaultValue` / `onChange`; each has its own `manual` flag for server data. The
- * component ships no texts: each feature requires the texts it needs.
+ * `value` / `defaultValue` and a change callback; search, sorting and pagination have their own
+ * `manual` flag for server data. The component ships no texts: each feature requires the texts it
+ * needs.
+ *
+ * ```tsx
+ * const columns: DataTableColumn<User>[] = [
+ *   { accessorKey: "name", header: t("users.name"), sortable: true },
+ *   { accessorKey: "email", header: t("users.email") },
+ * ];
+ *
+ * <DataTable
+ *   aria-label={t("users.title")}
+ *   data={users}
+ *   columns={columns}
+ *   getRowId={(user) => user.id}
+ *   sorting={{
+ *     sortLabel: (column, next) => t(`table.sort.${next}`, { column }),
+ *   }}
+ *   pagination={{
+ *     previousLabel: t("table.previous"),
+ *     nextLabel: t("table.next"),
+ *     pageLabel: (page, pageCount) => t("table.page", { page, pageCount }),
+ *     pageSizes: [10, 25, 50],
+ *     pageSizeLabel: t("table.pageSize"),
+ *   }}
+ * />
+ * ```
  */
 export function DataTable<TData extends RowData>(props: DataTableProps<TData>) {
   useDataTableWarnings(props);

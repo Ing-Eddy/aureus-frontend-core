@@ -15,6 +15,10 @@ import { resolveCharset, sanitizeOtp, toBlocks, transformPastedOtp } from "./uti
  * A one-time code (OTP, PIN) field with the shared field layout: `length` boxes over a single real
  * input, so SMS autofill (`autocomplete="one-time-code"`), pasting and screen readers work as with
  * any input. Every option is opt-in and there are no default texts.
+ *
+ * ```tsx
+ * <OtpField label={t("auth.code")} length={6} groups={[3, 3]} onComplete={verifyCode} />
+ * ```
  */
 export function OtpField(props: OtpFieldProps) {
   const {

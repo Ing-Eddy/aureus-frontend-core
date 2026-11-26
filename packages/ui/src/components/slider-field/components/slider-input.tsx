@@ -3,7 +3,9 @@ import { cn } from "@/shadcn/lib/utils";
 import { Input } from "@/shadcn/ui/input";
 import { editingText, parseSliderInput } from "../utils";
 
+/** Props of `SliderInput`. */
 export interface SliderInputProps {
+  /** Id of the input. */
   id: string;
   /** The value of the thumb this input is linked to. */
   value: number;
@@ -13,16 +15,25 @@ export interface SliderInputProps {
   label: string | undefined;
   /** The formatted value, announced as `aria-valuetext`. */
   valueText: string;
+  /** Lowest value. */
   min: number;
+  /** Highest value. */
   max: number;
+  /** Arrow step. */
   step: number;
   /** Fraction digits shown while editing (those of `step`). */
   decimals: number;
+  /** Locale of the typed number. Defaults to the browser's. */
   locale?: string;
+  /** Disabled or loading. */
   disabled?: boolean;
+  /** Marks the input as invalid. */
   error?: boolean;
+  /** Marks the input as required. */
   required?: boolean;
+  /** Ids that describe the input. */
   describedBy?: string;
+  /** Extra classes of the input. */
   className?: string;
 }
 

@@ -27,6 +27,20 @@ import type { SelectFieldProps } from "./types";
  * A single or multiple select with the shared field layout. It ships no default texts: every
  * message is optional and shows nothing when omitted, and the texts a feature needs (search,
  * clear, chips, summary, select all, create) are required when the feature is enabled.
+ *
+ * ```tsx
+ * <SelectField
+ *   label={t("customer.country")}
+ *   options={countries}
+ *   searchable
+ *   searchLabel={t("common.search")}
+ *   noResultsMessage={t("common.noResults")}
+ *   clearable
+ *   clearLabel={t("common.clear")}
+ *   value={country}
+ *   onValueChange={setCountry}
+ * />
+ * ```
  */
 export function SelectField(props: SelectFieldProps) {
   const {

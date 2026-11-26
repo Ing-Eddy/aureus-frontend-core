@@ -24,6 +24,7 @@ export type AppLayoutSidebarVariant = "sidebar" | "floating" | "inset";
  */
 export type AppLayoutCollapsible = "icon" | "offcanvas" | "none";
 
+/** How the desktop sidebar is shown. */
 export type AppLayoutSidebarState = "expanded" | "collapsed";
 
 /** Maximum width of the main content, centred. */
@@ -46,27 +47,32 @@ export type AppLayoutMaxWidth =
  * and the event handlers the layout needs.
  */
 export type AppLayoutLinkProps = Omit<ComponentPropsWithRef<"a">, "href"> & {
+  /** The link's target. */
   href: string;
   [dataAttribute: `data-${string}`]: string | boolean | undefined;
 };
 
+/** Props of `AppLayout`, passed on to its root `div`. */
 export interface AppLayoutProps extends ComponentPropsWithoutRef<"div"> {
   /** Controlled desktop state: expanded (`true`) or collapsed. */
   open?: boolean;
   /** Initial desktop state when uncontrolled. Defaults to `true`. */
   defaultOpen?: boolean;
+  /** Called when the user or `setOpen` changes the desktop state. */
   onOpenChange?: (open: boolean) => void;
 
   /** Controlled state of the mobile sheet. */
   mobileOpen?: boolean;
   /** Initial state of the mobile sheet when uncontrolled. Defaults to `false`. */
   defaultMobileOpen?: boolean;
+  /** Called when the mobile sheet should open or close. */
   onMobileOpenChange?: (open: boolean) => void;
 
   /** Controlled side of the sidebar. */
   side?: AppLayoutSide;
   /** Initial side when uncontrolled. Defaults to `"start"`. */
   defaultSide?: AppLayoutSide;
+  /** Called when `setSide` changes the side. */
   onSideChange?: (side: AppLayoutSide) => void;
 
   /**
@@ -110,11 +116,16 @@ export type AppLayoutRailTexts =
 export type AppLayoutMobileCloseTexts =
   | { mobileCloseButton?: false; mobileCloseLabel?: never }
   | {
+      /** A close button inside the mobile sheet. */
       mobileCloseButton: boolean;
       /** Accessible name of the close button of the mobile sheet. */
       mobileCloseLabel: string;
     };
 
+/**
+ * The props of `AppLayoutSidebar` that need no text of their own. Other attributes go to the
+ * sidebar's container (on mobile, to the panel's content).
+ */
 export interface AppLayoutSidebarBaseProps extends ComponentPropsWithoutRef<"div"> {
   /** Accessible name of the mobile sheet (not visible). Required: there is no default. */
   mobileTitle: string;
@@ -134,15 +145,18 @@ export interface AppLayoutSidebarBaseProps extends ComponentPropsWithoutRef<"div
   mobileClassName?: string;
 }
 
+/** Props of `AppLayoutSidebar`. */
 export type AppLayoutSidebarProps = AppLayoutSidebarBaseProps &
   AppLayoutRailTexts &
   AppLayoutMobileCloseTexts;
 
+/** Props of the sidebar's header, content and footer. */
 export interface AppLayoutSectionProps extends ComponentPropsWithoutRef<"div"> {
   /** Renders the consumer's element instead of a `div`. */
   asChild?: boolean;
 }
 
+/** Props of `AppLayoutSidebarTrigger`. */
 export interface AppLayoutSidebarTriggerProps
   extends Omit<ComponentPropsWithoutRef<"button">, "children"> {
   /** Accessible name of the button. Required: there is no default. */
@@ -171,6 +185,7 @@ export type AppLayoutTopbarBreadcrumbTexts =
     }
   | { breadcrumb: false; breadcrumbLabel?: never };
 
+/** The props of `AppLayoutTopbar` that need no text of their own. */
 export interface AppLayoutTopbarBaseProps extends ComponentPropsWithoutRef<"header"> {
   /** Global actions at the end of the bar, after the actions added by pages. */
   actions?: ReactNode;
@@ -180,17 +195,21 @@ export interface AppLayoutTopbarBaseProps extends ComponentPropsWithoutRef<"head
   children?: ReactNode;
 }
 
+/** Props of `AppLayoutTopbar`. */
 export type AppLayoutTopbarProps = AppLayoutTopbarBaseProps &
   AppLayoutTopbarTriggerTexts &
   AppLayoutTopbarBreadcrumbTexts;
 
+/** Props of `AppLayoutTopbarActions`. */
 export interface AppLayoutTopbarActionsProps {
   /** Rendered in the top bar's actions area while this component is mounted. */
   children?: ReactNode;
 }
 
+/** Props of `AppLayoutInset`. */
 export type AppLayoutInsetProps = ComponentPropsWithoutRef<"div">;
 
+/** Props of `AppLayoutMain`. */
 export interface AppLayoutMainProps extends ComponentPropsWithoutRef<"main"> {
   /** Classes of the padded content box, for example to change the padding. */
   contentClassName?: string;
@@ -204,17 +223,25 @@ export interface AppLayoutMainProps extends ComponentPropsWithoutRef<"main"> {
 export interface UseAppLayoutSidebarResult {
   /** The desktop presentation. `"expanded"` when `collapsible` is `"none"`. */
   state: AppLayoutSidebarState;
+  /** The desktop open state, as set by the user or the props. */
   open: boolean;
+  /** Changes `open`; controlled by `onOpenChange` when `open` is given. */
   setOpen: (open: boolean) => void;
   /** Toggles the sheet in mobile mode and the desktop state otherwise. */
   toggle: () => void;
   /** Whether the viewport is below the breakpoint, so the sidebar is a sheet. */
   isMobile: boolean;
+  /** Whether the mobile sheet is open. */
   mobileOpen: boolean;
+  /** Opens or closes the mobile sheet. */
   setMobileOpen: (open: boolean) => void;
+  /** The logical side of the sidebar. */
   side: AppLayoutSide;
+  /** Moves the sidebar to a side. */
   setSide: (side: AppLayoutSide) => void;
+  /** The sidebar's collapsing mode. */
   collapsible: AppLayoutCollapsible;
+  /** The sidebar's variant. */
   variant: AppLayoutSidebarVariant;
 }
 
@@ -222,5 +249,6 @@ export interface UseAppLayoutSidebarResult {
 export interface UseAppLayoutMainResult {
   /** The scrolling `main` element. */
   scrollRef: RefObject<HTMLElement | null>;
+  /** Scrolls the main area to the top at once. */
   scrollToTop: () => void;
 }

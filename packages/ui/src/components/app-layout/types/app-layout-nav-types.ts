@@ -2,14 +2,19 @@ import type { ComponentPropsWithoutRef, HTMLAttributes, ReactNode } from "react"
 
 /** One entry of an item's "more actions" menu. */
 export interface AppLayoutNavAction {
+  /** Unique within the menu. */
   id: string;
+  /** The entry's text. */
   label: ReactNode;
+  /** Decorative icon before the text. */
   icon?: ReactNode;
   /** `"default"` (default) or `"destructive"`. */
   variant?: "default" | "destructive";
+  /** The entry is shown but cannot be chosen. */
   disabled?: boolean;
   /** Leaves the action out of the menu. With every action hidden, no menu button is shown. */
   hidden?: boolean;
+  /** Called when the entry is chosen. */
   onSelect: () => void;
 }
 
@@ -17,6 +22,7 @@ export interface AppLayoutNavAction {
 export interface AppLayoutNavActions {
   /** Accessible name of the menu button. Required: there is no default. */
   label: string;
+  /** The menu's entries, in order. */
   items: readonly AppLayoutNavAction[];
 }
 
@@ -66,13 +72,16 @@ export interface AppLayoutNavSubmenuOptions extends AppLayoutNavRowOptions {
    * when one of its sub-items becomes active.
    */
   defaultOpen?: boolean;
+  /** Called when the submenu opens or closes. */
   onOpenChange?: (open: boolean) => void;
   /** Tooltip shown while the sidebar is collapsed. Defaults to `label`; `false` removes it. */
   tooltip?: ReactNode | false;
 }
 
+/** Element attributes of a row. `children` and `onSelect` are redefined by each part. */
 type LiProps = Omit<ComponentPropsWithoutRef<"li">, "children" | "onSelect">;
 
+/** Props of `AppLayoutNavItem`. */
 export interface AppLayoutNavItemProps extends AppLayoutNavItemOptions, LiProps {
   /**
    * Renders the consumer's element (its only child, such as a router link) as the row's control,
@@ -83,17 +92,21 @@ export interface AppLayoutNavItemProps extends AppLayoutNavItemOptions, LiProps 
   children?: ReactNode;
 }
 
+/** Props of `AppLayoutNavSubItem`. */
 export interface AppLayoutNavSubItemProps extends AppLayoutNavLinkOptions, LiProps {
   /** See `AppLayoutNavItemProps.asChild`. */
   asChild?: boolean;
+  /** With `asChild`, the element to render as the control. */
   children?: ReactNode;
 }
 
+/** Props of `AppLayoutNavSubmenu`. */
 export interface AppLayoutNavSubmenuProps extends AppLayoutNavSubmenuOptions, LiProps {
   /** `AppLayoutNavSubItem`s. A submenu cannot contain another submenu. */
   children?: ReactNode;
 }
 
+/** Props of `AppLayoutNavGroup`. */
 export interface AppLayoutNavGroupProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
   /** The group's title. Hidden while the sidebar is collapsed. */
   label?: ReactNode;
@@ -105,8 +118,10 @@ export interface AppLayoutNavGroupProps extends Omit<ComponentPropsWithoutRef<"d
   children?: ReactNode;
 }
 
+/** Props of `AppLayoutNavSeparator`. It is an `li` inside a group and a `div` elsewhere. */
 export type AppLayoutNavSeparatorProps = Omit<HTMLAttributes<HTMLElement>, "children">;
 
+/** Props of `AppLayoutNavSkeleton`. It is an `li` inside a group and a `div` elsewhere. */
 export interface AppLayoutNavSkeletonProps extends Omit<HTMLAttributes<HTMLElement>, "children"> {
   /** Shows an icon placeholder. `false` by default. */
   showIcon?: boolean;
@@ -122,20 +137,28 @@ interface AppLayoutNavEntryBase {
   hidden?: boolean;
 }
 
+/** A sub-item of a submenu entry. */
 export interface AppLayoutNavSubItemEntry extends AppLayoutNavEntryBase, AppLayoutNavLinkOptions {}
 
+/** A simple row in `AppLayoutNav items`. */
 export interface AppLayoutNavItemEntry extends AppLayoutNavEntryBase, AppLayoutNavItemOptions {
+  /** Marks the entry as a simple row. */
   type: "item";
 }
 
+/** A submenu in `AppLayoutNav items`. */
 export interface AppLayoutNavSubmenuEntry
   extends AppLayoutNavEntryBase,
     AppLayoutNavSubmenuOptions {
+  /** Marks the entry as a submenu. */
   type: "submenu";
+  /** The sub-items, in order. A submenu with none visible is left out. */
   items: readonly AppLayoutNavSubItemEntry[];
 }
 
+/** A line in `AppLayoutNav items`. */
 export interface AppLayoutNavSeparatorEntry extends AppLayoutNavEntryBase {
+  /** Marks the entry as a line. */
   type: "separator";
 }
 
@@ -145,20 +168,28 @@ export type AppLayoutNavGroupChildEntry =
   | AppLayoutNavSubmenuEntry
   | AppLayoutNavSeparatorEntry;
 
+/** A group in `AppLayoutNav items`. */
 export interface AppLayoutNavGroupEntry extends AppLayoutNavEntryBase {
+  /** Marks the entry as a group. */
   type: "group";
+  /** The group's title. Hidden while the sidebar is collapsed. */
   label?: ReactNode;
+  /** Makes the title a button that shows or hides the group. Needs `label`. `false` by default. */
   collapsible?: boolean;
+  /** Initial open state of a collapsible group. Defaults to `true`. */
   defaultOpen?: boolean;
+  /** The group's rows and separators. A group with no visible row is left out. */
   items: readonly AppLayoutNavGroupChildEntry[];
 }
 
 /**
- * One entry of `AppLayoutNav items`. Items, submenus and separators outside a group are placed in
- * a group without title.
+ * One entry of `AppLayoutNav items`. Items and submenus outside a group are placed in a group
+ * without title; a separator that does not follow such a row stands between groups.
  */
 export type AppLayoutNavEntry = AppLayoutNavGroupEntry | AppLayoutNavGroupChildEntry;
 
+/** Props of `AppLayoutNav`. */
 export interface AppLayoutNavProps extends Omit<ComponentPropsWithoutRef<"nav">, "children"> {
+  /** The entries, in order. Their ids must be unique across all levels. */
   items: readonly AppLayoutNavEntry[];
 }

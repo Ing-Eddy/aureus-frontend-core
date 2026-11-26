@@ -1,5 +1,6 @@
 import { defineConfig } from "tsdown";
 
+// Build of the published package: JavaScript, declarations and the stylesheets, into `dist/`.
 export default defineConfig({
   // Tests never ship: `*-tests` files anywhere, every `tests/` folder (with its helpers), and the
   // shared test helpers in `internal/testing`.
@@ -17,6 +18,7 @@ export default defineConfig({
   // Rolldown inlines `process.env.NODE_ENV` for the browser platform. Keep the expression, so the
   // consumer's bundler decides whether development-only warnings ship.
   define: { "process.env.NODE_ENV": "process.env.NODE_ENV" },
+  // The stylesheets ship as source CSS: the consumer's Tailwind processes them.
   copy: [{ from: "src/styles", to: "dist" }],
   inputOptions: {
     onLog(level, log, defaultHandler) {

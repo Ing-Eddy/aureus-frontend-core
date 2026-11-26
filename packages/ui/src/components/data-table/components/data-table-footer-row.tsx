@@ -12,10 +12,11 @@ import {
   sourceOf,
 } from "../utils";
 
-/** The footer row: rendered only when a column defines `footer`. */
+/** The footer row: rendered only when a visible column defines `footer`. */
 export function DataTableFooterRow<TData extends RowData>({
   pinOf,
 }: {
+  /** The pin of each column. */
   pinOf: (columnId: string) => PinLayout | undefined;
 }) {
   const { props, table } = useDataTableContext<TData>();

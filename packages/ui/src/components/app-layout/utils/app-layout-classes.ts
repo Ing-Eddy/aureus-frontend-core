@@ -31,6 +31,10 @@ export const sidebarOrderClassNames: Record<AppLayoutSide, string> = {
   end: "order-last",
 };
 
+/**
+ * Collapsed width of the floating and inset variants: the icon width plus the padding around their
+ * card.
+ */
 const detachedCollapsedWidth = "w-[calc(var(--app-layout-sidebar-width-icon)+(--spacing(4)))]";
 
 /**
@@ -57,6 +61,7 @@ export function sidebarWidthClassName(
 export const sidebarContainerClassName =
   "absolute inset-y-0 z-10 flex transition-[width] duration-200 ease-linear motion-reduce:transition-none";
 
+/** The edge of the box the container is anchored to, per logical side. */
 export const sidebarContainerAnchorClassNames: Record<AppLayoutSide, string> = {
   start: "end-0",
   end: "start-0",
@@ -84,25 +89,29 @@ export function sidebarContainerVariantClassName(
 /** `Sidebar` inner panel. */
 export const sidebarInnerClassName = "flex size-full flex-col bg-sidebar";
 
+/** `Sidebar` inner panel of the floating variant: the card look. */
 export const sidebarInnerFloatingClassName = "rounded-lg shadow-sm ring-1 ring-sidebar-border";
 
 /** `Sidebar` mobile `SheetContent`, with the sheet's own width and `max-w-sm` replaced. */
 export const sheetClassName =
   "gap-0 bg-sidebar p-0 text-sidebar-foreground data-[side=left]:w-(--app-layout-sidebar-width-mobile) data-[side=right]:w-(--app-layout-sidebar-width-mobile) data-[side=left]:max-w-[calc(100vw-2rem)] data-[side=right]:max-w-[calc(100vw-2rem)] data-[side=left]:sm:max-w-[calc(100vw-2rem)] data-[side=right]:sm:max-w-[calc(100vw-2rem)]";
 
+/** The close button in the top end corner of the sheet, larger on touch screens. */
 export const sheetCloseButtonClassName = "absolute top-2 end-2 pointer-coarse:size-11";
 
 /** `SidebarRail`, positioned on the inner edge of the sidebar box. */
 export const railClassName =
   "absolute inset-y-0 z-20 w-4 cursor-ew-resize transition-all ease-linear after:absolute after:inset-y-0 after:start-1/2 after:w-[2px] hover:after:bg-sidebar-border motion-reduce:transition-none";
 
+/** Places the rail over the sidebar's inner edge, per logical side. */
 export const railSideClassNames: Record<AppLayoutSide, string> = {
   start: "-end-2",
   end: "-start-2",
 };
 
-/** `SidebarHeader`, `SidebarFooter`. */
+/** `SidebarHeader`. */
 export const sidebarHeaderClassName = "flex shrink-0 flex-col gap-2 p-2";
+/** `SidebarFooter`. */
 export const sidebarFooterClassName = "flex shrink-0 flex-col gap-2 p-2";
 
 /** Collapsed to icons, the sections centre what they hold. */
@@ -119,7 +128,7 @@ export const sidebarContentClassName =
 export const sidebarContentCollapsedClassName =
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
-/** `SidebarTrigger`. */
+/** `SidebarTrigger`. Not used: the default icon already follows the physical side. */
 export const triggerClassName = "rtl:[&>svg]:-scale-x-100";
 
 /** `SidebarInset`. */
@@ -136,8 +145,10 @@ export function insetVariantClassName(side: AppLayoutSide, collapsed: boolean): 
 export const topbarClassName =
   "flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background px-4";
 
+/** The short vertical line after the sidebar trigger. */
 export const topbarDividerClassName = "mx-1 data-vertical:h-4 data-vertical:self-center";
 
+/** The actions area at the end of the top bar. */
 export const topbarActionsClassName = "ms-auto flex shrink-0 items-center gap-2";
 
 /** Main area: the only part of the inset that scrolls. */
@@ -147,6 +158,7 @@ export const mainClassName =
 /** Padded content box: the minimum separation from every edge of the main area. */
 export const mainContentClassName = "p-4 md:p-6";
 
+/** Centred maximum width of the content, per `maxWidth` value. */
 export const mainMaxWidthClassNames: Record<AppLayoutMaxWidth, string> = {
   sm: "mx-auto w-full max-w-sm",
   md: "mx-auto w-full max-w-md",
@@ -161,17 +173,20 @@ export const mainMaxWidthClassNames: Record<AppLayoutMaxWidth, string> = {
   full: "mx-auto w-full max-w-full",
 };
 
+/** The skip link: visible only while it has keyboard focus, over the top start corner. */
 export const skipLinkClassName =
   "sr-only rounded-md bg-background px-3 py-2 text-sm font-medium text-foreground shadow-md ring-2 ring-ring focus:not-sr-only focus:absolute focus:start-2 focus:top-2 focus:z-50";
 
 /** `SidebarGroup`. When collapsed, groups after the first are separated by a line. */
 export const groupClassName = "relative flex w-full min-w-0 flex-col p-2";
+/** The line above each collapsed group after the first. */
 export const groupCollapsedClassName = "not-first:border-t not-first:border-sidebar-border";
 
 /** `SidebarGroupLabel`. */
 export const groupLabelClassName =
   "flex h-8 w-full shrink-0 items-center gap-2 rounded-md px-2 text-start text-xs font-medium text-sidebar-foreground/70 ring-sidebar-ring outline-hidden focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0";
 
+/** Hover look of a collapsible group's title. */
 export const groupLabelButtonClassName =
   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
 
@@ -202,15 +217,20 @@ export function menuButtonEndPadding(hasBadge: boolean, hasActions: boolean): st
 export const menuActionClassName =
   "absolute top-1.5 end-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 after:absolute after:-inset-2 md:after:hidden [&>svg]:size-4 [&>svg]:shrink-0";
 
+/**
+ * Hides the actions button until its row is hovered or focused, only where the pointer can hover.
+ */
 export const menuActionOnHoverClassName =
   "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 aria-expanded:opacity-100 pointer-fine:opacity-0";
 
+/** Vertical position of a sub-item's actions button. */
 export const menuSubActionClassName = "top-1";
 
 /** `SidebarMenuBadge`. */
 export const menuBadgeClassName =
   "pointer-events-none absolute top-1.5 flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium text-sidebar-foreground tabular-nums select-none peer-hover/menu-button:text-sidebar-accent-foreground";
 
+/** Distance of the badge from the end: further when the actions button sits after it. */
 export function menuBadgeOffsetClassName(hasActions: boolean): string {
   return hasActions ? "end-7" : "end-1";
 }
@@ -246,11 +266,15 @@ export const flyoutClassName = "w-auto min-w-48";
 /** The label of a row: truncated when expanded, only for assistive technology when collapsed. */
 export const rowLabelClassName = "min-w-0 flex-1 truncate";
 
-/** Breadcrumb parts. */
+/** An item's icon and label in a row, for links and plain text. */
 export const breadcrumbItemContentClassName = "inline-flex items-center gap-1.5 [&>svg]:size-4";
+/** A breadcrumb item that is a button, with a visible focus ring. */
 export const breadcrumbButtonClassName =
   "inline-flex items-center gap-1.5 rounded-sm outline-hidden focus-visible:ring-2 focus-visible:ring-ring [&>svg]:size-4";
+/** The current page, the last breadcrumb item. */
 export const breadcrumbPageClassName =
   "inline-flex items-center gap-1.5 font-normal text-foreground [&>svg]:size-4";
+/** The default separator chevron, mirrored in right-to-left pages. */
 export const breadcrumbSeparatorIconClassName = "rtl:-scale-x-100";
+/** The button that opens the menu of hidden items. */
 export const breadcrumbEllipsisClassName = "size-7";

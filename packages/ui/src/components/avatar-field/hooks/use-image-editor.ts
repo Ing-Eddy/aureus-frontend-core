@@ -8,12 +8,32 @@ import {
   rotateCrop,
 } from "../utils";
 
+/** The edits of the crop editor. */
 type EditorAction =
-  | { type: "zoom"; zoom: number }
-  | { type: "move"; dx: number; dy: number }
+  | {
+      /** The edit to apply. */
+      type: "zoom";
+      /** The new zoom. */
+      zoom: number;
+    }
+  | {
+      type: "move";
+      /** Horizontal move, in fractions of the window. */
+      dx: number;
+      /** Vertical move, in fractions of the window. */
+      dy: number;
+    }
   | { type: "center" }
-  | { type: "rotate"; direction: 1 | -1 }
-  | { type: "flip"; axis: "x" | "y" }
+  | {
+      type: "rotate";
+      /** 1 clockwise, -1 counter-clockwise. */
+      direction: 1 | -1;
+    }
+  | {
+      type: "flip";
+      /** The axis to mirror. */
+      axis: "x" | "y";
+    }
   | { type: "reset" };
 
 /** Applies one editing action; the result is always clamped, so the image covers the window. */

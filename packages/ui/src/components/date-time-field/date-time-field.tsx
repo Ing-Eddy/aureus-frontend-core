@@ -24,20 +24,33 @@ import type { DateTimeFieldProps, DateTimePreset } from "./types";
 
 /** Calendar props as the field reads them: every member is optional inside the library. */
 interface CalendarSources {
+  /** First day of the week. */
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  /** Dates that cannot be chosen. */
   disabledDates?: readonly string[];
+  /** Matches dates that cannot be chosen. */
   isDateDisabled?: (date: string) => boolean;
+  /** Name of the calendar button. */
   openCalendarLabel?: string;
+  /** Name of the previous-month button. */
   previousMonthLabel?: string;
+  /** Name of the next-month button. */
   nextMonthLabel?: string;
+  /** Shortcuts beside the calendar. */
   presets?: readonly DateTimePreset[];
+  /** Name of their group. */
   presetsLabel?: string;
+  /** 12 or 24-hour clock. */
   hourCycle?: 12 | 24;
+  /** Minutes or seconds. */
   granularity?: "minute" | "second";
+  /** Arrow step of the minutes. */
   minuteStep?: number;
+  /** Arrow step of the seconds. */
   secondStep?: number;
 }
 
+/** The value of a preset, calling it when it is a function. */
 const resolvePreset = (preset: DateTimePreset) =>
   typeof preset.value === "function" ? preset.value() : preset.value;
 
@@ -46,6 +59,18 @@ const resolvePreset = (preset: DateTimePreset) =>
  * for the date modes. The value is a local ISO string (`"2026-08-01"`, `"14:30"`,
  * `"2026-08-01T14:30"`), `null` while empty or incomplete. Every extra is opt-in, and there are no
  * default texts: the calendar requires its button names, and every other text comes from `Intl`.
+ *
+ * ```tsx
+ * <DateTimeField
+ *   label={t("invoice.dueDate")}
+ *   min={todayIso()}
+ *   openCalendarLabel={t("date.openCalendar")}
+ *   previousMonthLabel={t("date.previousMonth")}
+ *   nextMonthLabel={t("date.nextMonth")}
+ *   value={dueDate}
+ *   onValueChange={setDueDate}
+ * />
+ * ```
  */
 export function DateTimeField(props: DateTimeFieldProps) {
   const {

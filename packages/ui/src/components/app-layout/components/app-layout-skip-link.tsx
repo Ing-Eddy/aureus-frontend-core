@@ -3,7 +3,12 @@ import { useAppLayoutContext } from "../hooks";
 import { skipLinkClassName } from "../utils";
 
 /** A link shown first on keyboard focus that moves focus to the main area. */
-export function AppLayoutSkipLink({ label }: { label: string }) {
+export function AppLayoutSkipLink({
+  label,
+}: {
+  /** The link's text. */
+  label: string;
+}) {
   const { mainId, mainRef } = useAppLayoutContext("AppLayout");
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();

@@ -7,6 +7,13 @@ import { ModalDrawerView } from "./modal-drawer-view";
 /**
  * The panel: a centred dialog or a drawer, following the modal's mode. Changing the mode remounts
  * only this part. Pass `ModalTitle` inside it; the close button is opt-in and needs `closeLabel`.
+ *
+ * ```tsx
+ * <ModalContent initialFocusRef={nameRef} drawerHandle={false}>
+ *   <ModalTitle visuallyHidden>{t("search.title")}</ModalTitle>
+ *   <ModalBody>{results}</ModalBody>
+ * </ModalContent>
+ * ```
  */
 export function ModalContent(props: ModalContentProps) {
   const context = useModalContext("ModalContent");

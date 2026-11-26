@@ -1,6 +1,7 @@
 import type { NumberSymbols } from "./number-locale";
 import { parseNumber } from "./parse-number";
 
+/** The power of ten of each suffix. */
 const EXPONENTS = { k: 3, m: 6, b: 9 } as const;
 
 /** Whether `text` ends with a shorthand suffix (k, m, b). */

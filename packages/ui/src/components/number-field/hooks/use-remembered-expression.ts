@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
+/** An expression and the value it gave. */
 export interface RememberedExpression {
+  /** The text the user committed. */
   source: string;
+  /** The committed value. */
   result: number;
 }
 

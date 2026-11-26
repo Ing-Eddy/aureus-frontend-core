@@ -30,10 +30,13 @@ export interface CheckboxGroupFieldBaseProps extends Omit<FieldBaseProps, "class
   /** Called with the checked values, always in the order of `options`. */
   onValueChange?: (value: string[]) => void;
   /**
-   * Adds a parent box before the options that checks or unchecks every enabled option. Its
-   * `label` is required. Disabled options and `maxSelected` are respected.
+   * Adds a parent box before the options that checks or unchecks every enabled option. Its `label`
+   * is required. Disabled options and `maxSelected` are respected.
    */
-  selectAll?: { label: ReactNode };
+  selectAll?: {
+    /** Text of the parent box. */
+    label: ReactNode;
+  };
   /** Maximum number of checked options. At the limit the unchecked options are disabled. */
   maxSelected?: number;
   /** Shown while the limit is reached, in a status region. No default. */

@@ -1,8 +1,10 @@
 import { type MouseEvent, type PointerEvent, useCallback, useEffect, useRef } from "react";
 
+/** Options of `usePressAndHold`. */
 export interface UsePressAndHoldOptions {
   /** Called once on press, then repeatedly while the button is held. */
   onStep: () => void;
+  /** Ignores presses and stops a running repetition. */
   disabled?: boolean;
   /** Delay before repeating starts, in ms. */
   delay?: number;

@@ -1,3 +1,7 @@
+/*
+ * The stylesheet an app imports (`@aureus-core/ui/styles.css`). The order matters: the brand theme
+ * redefines shadcn's tokens, and the typography and data table styles build on both.
+ */
 @import "./shadcn.css";
 @import "./theme.css";
 @import "./typography.css";

@@ -36,35 +36,61 @@ import { handleNumberKeyDown } from "./use-number-keyboard";
 import { useRememberedExpression } from "./use-remembered-expression";
 import { useWheelStep } from "./use-wheel-step";
 
+/** Options of `useNumberInput`: the props of `NumberField` with their defaults applied. */
 export interface UseNumberInputOptions {
+  /** The input, for the caret, selection and wheel. */
   inputRef: RefObject<HTMLInputElement | null>;
+  /** Controlled value; `null` is empty. */
   value?: number | null;
+  /** Initial value when uncontrolled. */
   defaultValue?: number | null;
+  /** Called with the parsed value while typing and on commit. */
   onValueChange?: (value: number | null) => void;
+  /** Lowest value. */
   min?: number;
+  /** Highest value. */
   max?: number;
+  /** Whether a commit clamps to `[min, max]`. */
   clampOnBlur: boolean;
+  /** Whether negative values are allowed. */
   allowNegative: boolean;
+  /** Step of the arrows and buttons. */
   step: number;
+  /** Step with Shift, PageUp and PageDown. */
   largeStep: number;
+  /** Locale of the separators. */
   locale: string;
+  /** Whether thousands are separated. */
   grouping: boolean;
+  /** Maximum fraction digits; unlimited without it. */
   decimals?: number;
+  /** Whether the fraction is padded to `decimals`. */
   padDecimals: boolean;
+  /** How negatives show when not editing. */
   negativeFormat: "minus" | "parentheses";
+  /** Whether focus selects the text. */
   selectOnFocus: boolean;
+  /** Whether the mouse wheel steps. */
   wheel: boolean;
+  /** Whether `k`, `m` and `b` expand. */
   shorthand: boolean;
+  /** Whether arithmetic is evaluated. */
   expressions: boolean;
   /** The field cannot change (disabled or loading). */
   locked: boolean;
+  /** The consumer's handler, run after the text is applied. */
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  /** The consumer's handler, run after editing starts. */
   onFocus?: (event: FocusEvent<HTMLInputElement>) => void;
+  /** The consumer's handler, run after the commit. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
+  /** The consumer's handler, run first; `preventDefault()` skips the field's key handling. */
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+  /** The consumer's handler, run first; `preventDefault()` skips the field's paste handling. */
   onPaste?: (event: ClipboardEvent<HTMLInputElement>) => void;
 }
 
+/** Which way a step moves. */
 type Direction = "increment" | "decrement";
 
 /**

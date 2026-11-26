@@ -4,23 +4,42 @@ import type { FieldStatusInternal } from "@/internal/types";
 
 /** The props the warnings read, all optional: untyped code can leave any of them out. */
 export interface SliderWarningSources extends FieldStatusInternal {
+  /** The visible label. */
   label?: ReactNode;
+  /** Accessible name without a label. */
   "aria-label"?: string;
+  /** Ids of the elements that name the slider. */
   "aria-labelledby"?: string;
+  /** Two thumbs. */
   range?: boolean;
+  /** Names of the two thumbs. */
   thumbLabels?: readonly (string | undefined)[];
+  /** Linked inputs are on. */
   withInput?: boolean;
+  /** Name of the single input. */
   inputLabel?: string;
+  /** Names of the two inputs. */
   inputLabels?: readonly (string | undefined)[];
+  /** Lowest value. */
   min?: number;
+  /** Highest value. */
   max?: number;
+  /** Controlled value. */
   value?: number | readonly number[];
+  /** Initial value. */
   defaultValue?: number | readonly number[];
+  /** Smallest distance between the two values. */
   minDistance?: number;
+  /** Only mark values are allowed. */
   snapToMarks?: boolean;
-  marks?: readonly { value: number }[];
+  /** The marks. */
+  marks?: readonly {
+    /** Position of the mark. */
+    value: number;
+  }[];
 }
 
+/** Whether both texts of a range are given. */
 const hasTwo = (texts?: readonly (string | undefined)[]) =>
   texts?.length === 2 && texts.every(Boolean);
 

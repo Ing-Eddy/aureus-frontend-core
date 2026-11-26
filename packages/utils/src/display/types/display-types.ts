@@ -6,6 +6,7 @@ import type {
   TimeFormatName,
 } from "@/date-formats";
 
+/** Configuration of `createDisplay`, shared by all its functions. */
 export interface DisplayConfig {
   /** The text shown for a missing (`null` / `undefined`) or unshowable value. Required. */
   empty: string;
@@ -15,16 +16,19 @@ export interface DisplayConfig {
   timeZone?: string;
 }
 
+/** Lets one call replace the display's `empty` text. */
 interface EmptyOption {
   /** Overrides the display's `empty` text for this call. */
   empty?: string;
 }
 
+/** Lets one call replace the display's locale. */
 interface LocaleOption {
   /** Overrides the display's locale for this call. */
   locale?: LocaleInput;
 }
 
+/** Options of `Display.text`. */
 export interface TextOptions extends EmptyOption {
   /** Maximum user-perceived characters (grapheme clusters). A positive integer. */
   maxLength?: number;
@@ -34,6 +38,7 @@ export interface TextOptions extends EmptyOption {
   blankAsEmpty?: boolean;
 }
 
+/** Options of `Display.number`. Each option is independent and opt-in. */
 export interface NumberOptions extends EmptyOption, LocaleOption {
   /** Maximum decimals (0–20); rounds half away from zero. Default: every decimal the number has. */
   decimals?: number;
@@ -47,6 +52,7 @@ export interface NumberOptions extends EmptyOption, LocaleOption {
   negativeFormat?: "minus" | "parentheses";
 }
 
+/** Options of `Display.boolean`. Both labels are required: the library ships no text. */
 export interface BooleanOptions extends EmptyOption {
   /** Text for `true`. Required. */
   true: string;
@@ -54,13 +60,21 @@ export interface BooleanOptions extends EmptyOption {
   false: string;
 }
 
+/**
+ * Options of `date`, `time` and `dateTime`. `Name` limits `format` to the names that fit the
+ * function.
+ */
 export interface DateDisplayOptions<Name extends string> extends EmptyOption, LocaleOption {
-  /** A name of the date-formats catalog. */
+  /**
+   * A name of the date-formats catalog. Defaults to `short` in `date`, `time` in `time` and
+   * `shortDateTime` in `dateTime`.
+   */
   format?: Name;
   /** Overrides the display's time zone for this call (instants only). */
   timeZone?: string;
 }
 
+/** The options of `list` that do not depend on `maxItems`. */
 interface ListBaseOptions extends EmptyOption, LocaleOption {
   /** `"conjunction"` (a, b y c; default), `"disjunction"` (a, b o c) or `"unit"`. */
   type?: Intl.ListFormatType;
@@ -68,7 +82,7 @@ interface ListBaseOptions extends EmptyOption, LocaleOption {
   style?: Intl.ListFormatStyle;
 }
 
-/** `more` is required whenever `maxItems` is given. */
+/** Options of `Display.list`. `more` is required whenever `maxItems` is given. */
 export type ListOptions = ListBaseOptions &
   (
     | { maxItems?: undefined; more?: undefined }
@@ -80,9 +94,14 @@ export type ListOptions = ListBaseOptions &
       }
   );
 
+/** One item of `Display.list`. Missing and blank items are skipped. */
 export type ListItem = string | null | undefined;
 
-/** Every function returns a string; `null` / `undefined` give the `empty` text. */
+/**
+ * The functions returned by `createDisplay`. Each returns a string; `null` and `undefined` give the
+ * `empty` text, and so does a value of the wrong type, with a development warning. An invalid
+ * locale tag or time zone makes `date`, `time`, `dateTime` and `list` throw a `RangeError`.
+ */
 export interface Display {
   /** Trimmed text, optionally cut to `maxLength` graphemes. */
   text(value: string | null | undefined, options?: TextOptions): string;

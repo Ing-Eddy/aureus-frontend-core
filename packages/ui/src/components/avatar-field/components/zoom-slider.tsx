@@ -1,13 +1,19 @@
 import { SliderBase } from "@/internal/components";
 import { MAX_ZOOM, MIN_ZOOM } from "../utils";
 
+/** Props of `ZoomSlider`. */
 export interface ZoomSliderProps {
+  /** Current zoom. */
   value: number;
+  /** Called with the new zoom. */
   onValueChange: (value: number) => void;
   /** Accessible name of the slider (on its thumb, the element with `role="slider"`). */
   label: string;
+  /** Locale of the value text. */
   locale?: string;
+  /** Disables the slider. */
   disabled?: boolean;
+  /** Extra classes of the slider. */
   className?: string;
 }
 

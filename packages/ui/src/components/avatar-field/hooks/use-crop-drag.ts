@@ -1,16 +1,24 @@
 import { type KeyboardEvent, type PointerEvent, useCallback, useRef } from "react";
 
+/** Options of `useCropDrag`. */
 export interface UseCropDragOptions {
+  /** Current zoom, which the keys step from. */
   zoom: number;
+  /** Moves the image, in fractions of the window. */
   moveBy: (dx: number, dy: number) => void;
+  /** Sets the zoom. */
   zoomTo: (zoom: number) => void;
+  /** Centres the image. */
   center: () => void;
+  /** Ignores pointer and keys. */
   disabled: boolean;
 }
 
 /** Step of an arrow key, and of Shift + arrow, as a fraction of the window. */
 export const MOVE_STEP = 0.02;
+/** Step of Shift + arrow. */
 export const LARGE_MOVE_STEP = 0.1;
+/** Zoom change of the `+` and `-` keys. */
 export const ZOOM_STEP = 0.1;
 
 /**

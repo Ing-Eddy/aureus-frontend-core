@@ -1,11 +1,20 @@
 import type { ReactNode, Ref } from "react";
 import { cn } from "@/shadcn/lib/utils";
 
+/** Props of `FileItems`. */
 export interface FileItemsProps {
+  /** Rows or tiles. */
   layout: "list" | "grid";
   /** The rendered items, with their ids as keys. */
-  items: { id: string; node: ReactNode }[];
+  items: {
+    /** The item's id, used as key. */
+    id: string;
+    /** Its rendered content. */
+    node: ReactNode;
+  }[];
+  /** Reaches the list element. */
   containerRef?: Ref<HTMLUListElement>;
+  /** Extra classes of the list. */
   className?: string;
 }
 

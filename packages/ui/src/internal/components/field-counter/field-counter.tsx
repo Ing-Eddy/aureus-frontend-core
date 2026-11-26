@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/shadcn/lib/utils";
 
+/** Props of `FieldCounter`. */
 export interface FieldCounterProps {
   /** Current number of characters. */
   count: number;
@@ -12,6 +13,7 @@ export interface FieldCounterProps {
   announcement: string;
   /** Delay before the live region announces a change, in ms. */
   announceDelay?: number;
+  /** Extra classes of the visible counter. */
   className?: string;
 }
 

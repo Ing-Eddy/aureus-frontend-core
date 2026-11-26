@@ -2,12 +2,17 @@ import { cn } from "@/shadcn/lib/utils";
 import type { SliderMark } from "../types";
 import { percentOf, positionAt } from "../utils";
 
+/** What ticks and labels need to place each mark. */
 interface SliderMarksCommon {
   /** Visible marks: within the limits, sorted and unique (see `visibleMarks`). */
   marks: readonly SliderMark[];
+  /** Lowest value of the track. */
   min: number;
+  /** Highest value of the track. */
   max: number;
+  /** Direction of the track. */
   orientation: "horizontal" | "vertical";
+  /** Extra classes of the layer. */
   className?: string;
 }
 
@@ -46,7 +51,9 @@ export function SliderMarkTicks({ marks, min, max, orientation, className }: Sli
   );
 }
 
+/** Props of `SliderMarkLabels`. */
 export interface SliderMarkLabelsProps extends SliderMarksCommon {
+  /** Extra classes of each label. */
   labelClassName?: string;
 }
 

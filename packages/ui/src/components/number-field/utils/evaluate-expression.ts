@@ -1,13 +1,28 @@
 import type { NumberSymbols } from "./number-locale";
 import { parseNumber } from "./parse-number";
 
-export type ExpressionResult = { ok: true; value: number } | { ok: false };
+/** The outcome of `evaluateExpression`. */
+export type ExpressionResult =
+  | {
+      /** Whether the expression is valid. */
+      ok: true;
+      /** Its value, always finite. */
+      value: number;
+    }
+  | { ok: false };
 
+/** One piece of an expression. */
 type Token =
-  | { type: "number"; value: number }
+  | {
+      /** What the token is. */
+      type: "number";
+      /** The number, the operator (`neg` is the unary minus) or the parenthesis. */
+      value: number;
+    }
   | { type: "operator"; value: "+" | "-" | "*" | "/" | "neg" }
   | { type: "paren"; value: "(" | ")" };
 
+/** Higher binds tighter. */
 const PRECEDENCE = { "+": 1, "-": 1, "*": 2, "/": 2, neg: 3 } as const;
 
 /**
@@ -20,6 +35,7 @@ export function isExpression(text: string): boolean {
   return /[+\-*/()−×÷]/.test(trimmed.slice(1));
 }
 
+/** The tokens of an expression, or `undefined` for a character or number that is not valid. */
 function tokenize(source: string, symbols: NumberSymbols): Token[] | undefined {
   const tokens: Token[] = [];
   let index = 0;
@@ -60,10 +76,15 @@ function tokenize(source: string, symbols: NumberSymbols): Token[] | undefined {
   return tokens;
 }
 
+/** `char` escaped to be used inside a regular expression. */
 function escapeRegExp(char: string) {
   return char.replace(/[\\^$.*+?()[\]{}|-]/g, "\\$&");
 }
 
+/**
+ * Reorders the tokens to reverse Polish notation (shunting-yard), or `undefined` for unmatched
+ * parentheses.
+ */
 function toRpn(tokens: Token[]): Token[] | undefined {
   const output: Token[] = [];
   const stack: Token[] = [];

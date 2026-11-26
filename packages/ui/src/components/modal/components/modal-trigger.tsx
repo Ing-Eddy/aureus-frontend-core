@@ -6,7 +6,14 @@ import type { ModalTriggerProps } from "../types";
 
 /**
  * Opens and closes the modal (reason `"trigger"`). It is rendered outside the dialog and drawer
- * primitives, so it keeps its DOM node when the mode changes, and focus returns to it on close.
+ * primitives, so it keeps its DOM node when the mode changes, and focus returns to it on close. An
+ * `onClick` that prevents the default stops the toggle.
+ *
+ * ```tsx
+ * <ModalTrigger asChild>
+ *   <Button>{t("users.create")}</Button>
+ * </ModalTrigger>
+ * ```
  */
 export function ModalTrigger({ asChild = false, onClick, ref, ...props }: ModalTriggerProps) {
   const context = useModalContext("ModalTrigger");

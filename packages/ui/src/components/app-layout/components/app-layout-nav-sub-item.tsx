@@ -10,9 +10,14 @@ import { AppLayoutNavBadge } from "./app-layout-nav-badge";
 import { AppLayoutNavControl, useResolvedActive } from "./app-layout-nav-control";
 
 /**
- * A row inside an `AppLayoutNavSubmenu`, with the same options as an item. It reports whether it
- * is active, so the submenu is marked active and opens. While the sidebar is collapsed it is shown
- * in the submenu's flyout menu, without badge or actions.
+ * A row inside an `AppLayoutNavSubmenu`, with the options of an item except `tooltip`. It reports
+ * whether it is active, so the submenu is marked active and opens. While the sidebar is collapsed
+ * it is shown in the submenu's flyout menu, without badge or actions; `asChild`, `className` and
+ * other element attributes are not applied there.
+ *
+ * ```tsx
+ * <AppLayoutNavSubItem label={t("nav.reports")} href="/sales/reports" />
+ * ```
  */
 export function AppLayoutNavSubItem({
   label,

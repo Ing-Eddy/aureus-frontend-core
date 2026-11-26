@@ -1,11 +1,16 @@
 import { type RefObject, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
+/** Options of `useTextareaAutosize`. */
 export interface UseTextareaAutosizeOptions {
+  /** The textarea to size. */
   ref: RefObject<HTMLTextAreaElement | null>;
+  /** Smallest height, in lines. */
   minRows: number;
+  /** Largest height, in lines, after which it scrolls; `Infinity` for no limit. */
   maxRows: number;
 }
 
+/** The number of a computed CSS length (`"12px"` → 12), or 0. */
 const px = (value: string) => Number.parseFloat(value) || 0;
 
 /**

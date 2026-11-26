@@ -24,6 +24,10 @@ import { useCheckboxWarnings } from "./hooks";
  * A checkbox with the shared field layout. The value is `boolean` by default, or the custom
  * `checkedValue`/`uncheckedValue`. `label` sits above, as in every field; `checkboxLabel` sits
  * beside the box. Every option is opt-in and there are no default texts.
+ *
+ * ```tsx
+ * <CheckboxField checkboxLabel={t("auth.remember")} value={remember} onValueChange={setRemember} />
+ * ```
  */
 export function CheckboxField(
   props: CheckboxFieldBaseProps & FieldTexts & CheckboxBooleanValueProps,

@@ -11,6 +11,11 @@ function firstEnabledBox(container: HTMLElement) {
 /**
  * `CheckboxGroupField` bound to the surrounding react-hook-form form. Render it inside a
  * `FormProvider`: the form holds a `string[]`, and its validation message is shown as helper text.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <CheckboxGroupControl name="permissions" label={t("user.permissions")} options={permissions} />
+ * ```
  */
 export function CheckboxGroupControl({
   name,

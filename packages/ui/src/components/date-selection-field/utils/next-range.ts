@@ -2,10 +2,13 @@ import { addDaysIso, compareIso, daysBetweenInclusive } from "@/internal/utils/h
 
 /** A range being chosen: `to` is `null` until its end is chosen. */
 export interface DateRangeValue {
+  /** First day, `YYYY-MM-DD`. */
   from: string;
+  /** Last day, or `null` while it is not chosen. */
   to: string | null;
 }
 
+/** The limits a range chosen in the calendar must respect. */
 export interface RangeRules {
   /** Fewest days in a range, counting both ends. */
   minDays?: number;

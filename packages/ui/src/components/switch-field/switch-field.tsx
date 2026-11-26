@@ -19,6 +19,15 @@ const helperIndent = { default: "ps-10", sm: "ps-8" } as const;
  * `boolean` by default, or the custom `checkedValue`/`uncheckedValue`. `label` sits above, as in
  * every field; `switchLabel` sits beside the switch. Every option is opt-in and there are no
  * default texts. `onBeforeChange` can confirm each change, for example after saving it.
+ *
+ * ```tsx
+ * <SwitchField
+ *   switchLabel={t("user.active")}
+ *   value={active}
+ *   onValueChange={setActive}
+ *   onBeforeChange={(next) => next || confirmDeactivation()}
+ * />
+ * ```
  */
 export function SwitchField(props: SwitchBooleanProps): ReactElement;
 /** With custom values: the value type is inferred from `checkedValue` and `uncheckedValue`. */

@@ -3,6 +3,7 @@ export function attributeSelector(name: string, value: string): string {
   return `[${name}="${value.replace(/["\\]/g, "\\$&")}"]`;
 }
 
+/** Elements that handle their own clicks and keys. */
 const INTERACTIVE =
   "button, a[href], input, select, textarea, label, [role=checkbox], [role=menuitem], [role=separator], [data-slot=resize-handle]";
 

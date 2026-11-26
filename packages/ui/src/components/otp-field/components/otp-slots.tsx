@@ -43,13 +43,21 @@ function OtpMaskedSlot({
   );
 }
 
+/** Props of `OtpSlots`. */
 export interface OtpSlotsProps {
+  /** Slot indexes of each block, in order. */
   blocks: number[][];
+  /** Shows dots instead of the characters. */
   masked: boolean;
+  /** Draws the boxes as invalid. */
   invalid?: boolean;
+  /** Content between blocks. Defaults to shadcn's dash. */
   separator?: ReactNode;
+  /** Extra classes of the container. */
   className?: string;
+  /** Extra classes of each box. */
   slotClassName?: string;
+  /** Extra classes of each separator. */
   separatorClassName?: string;
 }
 

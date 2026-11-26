@@ -3,9 +3,13 @@ import type { ToggleValue } from "@/internal/types";
 import { isDev } from "@/internal/utils/constants";
 import { useControllableState } from "./use-controllable-state";
 
+/** Options of `useToggleValue`. */
 export interface UseToggleValueOptions<V extends ToggleValue> {
+  /** Controlled value. */
   value?: V;
+  /** Initial value when uncontrolled. Defaults to `uncheckedValue`. */
   defaultValue?: V;
+  /** Called with every requested change. */
   onValueChange?: (value: V) => void;
   /** Value when checked. Defaults to `true`. */
   checkedValue?: V;
@@ -16,8 +20,9 @@ export interface UseToggleValueOptions<V extends ToggleValue> {
 }
 
 /**
- * The checkbox value: controlled or uncontrolled, mapped between the box's checked state and the
- * values the consumer stores (`true`/`false` by default, or custom values).
+ * The value of a two-state control (checkbox or switch): controlled or uncontrolled, mapped between
+ * its checked state and the values the consumer stores (`true`/`false` by default, or custom
+ * values). A value that matches neither is shown unchecked, with a development warning.
  */
 export function useToggleValue<V extends ToggleValue>({
   value,

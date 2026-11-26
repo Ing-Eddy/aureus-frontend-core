@@ -5,11 +5,26 @@ import type { FileItem } from "@/internal/types";
 import { mapControllerToValueField } from "@/internal/utils/helpers";
 import type { AvatarControlProps } from "./avatar-control-types";
 
+/** The avatar's value: a photo item or `null`. */
 type PhotoValue = FileItem<unknown> | null;
 
 /**
  * `AvatarField` bound to the surrounding react-hook-form form. Render it inside a `FormProvider`:
  * the form holds the photo item (or `null`), and its validation message is shown as helper text.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <AvatarControl
+ *   name="photo"
+ *   label={t("user.photo")}
+ *   getFileInfo={(stored: Attachment) => ({ name: stored.name, url: stored.url })}
+ *   chooseLabel={t("avatar.choose")}
+ *   changeLabel={t("avatar.change")}
+ *   inspectLabel={(name) => t("avatar.view", { name })}
+ *   dialogTitle={t("avatar.title")}
+ *   closeLabel={t("common.close")}
+ * />
+ * ```
  */
 export function AvatarControl<E = unknown>(props: AvatarControlProps<E>): ReactElement;
 export function AvatarControl({

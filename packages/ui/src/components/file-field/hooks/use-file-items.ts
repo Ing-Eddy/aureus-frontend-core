@@ -6,10 +6,15 @@ import { toFileList } from "../utils";
 /** A file field's value: one item or `null` without `multiple`, an array with it. */
 export type FileValue<E> = FileItem<E> | FileItem<E>[] | null;
 
+/** Options of `useFileItems`. */
 export interface UseFileItemsOptions<E> {
+  /** An array value, or one item. */
   multiple: boolean;
+  /** Controlled value. */
   value?: FileValue<E>;
+  /** Initial value when uncontrolled. */
   defaultValue?: FileValue<E>;
+  /** Called with the whole new value. */
   onValueChange?: (value: FileValue<E>) => void;
 }
 

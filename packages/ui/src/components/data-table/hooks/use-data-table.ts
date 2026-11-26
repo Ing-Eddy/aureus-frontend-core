@@ -10,6 +10,10 @@ import {
 } from "../utils";
 import type { DataTableState } from "./use-table-state";
 
+/**
+ * The table's own columns. Their pinning follows the consumer's pins and never appears in the
+ * public pinning state.
+ */
 const RESERVED = new Set([SELECT_COLUMN_ID, EXPAND_COLUMN_ID, ACTIONS_COLUMN_ID]);
 
 /** TanStack keeps only selected ids (`true`); the public type also accepts `false` entries. */

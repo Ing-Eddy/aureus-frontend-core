@@ -4,9 +4,11 @@ import { Button } from "@/shadcn/ui/button";
 import { useModalContext } from "../hooks";
 import { closeButtonClassName } from "../utils";
 
+/** Props of `ModalCloseButton`. */
 export interface ModalCloseButtonProps {
   /** Accessible name, from `closeLabel`. */
   label: string | undefined;
+  /** The `closeButtonClassName` of `ModalContent`. */
   className?: string;
 }
 

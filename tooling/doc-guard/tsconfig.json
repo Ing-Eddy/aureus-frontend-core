@@ -1,0 +1,7 @@
+{
+  "extends": "@aureus-core/tsconfig/base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["src", "*.config.ts"]
+}

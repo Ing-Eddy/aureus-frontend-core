@@ -6,15 +6,20 @@ import { choiceStyles } from "./choice-styles";
 
 /** Content for each state of the switch, such as `{ on: "Yes", off: "No" }`. */
 export interface SwitchStateContent {
+  /** Shown while the switch is on. */
   on: ReactNode;
+  /** Shown while the switch is off. */
   off: ReactNode;
 }
 
+/** Props of `SwitchBox`: Radix's switch, plus what shadcn's cannot render inside it. */
 export type SwitchBoxProps = Omit<
   ComponentProps<typeof SwitchPrimitive.Root>,
   "checked" | "children"
 > & {
+  /** Whether the switch is on. */
   checked: boolean;
+  /** shadcn's switch size. Defaults to `"default"`. */
   size?: "default" | "sm";
   /** Shows a spinner in the thumb (loading, or a change waiting for confirmation). */
   busy?: boolean;
@@ -22,7 +27,9 @@ export type SwitchBoxProps = Omit<
   thumbIcons?: SwitchStateContent;
   /** Decorative text after the switch for each state. */
   stateLabels?: SwitchStateContent;
+  /** Extra classes of the thumb. */
   thumbClassName?: string;
+  /** Extra classes of the state label. */
   stateLabelClassName?: string;
 };
 

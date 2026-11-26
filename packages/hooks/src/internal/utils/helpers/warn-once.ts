@@ -1,5 +1,6 @@
 import { isDev } from "../constants";
 
+/** The keys already warned about, kept for the life of the page. */
 const warned = new Set<string>();
 
 /**

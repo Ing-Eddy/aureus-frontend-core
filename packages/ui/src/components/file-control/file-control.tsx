@@ -8,6 +8,7 @@ import type {
   FileControlSingleProps,
 } from "./file-control-types";
 
+/** A file field's value: one item, a list or `null`. */
 type FileValue = FileItem<unknown> | FileItem<unknown>[] | null;
 
 /**
@@ -15,8 +16,24 @@ type FileValue = FileItem<unknown> | FileItem<unknown>[] | null;
  * the form holds the file items (`[]` or `null` when empty), and its validation message is shown
  * as helper text. With `upload`, a schema can block the submit while uploads are pending
  * (`hasPendingUploads`).
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <FileControl
+ *   name="logo"
+ *   label={t("company.logo")}
+ *   accept="image/*"
+ *   chooseLabel={t("files.choose")}
+ *   removeLabel={(name) => t("files.remove", { name })}
+ *   getFileInfo={(stored: Attachment) => ({ name: stored.name, url: stored.url })}
+ * />
+ * ```
  */
 export function FileControl<E = unknown>(props: FileControlMultipleProps<E>): ReactElement;
+/**
+ * Without `multiple`: the form stores one item or `null`. See the first signature for the whole
+ * behaviour.
+ */
 export function FileControl<E = unknown>(props: FileControlSingleProps<E>): ReactElement;
 export function FileControl({
   name,

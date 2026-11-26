@@ -6,8 +6,10 @@ export function toPosixPath(path: string): string {
     .replace(/\/+$/, "");
 }
 
+/** The folder names of a path, with empty segments removed. */
 const splitSegments = (path: string) => toPosixPath(path).split("/").filter(Boolean);
 
+/** Compiled pattern segments: a scan tests the same few against every folder. */
 const segmentCache = new Map<string, RegExp>();
 
 /** A pattern segment as a regular expression: `*` matches any characters except `/`. */
@@ -21,6 +23,7 @@ function segmentRegExp(segment: string): RegExp {
   return regExp;
 }
 
+/** Whether the path's segments match the pattern's, trying every length for each `**`. */
 function matchSegments(pattern: readonly string[], path: readonly string[]): boolean {
   if (pattern.length === 0) return path.length === 0;
   const [head, ...rest] = pattern;

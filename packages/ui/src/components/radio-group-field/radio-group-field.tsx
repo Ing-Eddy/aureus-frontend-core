@@ -16,6 +16,18 @@ import type { RadioGroupFieldProps } from "./types";
  * A group of radios with the shared field layout: exactly one option can be chosen. The value is
  * `string | null` (or the other option's text). Every extra is opt-in and there are no default
  * texts. Keyboard: one tab stop, arrows move and select (Radix radio group).
+ *
+ * ```tsx
+ * <RadioGroupField
+ *   label={t("order.delivery")}
+ *   options={[
+ *     { value: "pickup", label: t("order.pickup") },
+ *     { value: "shipping", label: t("order.shipping") },
+ *   ]}
+ *   defaultValue="pickup"
+ *   appearance="card"
+ * />
+ * ```
  */
 export function RadioGroupField(props: RadioGroupFieldProps) {
   const {

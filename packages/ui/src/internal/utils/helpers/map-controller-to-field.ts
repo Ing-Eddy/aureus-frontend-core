@@ -4,14 +4,19 @@ import { mergeRefs } from "./merge-refs";
 
 /** What react-hook-form's `Controller` passes to its `render` function. */
 export interface ControllerContext {
+  /** The field's value and handlers. */
   field: ControllerRenderProps<FieldValues, string>;
+  /** The field's validation state. */
   fieldState: ControllerFieldState;
 }
 
 /** Props of the field that the control composes with react-hook-form's own handlers. */
 export interface ComposableFieldProps<E extends HTMLElement> {
+  /** The consumer's handler, run after the form stores the value. */
   onChange?: (event: ChangeEvent<E>) => void;
+  /** The consumer's handler, run after the form marks the field as touched. */
   onBlur?: (event: FocusEvent<E>) => void;
+  /** The consumer's ref, set together with the form's. */
   ref?: Ref<E>;
 }
 

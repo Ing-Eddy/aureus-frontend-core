@@ -23,6 +23,7 @@ import {
   writeIfChanged,
 } from "./utils/helpers";
 
+/** Names quoted and separated by commas, for error messages. */
 const quoteList = (values: readonly string[]) => values.map((value) => `"${value}"`).join(", ");
 
 /** Throws when `typesFrom` or `defaultNamespace` name something that was not discovered. */

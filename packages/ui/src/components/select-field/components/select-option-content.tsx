@@ -6,8 +6,14 @@ import type { SelectOption } from "../types";
 import { selectStyles } from "./styles";
 
 /** Wraps the label text (Base UI Select needs `Select.ItemText` for typeahead). */
-export type TextWrapper = ComponentType<{ children: ReactNode; className?: string }>;
+export type TextWrapper = ComponentType<{
+  /** The label. */
+  children: ReactNode;
+  /** Classes of the text element. */
+  className?: string;
+}>;
 
+/** The wrapper used where no special text element is needed. */
 const PlainText: TextWrapper = ({ children, className }) => (
   <span className={className}>{children}</span>
 );

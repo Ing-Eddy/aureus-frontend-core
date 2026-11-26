@@ -2,17 +2,21 @@ import type { ReactNode } from "react";
 
 /** A file picked in this session and not sent yet. */
 export interface NewFileItem {
+  /** Tells a file picked here (`"new"`) from a stored one (`"existing"`). */
   kind: "new";
   /** Stable while the field is mounted; used for keys, uploads and reordering. */
   id: string;
+  /** The picked file, after `transform` when there is one. */
   file: File;
 }
 
 /** A file the backend already stores, described by the backend's own data. */
 export interface ExistingFileItem<E> {
+  /** Always `"existing"` for a file the backend stores. */
   kind: "existing";
   /** Stable id. Build existing items with `toExistingFile`/`toExistingFiles` to get one. */
   id: string;
+  /** The backend's description of the file, read through `getFileInfo`. */
   data: E;
 }
 
@@ -42,7 +46,12 @@ export type FileRejectionReason =
 
 /** A file that did not enter the value, with every reason. */
 export interface FileRejection {
+  /** The file as it was picked, before any `transform`. */
   file: File;
+  /**
+   * Every restriction it broke. `"count"` and `"total-size"` are only checked for a file that
+   * passes the others.
+   */
   reasons: FileRejectionReason[];
 }
 
@@ -56,6 +65,9 @@ export interface FileUploadContext {
 
 /** The state of one item's immediate upload. */
 export interface FileUploadState {
+  /**
+   * `"uploading"` while the request runs, `"error"` after it fails. A finished upload has no state.
+   */
   status: "uploading" | "error";
   /** From 0 to 100. */
   progress: number;

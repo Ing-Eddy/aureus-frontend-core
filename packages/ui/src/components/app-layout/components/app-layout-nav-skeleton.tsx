@@ -5,7 +5,16 @@ import { NavListContext } from "../hooks";
 import type { AppLayoutNavSkeletonProps } from "../types";
 import { skeletonClassName } from "../utils";
 
-/** A loading placeholder for a navigation row. Decorative; its width is fixed by `width`. */
+/**
+ * A loading placeholder for a navigation row. Decorative; its width is fixed by `width`.
+ *
+ * ```tsx
+ * <AppLayoutNavGroup>
+ *   <AppLayoutNavSkeleton showIcon />
+ *   <AppLayoutNavSkeleton showIcon width="50%" />
+ * </AppLayoutNavGroup>
+ * ```
+ */
 export function AppLayoutNavSkeleton({
   showIcon = false,
   width = "70%",

@@ -7,7 +7,9 @@ import {
   FileVideoIcon,
 } from "lucide-react";
 
+/** MIME types shown with the archive icon. */
 const archive = /zip|rar|7z|tar|gzip|compressed/;
+/** MIME types shown with the document icon. */
 const text = /pdf|text|word|document|sheet|excel|csv|presentation|rtf|json/;
 
 /** A decorative icon for a file's MIME type. */

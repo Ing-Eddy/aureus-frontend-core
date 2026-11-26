@@ -2,7 +2,9 @@ import { HMR_UPDATE_EVENT } from "@/internal/utils/constants";
 import { toPosixPath } from "./match-glob";
 import type { ScanResult } from "./scan-namespaces";
 
+/** Options of `renderVirtualModule`. */
 export interface RenderVirtualModuleOptions {
+  /** Exposed to the runtime as `resources.defaultNamespace`; omitted when there is none. */
   readonly defaultNamespace?: string | undefined;
   /** Adds the `import.meta.hot` listener that feeds `onUpdate`. Development only. */
   readonly dev: boolean;

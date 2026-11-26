@@ -6,6 +6,7 @@
  * so content scrolling under them never shows through.
  */
 @layer components {
+  /* The color of each cell state, from the theme tokens. */
   :where([data-slot="data-table"]) {
     --dt-stripe: color-mix(in oklab, var(--muted) 45%, transparent);
     --dt-hover: color-mix(in oklab, var(--muted) 80%, transparent);
@@ -14,6 +15,10 @@
     --dt-crossing: color-mix(in oklab, var(--primary) 20%, transparent);
   }
 
+  /*
+   * The states, from weakest to strongest: a later rule wins. The crossing cell of a marked row
+   * and a marked column also gets an inner ring.
+   */
   :where([data-slot="data-table"] tbody tr[data-stripe] > td) {
     --dt-cell-bg: var(--dt-stripe);
   }
@@ -35,6 +40,7 @@
     box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent);
   }
 
+  /* Every cell paints the state that applies to it; opaque cells paint it over the background. */
   :where([data-slot="data-table"] :is(th, td)) {
     background-color: var(--dt-cell-bg, transparent);
   }

@@ -21,14 +21,20 @@ export function hasVisibleActions(actions: AppLayoutNavActions | undefined, coll
   return !collapsed && !!actions && actions.items.some((action) => !action.hidden);
 }
 
-/** A row's "more actions" button and its menu. Hidden while collapsed or with no visible action. */
+/**
+ * A row's "more actions" button and its menu. Hidden while collapsed or with no visible action. The
+ * menu opens below the button in the sheet, and towards the content beside the sidebar.
+ */
 export function AppLayoutNavActionsMenu({
   actions,
   showOnHover,
   sub = false,
 }: {
+  /** The menu's button name and entries. */
   actions: AppLayoutNavActions;
+  /** Shows the button only on hover or focus, on devices that can hover. */
   showOnHover: boolean;
+  /** Places the button for a sub-item row, which is shorter. Defaults to `false`. */
   sub?: boolean;
 }) {
   const { direction, physicalSide } = useAppLayoutContext("AppLayoutNavItem");

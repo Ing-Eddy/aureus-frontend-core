@@ -25,8 +25,11 @@ export function fieldTextChecks({
 
 /** The props that can give a field's input an accessible name. */
 export interface InputNameSources {
+  /** A visible label. */
   label?: unknown;
+  /** The accessible name, for a field without a visible label. */
   "aria-label"?: string;
+  /** Ids of the elements that name the field. */
   "aria-labelledby"?: string;
 }
 

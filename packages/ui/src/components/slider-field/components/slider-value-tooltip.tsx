@@ -1,8 +1,12 @@
 import { cn } from "@/shadcn/lib/utils";
 
+/** Props of `SliderValueTooltip`. */
 export interface SliderValueTooltipProps {
+  /** The formatted value. */
   text: string;
+  /** Direction of the track. */
   orientation: "horizontal" | "vertical";
+  /** Extra classes of the tooltip. */
   className?: string;
 }
 

@@ -1,3 +1,4 @@
+/** Decimal units, largest first. */
 const units = [
   { unit: "gigabyte", size: 1e9 },
   { unit: "megabyte", size: 1e6 },

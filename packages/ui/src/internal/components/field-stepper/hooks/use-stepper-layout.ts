@@ -1,5 +1,6 @@
 import { useMediaQuery } from "@/internal/hooks";
 
+/** Where the step buttons go: stacked at the end, or one at each side. */
 export type StepperLayout = "stacked" | "split";
 
 /**

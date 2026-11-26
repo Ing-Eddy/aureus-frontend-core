@@ -8,6 +8,11 @@ import type { DateTimeControlProps } from "./date-time-control-types";
  * the form holds the ISO string (`null` while empty or incomplete), a missing value behaves as
  * `null`, and the validation message is shown as helper text. Opening the calendar does not mark
  * the field as touched.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>. The form stores "HH:mm".
+ * <DateTimeControl name="opensAt" label={t("store.opensAt")} mode="time" minuteStep={15} />
+ * ```
  */
 export function DateTimeControl({
   name,

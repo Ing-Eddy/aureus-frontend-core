@@ -26,7 +26,23 @@ import {
 } from "../utils";
 import { AppLayoutLink } from "./app-layout-link";
 
-type Entry = { kind: "item"; item: AppLayoutBreadcrumbItem; index: number } | { kind: "ellipsis" };
+/**
+ * One position of the shown trail: an item with its index in the whole trail, or the place of the
+ * menu of hidden items.
+ */
+type Entry =
+  | {
+      /** An item of the trail. */
+      kind: "item";
+      /** The item shown. */
+      item: AppLayoutBreadcrumbItem;
+      /** Its position in the whole trail, which decides whether it is the current page. */
+      index: number;
+    }
+  | {
+      /** The menu of the hidden middle items. */
+      kind: "ellipsis";
+    };
 
 /** The visible entries: everything, or the first item, the ellipsis and the last items. */
 export function breadcrumbEntries(
@@ -45,6 +61,7 @@ export function breadcrumbEntries(
   };
 }
 
+/** An item's icon and label, shared by every way of showing it. */
 function content(item: AppLayoutBreadcrumbItem): ReactNode {
   return (
     <>
@@ -56,8 +73,17 @@ function content(item: AppLayoutBreadcrumbItem): ReactNode {
 
 /**
  * The layout's breadcrumb trail, set with `useAppLayoutBreadcrumbItems` or
- * `useAppLayoutBreadcrumb`. The last item is the current page; earlier items are links or
- * buttons. With `maxItems`, the middle items collapse into a menu named by `ellipsisLabel`.
+ * `useAppLayoutBreadcrumb`. The last item is the current page; earlier items are links or buttons.
+ * With `maxItems`, the middle items collapse into a menu named by `ellipsisLabel`. It renders
+ * nothing while the trail is empty. `AppLayoutTopbar` already includes one.
+ *
+ * ```tsx
+ * <AppLayoutBreadcrumb
+ *   label={t("layout.breadcrumb")}
+ *   maxItems={4}
+ *   ellipsisLabel={t("layout.more")}
+ * />
+ * ```
  */
 export function AppLayoutBreadcrumb({
   label,

@@ -2,18 +2,25 @@ import type { ReactNode } from "react";
 import { cn } from "@/shadcn/lib/utils";
 import { Button } from "@/shadcn/ui/button";
 
+/** One shortcut of the calendar. */
 export interface PresetsListItem {
+  /** Stable and unique among the items. */
   key: string;
+  /** Visible text of the button. */
   label: ReactNode;
   /** Its value equals the current value. */
   pressed: boolean;
+  /** Called when the button is pressed. */
   onSelect: () => void;
 }
 
+/** Props of `PresetsList`. */
 export interface PresetsListProps {
   /** Accessible name of the group, from the field's `presetsLabel`. */
   label: string | undefined;
+  /** The shortcuts, in order. */
   items: readonly PresetsListItem[];
+  /** Extra classes of the group. */
   className?: string;
 }
 

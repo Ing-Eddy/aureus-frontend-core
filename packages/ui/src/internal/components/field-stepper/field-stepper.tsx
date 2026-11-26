@@ -7,19 +7,31 @@ import {
 import { cn } from "@/shadcn/lib/utils";
 import { usePressAndHold } from "./hooks";
 
+/** Which way a step button moves the value. */
 export type StepDirection = "increment" | "decrement";
 
+/** Props of one step button. */
 interface StepButtonProps {
+  /** Which way it steps. */
   direction: StepDirection;
   /** Id of the controlled input. */
   controls: string;
+  /** Whether it can step. */
   disabled: boolean;
+  /** Called once per step, repeatedly while held. */
   onStep: (direction: StepDirection) => void;
+  /** Accessible name. */
   label: string | undefined;
+  /** Classes of the layout it belongs to. */
   className: string;
+  /** The arrow or sign shown. */
   icon: React.ReactNode;
 }
 
+/**
+ * A step button: out of the tab order (the arrow keys of the input do the same) and repeating while
+ * held.
+ */
 function StepButton({
   direction,
   controls,
@@ -47,10 +59,15 @@ function StepButton({
   );
 }
 
+/** Props of the step buttons of a number field. */
 export interface FieldStepperProps {
+  /** Id of the controlled input. */
   controls: string;
+  /** Called once per step. */
   onStep: (direction: StepDirection) => void;
+  /** `false` at the upper limit. */
   canIncrement: boolean;
+  /** `false` at the lower limit. */
   canDecrement: boolean;
   /** The field is disabled or loading. */
   disabled?: boolean;
@@ -59,7 +76,9 @@ export interface FieldStepperProps {
    * the stepper is shown; they are only `undefined` in untyped code, which gets a warning.
    */
   incrementLabel: string | undefined;
+  /** Accessible name of the decrement button. */
   decrementLabel: string | undefined;
+  /** Extra classes of the stepper. */
   className?: string;
 }
 
@@ -102,9 +121,12 @@ export function FieldStepperStacked({
   );
 }
 
+/** Props of `FieldStepperSplitButton`. */
 export interface FieldStepperSplitButtonProps
   extends Omit<FieldStepperProps, "canIncrement" | "canDecrement"> {
+  /** Which of the two buttons this is. */
   direction: StepDirection;
+  /** `false` at the limit in this direction. */
   canStep: boolean;
 }
 

@@ -15,6 +15,11 @@ function focusTarget(group: HTMLElement) {
  * `RadioGroupField` bound to the surrounding react-hook-form form. Render it inside a
  * `FormProvider`: the form holds `string | null`, and its validation message is shown as helper
  * text.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <RadioGroupControl name="delivery" label={t("order.delivery")} options={deliveryOptions} />
+ * ```
  */
 export function RadioGroupControl({
   name,

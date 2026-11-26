@@ -28,6 +28,7 @@ const pkg = JSON.parse(readFileSync(join(pkgDir, "package.json"), "utf8"));
 const failures = [];
 const fail = (check, message) => failures.push(`[${check}] ${message}`);
 
+// Every file under `dir`, however deep.
 const walk = (dir) =>
   readdirSync(dir).flatMap((entry) => {
     const path = join(dir, entry);
@@ -76,8 +77,8 @@ for (const folder of ["runtime", "internal"]) {
 const { messages } = await publint({ pkgDir, level: "warning", strict: true, pack: "pnpm" });
 for (const message of messages) fail("publint", formatMessage(message, pkg) ?? message.code);
 
-// 4. Every module resolves to ESM + types for ESM consumers (node16 and bundler).
-//    attw cannot expand wildcard exports, so the entry points are listed explicitly.
+// 4. Every entry point, the type-only `client` one included, resolves to ESM + types for ESM
+//    consumers (node16 and bundler).
 const entrypoints = [...modules, "client"].map((name) => `./${name}`);
 const esmResolutions = new Set(["node16-esm", "bundler"]);
 // attw exits before flushing large output to a pipe, so its JSON goes to a file (synchronous writes).
@@ -181,7 +182,7 @@ try {
   rmSync(clientDir, { recursive: true, force: true });
 }
 
-// 6. The tarball ships only build output and package metadata.
+// 6. The tarball ships only build output, `client.d.ts` and package metadata.
 const packed = JSON.parse(
   execFileSync("pnpm", ["pack", "--dry-run", "--json"], { cwd: pkgDir, encoding: "utf8" }),
 );

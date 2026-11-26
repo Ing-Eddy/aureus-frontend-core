@@ -2,6 +2,11 @@ import { isNil, numberFormat, resolveLocale, warnOnce } from "@/internal/utils/h
 import type { DisplayConfig, NumberOptions } from "../types";
 import { emptyText, integerOption, warnType } from "../utils/helpers";
 
+/**
+ * `Display.number`: a finite number in the locale's digits. Anything else, or options `Intl`
+ * rejects (such as an unknown currency code or locale tag), gives the `empty` text with a
+ * development warning.
+ */
 export function displayNumber(
   value: unknown,
   options: NumberOptions | undefined,

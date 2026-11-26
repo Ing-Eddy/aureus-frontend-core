@@ -2,6 +2,11 @@ import { isNil, listFormat, resolveLocale } from "@/internal/utils/helpers";
 import type { DisplayConfig, ListOptions } from "../types";
 import { emptyText, integerOption, warnType } from "../utils/helpers";
 
+/**
+ * `Display.list`: the non-blank strings joined with the locale's list conventions. Missing, blank
+ * and non-string items are skipped (non-strings with a development warning); with nothing left, the
+ * result is the `empty` text. `maxItems` only cuts the list when `more` is given too.
+ */
 export function displayList(
   values: unknown,
   options: ListOptions | undefined,

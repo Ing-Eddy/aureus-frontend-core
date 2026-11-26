@@ -6,6 +6,7 @@ export type FormatNeeds = "date" | "time" | "both";
 
 /** How one catalog name is written. Internal: consumers pick names, never definitions. */
 export interface DateFormatDefinition {
+  /** The parts the format shows. A value that lacks one of them is rejected. */
   needs: FormatNeeds;
   /** The locale's conventional form, used for every language without an exact form. */
   intl: Intl.DateTimeFormatOptions;
@@ -13,7 +14,9 @@ export interface DateFormatDefinition {
   patterns?: Readonly<Record<string, string>>;
 }
 
+/** The catalog's own type, from which the name unions are derived. */
 type Catalog = typeof dateFormatCatalog;
+/** The catalog names whose `needs` is `N`. */
 type NamesWith<N extends FormatNeeds> = {
   [K in keyof Catalog]: Catalog[K]["needs"] extends N ? K : never;
 }[keyof Catalog];
@@ -34,6 +37,7 @@ export type DateTimeFormatName = NamesWith<"both">;
  */
 export type DateInput = Date | number | string;
 
+/** Configuration of `createDateFormatter`. Both settings are optional. */
 export interface DateFormatterConfig {
   /** Tags or a getter evaluated on every call. Omitted → the runtime's default locale. */
   locale?: LocaleInput;
@@ -44,6 +48,7 @@ export interface DateFormatterConfig {
 /** Per-call overrides of the formatter's config. */
 export type DateFormatOverrides = DateFormatterConfig;
 
+/** Formats dates and times with the names of the library's catalog. */
 export interface DateFormatter {
   /**
    * The value written with a catalog format, or `null` when the value is `null`/`undefined`, is

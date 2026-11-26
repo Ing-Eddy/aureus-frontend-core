@@ -1,9 +1,13 @@
 import { type CropState, cropTransform, type ImageSize, outputSide } from "./crop-math";
 
+/** The image types an edit can export. */
 export type AvatarOutputType = "image/png" | "image/jpeg" | "image/webp";
 
+/** How `renderCrop` exports. */
 export interface RenderCropOptions {
+  /** Largest side, in pixels. */
   outputSize: number;
+  /** Image type. */
   outputType: AvatarOutputType;
   /** From 0 to 1, for JPEG and WebP. */
   outputQuality: number;
@@ -26,6 +30,7 @@ export class AvatarEditError extends Error {
   }
 }
 
+/** File extension of each output type. */
 const extensions: Record<AvatarOutputType, string> = {
   "image/png": "png",
   "image/jpeg": "jpg",

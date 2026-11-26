@@ -5,12 +5,19 @@ import { normalizeValues, type SliderLimits, sameValues } from "../utils";
 /** A slider value as the consumer sees it: a `number`, or a pair with `range`. */
 export type SliderValue = number | [number, number];
 
+/** Options of `useSliderValue`. */
 export interface UseSliderValueOptions {
+  /** Two values instead of one. */
   range: boolean;
+  /** Controlled value. */
   value?: number | readonly number[];
+  /** Initial value when uncontrolled. Defaults to the limits. */
   defaultValue?: number | readonly number[];
+  /** Called while the value changes. */
   onValueChange?: (value: SliderValue) => void;
+  /** Called when an interaction ends. */
   onValueCommit?: (value: SliderValue) => void;
+  /** What every value is normalized to. */
   limits: SliderLimits;
 }
 

@@ -26,7 +26,9 @@ export interface AvatarFieldClassNames extends FieldClassNames {
 
 /** Why an edit could not be applied: the server did not allow CORS, or rendering failed. */
 export interface AvatarEditFailure {
+  /** `"cors"` when the image's server does not allow reading it. */
   reason: "cors" | "render";
+  /** What was thrown. */
   error: unknown;
 }
 

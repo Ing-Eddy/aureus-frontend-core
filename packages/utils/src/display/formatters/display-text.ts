@@ -2,6 +2,10 @@ import { isNil, warnOnce } from "@/internal/utils/helpers";
 import type { DisplayConfig, TextOptions } from "../types";
 import { emptyText, graphemes, integerOption, truncateGraphemes, warnType } from "../utils/helpers";
 
+/**
+ * `Display.text`: the trimmed string, cut to `maxLength` graphemes. A blank string stays `""`
+ * unless `blankAsEmpty`; a value of another type gives the `empty` text with a development warning.
+ */
 export function displayText(
   value: unknown,
   options: TextOptions | undefined,

@@ -14,6 +14,10 @@ export type { DateRangeValue } from "../utils";
 export interface DateSelectionPreset<Value> {
   /** Content of the preset button. No default. */
   label: ReactNode;
+  /**
+   * The value to choose, or a function called when it is chosen (and while the popover is open, to
+   * mark it as pressed).
+   */
   value: Value | (() => Value);
 }
 

@@ -8,9 +8,18 @@ import { parseIsoDate, parseIsoDateTime, parseIsoTime } from "@/internal/utils/h
  *   move it.
  */
 export type DateValue =
-  | { kind: "instant"; date: Date }
+  | {
+      /** An instant, or the parts a wall-time string had. */
+      kind: "instant";
+      /** The moment, or the wall time held as UTC (see above). */
+      date: Date;
+    }
   | { kind: "date" | "time" | "datetime"; date: Date };
 
+/**
+ * An ISO date and time with a zone (`Z` or `±HH:mm`). The captured date and time are validated on
+ * their own, because `Date` rolls impossible days such as February 30 into the next month.
+ */
 const ZONED = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}(?::\d{2})?)(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
 /** A UTC `Date` holding a wall time; years below 100 are kept as they are. */
@@ -20,6 +29,7 @@ function wallTime(year: number, month: number, day: number, hour = 0, minute = 0
   return date;
 }
 
+/** Whether a `Date` holds a real moment. */
 const isValid = (date: Date) => !Number.isNaN(date.getTime());
 
 /** Reads `value` as a date, or returns `null` when it is not a supported, real date. */

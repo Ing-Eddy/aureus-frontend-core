@@ -6,6 +6,11 @@ import type { TextControlProps } from "./text-control-types";
 /**
  * `TextField` bound to the surrounding react-hook-form form. Render it inside a `FormProvider`:
  * it reads its value from the form and shows the form's validation message as helper text.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <TextControl name="name" label={t("customer.name")} required />
+ * ```
  */
 export function TextControl({
   name,

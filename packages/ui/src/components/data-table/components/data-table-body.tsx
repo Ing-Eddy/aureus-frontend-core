@@ -23,21 +23,32 @@ import {
 import { DataTableDetailRow } from "./data-table-detail-row";
 import { DataTableRowActions } from "./data-table-row-actions";
 
+/** Where a visible column is pinned, or `undefined` when it scrolls. */
 type PinOf = (columnId: string) => PinLayout | undefined;
 
 /** The id of a row's detail row, for the expand button's `aria-controls`. */
 const detailIdOf = (baseId: string, rowIndex: number) => `${baseId}-detail-${rowIndex}`;
 
+/**
+ * The default cell content: nothing for `null` and `undefined`, JSON for objects (a `Date` keeps
+ * JSON's quotes), and the string form of everything else.
+ */
 function asText(value: unknown): string {
   if (value === null || value === undefined) return "";
   return typeof value === "object" ? JSON.stringify(value) : String(value);
 }
 
+/**
+ * One body cell: the selection checkbox, expand button or actions menu of the table's own columns,
+ * else the consumer's `cell` or the value as text.
+ */
 function BodyCell<TData extends RowData>({
   cell,
   pin,
 }: {
+  /** The TanStack cell to draw. */
   cell: Cell<DataTableFeatures, TData, unknown>;
+  /** Its column's pin, if any. */
   pin: PinLayout | undefined;
 }) {
   const { props, highlight, titleId } = useDataTableContext<TData>();
@@ -108,13 +119,20 @@ function BodyCell<TData extends RowData>({
   );
 }
 
+/**
+ * One data row. With `onRowClick` or row highlighting it is focusable: clicks and Enter activate
+ * it, except when they come from a control inside it.
+ */
 function BodyRow<TData extends RowData>({
   row,
   index,
   pinOf,
 }: {
+  /** The TanStack row to draw. */
   row: Row<DataTableFeatures, TData>;
+  /** Its position among the shown rows, which decides the stripe. */
   index: number;
+  /** The pin of each column. */
   pinOf: PinOf;
 }) {
   const { props, highlight, rowFocus, table, tableElementRef } = useDataTableContext<TData>();
@@ -182,7 +200,12 @@ function BodyRow<TData extends RowData>({
 }
 
 /** The rows, or the loading, empty and error states. */
-export function DataTableBody<TData extends RowData>({ pinOf }: { pinOf: PinOf }) {
+export function DataTableBody<TData extends RowData>({
+  pinOf,
+}: {
+  /** The pin of each column. */
+  pinOf: PinOf;
+}) {
   const { props, table, titleId } = useDataTableContext<TData>();
   const rows = table.getRowModel().rows;
   const colSpan = table.getVisibleLeafColumns().length;

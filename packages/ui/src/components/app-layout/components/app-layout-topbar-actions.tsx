@@ -3,9 +3,16 @@ import { useAppLayoutTopbarContext } from "../hooks";
 import type { AppLayoutTopbarActionsProps } from "../types";
 
 /**
- * Renders its children in the top bar's actions area while it is mounted, from anywhere inside
- * the layout (usually a page). Several instances appear in mount order, before the top bar's own
- * `actions`. The children keep the React context of the place where they are written.
+ * Renders its children in the top bar's actions area while it is mounted, from anywhere inside the
+ * layout (usually a page). Several instances appear in mount order, before the top bar's own
+ * `actions`. The children keep the React context of the place where they are written. Without an
+ * `AppLayoutTopbar`, nothing is rendered.
+ *
+ * ```tsx
+ * <AppLayoutTopbarActions>
+ *   <Button onClick={exportInvoices}>{t("invoices.export")}</Button>
+ * </AppLayoutTopbarActions>
+ * ```
  */
 export function AppLayoutTopbarActions({ children }: AppLayoutTopbarActionsProps) {
   const { target } = useAppLayoutTopbarContext("AppLayoutTopbarActions");

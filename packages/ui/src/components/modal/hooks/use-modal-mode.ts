@@ -2,11 +2,17 @@ import { useEffect, useRef } from "react";
 import { useMediaQuery } from "@/internal/hooks";
 import type { ModalMode, ModalModeSetting } from "../types";
 
+/** Options of `useModalMode`. */
 export interface UseModalModeOptions {
+  /** The `mode` prop. */
   mode: ModalModeSetting;
+  /** Viewport width from which a responsive modal is a dialog. */
   breakpoint: number;
+  /** Keeps the current mode while `open`. */
   lockModeWhileOpen: boolean;
+  /** Whether the modal is open. */
   open: boolean;
+  /** Called when the returned mode changes, not on mount. */
   onModeChange?: (mode: ModalMode) => void;
 }
 

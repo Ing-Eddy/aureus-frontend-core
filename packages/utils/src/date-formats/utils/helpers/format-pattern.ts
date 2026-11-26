@@ -1,9 +1,26 @@
 import { dateTimeFormat, warnOnce } from "@/internal/utils/helpers";
 import { dateTokens } from "../constants";
 
-type Token = { type: "literal"; text: string } | { type: "field"; token: string };
+/** One piece of a pattern: literal text to copy, or a field to fill from the date. */
+type Token =
+  | {
+      /** Text copied to the output. */
+      type: "literal";
+      /** The text, with its quotes removed. */
+      text: string;
+    }
+  | {
+      /** A part of the date. */
+      type: "field";
+      /** The pattern letters, one of `dateTokens` (`"dd"`, `"MMM"`…). */
+      token: string;
+    };
 
-/** Splits a pattern into tokens: runs of one letter, `'quoted'` literals (`''` is a quote). */
+/**
+ * Splits a pattern into tokens: runs of one letter, and literal text, which may be `'quoted'` (`''`
+ * is a quote). A letter run that is not a token is written literally with a development warning,
+ * and an unterminated quote makes the rest of the pattern literal.
+ */
 export function tokenize(pattern: string): Token[] {
   const tokens: Token[] = [];
   const literal = (text: string) => {
@@ -52,17 +69,22 @@ export function tokenize(pattern: string): Token[] {
   return tokens;
 }
 
+/** A locale as `Intl` accepts it; `undefined` is the runtime's default. */
 type Locale = string | string[] | undefined;
 
+/** `value` with leading zeros up to `length` digits. */
 const pad = (value: number, length: number) => String(value).padStart(length, "0");
 
+/** The text of one part of a formatted date, or `""` when the formatter has no such part. */
 function partOf(formatter: Intl.DateTimeFormat, date: Date, type: Intl.DateTimeFormatPartTypes) {
   return formatter.formatToParts(date).find((part) => part.type === type)?.value ?? "";
 }
 
 /**
- * Writes `date` with a pattern. Numbers are always ASCII digits; month and weekday names and the
- * day period come from `locale`. `timeZone` is the zone the parts are read in.
+ * Writes `date` with a pattern. Numbers are always ASCII digits of the Gregorian calendar; month
+ * and weekday names and the day period come from `locale`. Each name is formatted on its own, in
+ * the locale's default calendar, so a language that inflects names inside a date gets the
+ * standalone form. `timeZone` is the zone the parts are read in.
  */
 export function formatPattern(
   date: Date,

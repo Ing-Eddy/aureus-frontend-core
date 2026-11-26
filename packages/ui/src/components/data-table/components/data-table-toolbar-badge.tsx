@@ -1,6 +1,7 @@
 import { type ReactElement, type ReactNode, useId } from "react";
 import { Badge } from "@/shadcn/ui/badge";
 
+/** Props of `DataTableToolbarBadge`. */
 export interface DataTableToolbarBadgeProps {
   /** Shown when greater than zero. */
   count: number;

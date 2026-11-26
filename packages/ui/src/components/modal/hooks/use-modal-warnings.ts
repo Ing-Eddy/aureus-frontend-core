@@ -7,12 +7,15 @@ export function useModalWarnings({
   closeButton,
   closeLabel,
 }: {
+  /** Whether the close button is on. */
   closeButton?: boolean;
+  /** Its accessible name. */
   closeLabel?: string;
 }) {
   useMissingTexts("Modal", [[closeButton && !closeLabel, "`closeButton` needs `closeLabel`"]]);
 }
 
+/** The warning for a panel without `ModalTitle`. */
 export const missingTitleWarning =
   "Modal: ModalContent has no ModalTitle, so the dialog has no accessible name.";
 

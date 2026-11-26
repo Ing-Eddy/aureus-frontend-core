@@ -2,10 +2,13 @@ import type { AppLayoutSide } from "../types";
 
 /** What `persistKey` saves: the desktop state and the side. */
 export interface PersistedLayoutState {
+  /** Whether the desktop sidebar was expanded. */
   open?: boolean;
+  /** The side the sidebar was on. */
   side?: AppLayoutSide;
 }
 
+/** `localStorage`, or `undefined` on the server and where access is blocked. */
 function storage(): Storage | undefined {
   try {
     return typeof window === "undefined" ? undefined : window.localStorage;

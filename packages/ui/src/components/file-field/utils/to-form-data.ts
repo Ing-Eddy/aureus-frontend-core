@@ -5,6 +5,11 @@ import { toFileList } from "./file-guards";
  * Appends the file of every new item under `field` to `formData` (a new one when omitted) and
  * returns it. Multipart `FormData` is the recommended way to send files: base64 is about a third
  * larger and needs the whole file in memory.
+ *
+ * ```ts
+ * const body = toFormData(values.attachments, "attachments");
+ * body.append("number", values.number);
+ * ```
  */
 export function toFormData<E>(
   value: FileItem<E> | readonly FileItem<E>[] | null | undefined,

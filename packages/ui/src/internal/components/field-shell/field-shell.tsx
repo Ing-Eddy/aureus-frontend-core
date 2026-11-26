@@ -4,14 +4,18 @@ import { cn } from "@/shadcn/lib/utils";
 import { Field } from "@/shadcn/ui/field";
 import { FieldHeader, FieldHelper } from "./components";
 
+/** Props of `FieldShell`. */
 export interface FieldShellProps
   extends Pick<
       FieldBaseProps,
       "label" | "required" | "helperText" | "error" | "errorMessage" | "className" | "classNames"
     >,
     Pick<FieldStatusInternal, "info" | "infoLabel"> {
+  /** Id of the control; the label's id is derived from it. */
   inputId: string;
+  /** Id of the helper or error text. */
   helperId: string;
+  /** Id of the info content. */
   infoId: string;
   /** `data-*` attributes from `useFieldA11y`. */
   rootProps?: Record<`data-${string}`, boolean | undefined>;
@@ -26,10 +30,15 @@ export interface FieldShellProps
    * checkbox group). `labelledByRoot` takes precedence for `aria-labelledby`.
    */
   rootAria?: {
+    /** Ids that describe the group. */
     "aria-describedby"?: string;
+    /** Marks the group as loading. */
     "aria-busy"?: boolean;
+    /** Marks the group as disabled. */
     "aria-disabled"?: boolean;
+    /** Name of a group without a label. */
     "aria-label"?: string;
+    /** Ids of the elements that name a group without a label. */
     "aria-labelledby"?: string;
   };
   /** Content at the end of the header row, before the info button. */

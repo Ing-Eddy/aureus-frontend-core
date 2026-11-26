@@ -33,6 +33,7 @@ export interface DataTableFooterContext<TData> {
 /** The built-in sort functions. */
 export type DataTableSortFnName = "alphanumeric" | "text" | "datetime" | "basic";
 
+/** What every column has, groups included. */
 interface DataTableColumnBase<TData> {
   /** The header: text, any node, or a render function. */
   header: ReactNode | ((context: DataTableHeaderContext) => ReactNode);
@@ -51,10 +52,13 @@ interface DataTableColumnBase<TData> {
   pin?: DataTablePinEdge;
   /** The footer of this column. The footer row appears when any column has one. */
   footer?: ReactNode | ((context: DataTableFooterContext<TData>) => ReactNode);
+  /** Classes of the header cell. */
   headerClassName?: string;
+  /** Classes of the body and footer cells. No effect on a group. */
   cellClassName?: string;
 }
 
+/** What the columns that render cells share (everything but groups). */
 interface DataTableLeafColumnBase<TData, TValue> extends DataTableColumnBase<TData> {
   /** The cell content. Default: the value as text. */
   cell?: (context: DataTableCellContext<TData, TValue>) => ReactNode;
@@ -64,18 +68,24 @@ interface DataTableLeafColumnBase<TData, TValue> extends DataTableColumnBase<TDa
   sortFn?: DataTableSortFnName | ((a: TData, b: TData) => number);
   /** Width in pixels (used by `resizing`). Default 150. */
   size?: number;
+  /** Smallest width in pixels while resizing. Default 20. */
   minSize?: number;
+  /** Largest width in pixels while resizing. No default: no limit. */
   maxSize?: number;
   /** Has a resize handle when `resizing` is on. Default `false`. */
   resizable?: boolean;
+  /** Only groups have child columns. */
   columns?: undefined;
 }
 
 /** A column reading `row[accessorKey]`; its id defaults to the key. */
 export type DataTableAccessorKeyColumn<TData> = {
   [Key in keyof TData & string]: DataTableLeafColumnBase<TData, TData[Key]> & {
+    /** The property of the row that holds the value. */
     accessorKey: Key;
+    /** Not used together with `accessorKey`. */
     accessorFn?: undefined;
+    /** Unique column id. Defaults to `accessorKey`. */
     id?: string;
   };
 }[keyof TData & string];
@@ -83,23 +93,39 @@ export type DataTableAccessorKeyColumn<TData> = {
 /** A column computing its value from the row. */
 export interface DataTableAccessorFnColumn<TData, TValue = unknown>
   extends DataTableLeafColumnBase<TData, TValue> {
+  /** Returns the column's value, used for sorting and search. */
   accessorFn: (row: TData, index: number) => TValue;
+  /** Not used together with `accessorFn`. */
   accessorKey?: undefined;
+  /** Unique column id. */
   id: string;
 }
 
-/** A column with no value of its own (actions, badges…). Not searchable or sortable by value. */
+/**
+ * A column with no value of its own (actions, badges…): it is not searched, and `sortable` has no
+ * effect on it.
+ */
 export interface DataTableDisplayColumn<TData> extends DataTableLeafColumnBase<TData, undefined> {
+  /** Unique column id. */
   id: string;
+  /** A display column reads no property. */
   accessorKey?: undefined;
+  /** A display column computes no value. */
   accessorFn?: undefined;
 }
 
-/** A group of columns: its header spans its children. */
+/**
+ * A group of columns: its header spans its children. It uses `header`, `label`, `subtitle` and
+ * `headerClassName`; `align`, `pin`, `hideable`, `footer` and `cellClassName` have no effect on it.
+ */
 export interface DataTableGroupColumn<TData> extends DataTableColumnBase<TData> {
+  /** Unique column id. */
   id: string;
+  /** The child columns, which may be groups too. */
   columns: readonly DataTableColumn<TData>[];
+  /** A group has no value. */
   accessorKey?: undefined;
+  /** A group has no value. */
   accessorFn?: undefined;
 }
 

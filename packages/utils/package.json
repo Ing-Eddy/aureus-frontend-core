@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "@aureus-core/doc-guard": "workspace:*",
     "@aureus-core/tsconfig": "workspace:*",
     "@types/node": "^26.6.6",
     "publint": "^0.3.25",

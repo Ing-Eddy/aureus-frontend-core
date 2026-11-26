@@ -25,11 +25,12 @@ export interface CreateI18nConfig {
   /** Forces the initial language. Language detection is off when it is given. */
   lng?: string;
   /**
-   * How the initial language is chosen when `lng` is not given. By default (or with an object):
-   * the language stored by a previous visit if it is still supported, else the first of the
-   * browser's preferred languages that matches a discovered language (`es-MX` → `es`), else
-   * `fallbackLng`; every language change is stored in `localStorage`. `false` turns detection off:
-   * the initial language is `fallbackLng` and nothing is stored.
+   * How the initial language is chosen when `lng` is not given. By default (or with an object): the
+   * language stored by a previous visit if it is still supported, else the first of the browser's
+   * preferred languages that matches a discovered language (`es-MX` → `es`), else `fallbackLng`.
+   * Every language i18next sets is stored in `localStorage`, including the one detected on the
+   * first visit. `false` turns detection off: the initial language is `fallbackLng` and nothing is
+   * stored.
    */
   detection?: false | I18nDetectionOptions;
   /**

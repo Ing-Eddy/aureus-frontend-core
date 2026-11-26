@@ -8,21 +8,35 @@ import {
 import { Button } from "@/shadcn/ui/button";
 import { ZoomSlider } from "./zoom-slider";
 
+/** The names of the toolbar's controls. */
 export interface EditorToolbarTexts {
+  /** Name of the zoom slider. */
   zoomLabel: string;
+  /** Name of the rotate-left button. */
   rotateLeftLabel: string;
+  /** Name of the rotate-right button. */
   rotateRightLabel: string;
+  /** Name of the horizontal flip button. */
   flipHorizontalLabel: string;
+  /** Name of the vertical flip button. */
   flipVerticalLabel: string;
 }
 
+/** Props of `EditorToolbar`. */
 export interface EditorToolbarProps {
+  /** Names of the controls. */
   texts: EditorToolbarTexts;
+  /** Current zoom. */
   zoom: number;
+  /** Sets the zoom. */
   zoomTo: (zoom: number) => void;
+  /** Turns 90° one way or the other. */
   rotate: (direction: 1 | -1) => void;
+  /** Mirrors on an axis. */
   flip: (axis: "x" | "y") => void;
+  /** Locale of the zoom value. */
   locale?: string;
+  /** Disables every control. */
   disabled: boolean;
 }
 

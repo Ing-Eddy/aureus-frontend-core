@@ -5,10 +5,16 @@ import type { AppLayoutMainProps } from "../types";
 import { mainClassName, mainContentClassName, mainMaxWidthClassNames } from "../utils";
 
 /**
- * The page's `main` landmark. It scrolls on its own, and its content always keeps a minimum
- * padding from every edge. When `scrollResetKey` changes, it scrolls back to the top. While its
- * content overflows it is a tab stop, so keyboard users can scroll a page without focusable
- * content; otherwise it can still receive focus from the skip link.
+ * The page's `main` landmark. It scrolls on its own, and its content always keeps a minimum padding
+ * from every edge. When `scrollResetKey` changes, it scrolls back to the top. While its content
+ * overflows it is a tab stop, so keyboard users can scroll a page without focusable content;
+ * otherwise it can still receive focus from the skip link.
+ *
+ * ```tsx
+ * <AppLayoutMain maxWidth="5xl" scrollResetKey={pathname}>
+ *   {page}
+ * </AppLayoutMain>
+ * ```
  */
 export function AppLayoutMain({
   children,

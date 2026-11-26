@@ -15,8 +15,11 @@ import type {
 import { leafColumns } from "../utils";
 import { columnId } from "../utils/column-label";
 
+/** Stable empty default of the sorting state. */
 const EMPTY_SORTING: DataTableSort[] = [];
+/** Stable empty default of the states kept by id (selection, visibility, sizing, expansion). */
 const EMPTY_RECORD = {};
+/** Stable default with nothing marked. */
 const EMPTY_HIGHLIGHT: DataTableHighlight = {};
 
 /** The pins the columns declare with `pin`. */
@@ -147,4 +150,5 @@ export function useTableState<TData extends RowData>(props: DataTableProps<TData
   };
 }
 
+/** Every state slice of one table, with its setter. */
 export type DataTableState = ReturnType<typeof useTableState>;

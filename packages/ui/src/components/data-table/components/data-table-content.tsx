@@ -22,7 +22,11 @@ import { DataTableBody } from "./data-table-body";
 import { DataTableFooterRow } from "./data-table-footer-row";
 import { DataTableHeadCell } from "./data-table-head-cell";
 
-/** The scroll container and the `<table>`: header rows, body and footer. */
+/**
+ * The scroll container and the `<table>`: header rows, body and footer. It measures the pinned
+ * columns, suspends pinning when they would cover too much of the table, and shows a shadow at each
+ * edge that hides content.
+ */
 export function DataTableContent<TData extends RowData>() {
   const { props, table, tableElementRef, titleId } = useDataTableContext<TData>();
   const resizing = props.resizing !== undefined;

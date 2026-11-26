@@ -3,6 +3,7 @@ import { useControllableState, useMediaQuery } from "@/internal/hooks";
 import type { AppLayoutProps, AppLayoutSide } from "../types";
 import { readPersistedState, writePersistedState } from "../utils";
 
+/** The `AppLayout` props that concern the sidebar's state. */
 type SidebarStateOptions = Pick<
   AppLayoutProps,
   | "open"
@@ -21,7 +22,8 @@ type SidebarStateOptions = Pick<
 /**
  * The sidebar's three states (desktop open, sheet open, side), each controllable, plus whether the
  * viewport is below the breakpoint. With `persistKey`, the stored desktop state and side are the
- * initial uncontrolled values (no change callback is called for them) and every change is saved.
+ * initial uncontrolled values (no change callback is called for them), and both are saved on mount
+ * and on every change.
  */
 export function useSidebarState({
   open: openProp,

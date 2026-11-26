@@ -1,13 +1,18 @@
 import { useId } from "react";
 
+/** The state of a field that its ids and ARIA attributes come from. */
 export interface UseFieldA11yOptions {
   /** The consumer's `id` for the input. A stable id is generated when it is missing. */
   id?: string;
   /** The consumer's own `aria-describedby`, kept first. */
   describedBy?: string;
+  /** Sets `aria-required`. */
   required?: boolean;
+  /** Disables the input and sets `aria-busy`. */
   loading?: boolean;
+  /** Disables the input. */
   disabled?: boolean;
+  /** Sets `aria-invalid`. */
   error?: boolean;
   /** Whether a helper text or error message is rendered below the input. */
   hasHelper: boolean;

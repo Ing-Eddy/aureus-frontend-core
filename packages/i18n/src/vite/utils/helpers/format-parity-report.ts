@@ -1,5 +1,6 @@
 import type { ParityFinding } from "./check-key-parity";
 
+/** Keys quoted and separated by commas, for the report. */
 const quoteList = (keys: readonly string[]) => keys.map((key) => `"${key}"`).join(", ");
 
 /**

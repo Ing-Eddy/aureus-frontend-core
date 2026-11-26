@@ -1,5 +1,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 
+/** Whether media queries can be evaluated here. */
 const hasMatchMedia = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function";
 

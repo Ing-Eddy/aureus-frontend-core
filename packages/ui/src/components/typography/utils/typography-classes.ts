@@ -29,6 +29,7 @@ export const variantClassNames: Record<TypographyVariant, string> = {
   code: "typography-code",
 };
 
+/** Text color per tone. */
 export const toneClassNames: Record<TypographyTone, string> = {
   default: "text-foreground",
   muted: "text-muted-foreground",
@@ -36,6 +37,7 @@ export const toneClassNames: Record<TypographyTone, string> = {
   destructive: "text-destructive",
 };
 
+/** Font weight per value. */
 export const weightClassNames: Record<TypographyWeight, string> = {
   regular: "font-normal",
   medium: "font-medium",
@@ -51,6 +53,7 @@ export const alignClassNames: Record<TypographyAlign, string> = {
   justify: "text-justify",
 };
 
+/** Line wrapping per value. */
 export const wrapClassNames: Record<TypographyWrap, string> = {
   balance: "text-balance",
   pretty: "text-pretty",
@@ -67,6 +70,9 @@ export const lineClampClassNames: Record<TypographyLineClamp, string> = {
   6: "line-clamp-6",
 };
 
+/** One line, cut with an ellipsis. */
 export const truncateClassName = "truncate";
+/** Italic text. */
 export const italicClassName = "italic";
+/** Digits of equal width. */
 export const tabularNumsClassName = "tabular-nums";

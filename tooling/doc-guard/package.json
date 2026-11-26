@@ -1,0 +1,23 @@
+{
+  "name": "@aureus-core/doc-guard",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Finds public exports and props of a package that have no doc comment",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "typescript-api": "npm:typescript@^5.9.3"
+  },
+  "devDependencies": {
+    "@aureus-core/tsconfig": "workspace:*",
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}

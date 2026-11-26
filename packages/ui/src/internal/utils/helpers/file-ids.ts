@@ -1,3 +1,4 @@
+/** Numbers the ids made without `crypto.randomUUID`. */
 let counter = 0;
 
 /** A unique id for a new file item: `crypto.randomUUID()` when available, a counter otherwise. */

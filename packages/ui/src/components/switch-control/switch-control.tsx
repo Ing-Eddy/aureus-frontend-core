@@ -12,6 +12,11 @@ import type {
  * `SwitchField` bound to the surrounding react-hook-form form. Render it inside a `FormProvider`:
  * the form holds `boolean` (or the custom values), and its validation message is shown as helper
  * text. With `onBeforeChange`, only confirmed changes reach the form.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <SwitchControl name="active" switchLabel={t("user.active")} />
+ * ```
  */
 export function SwitchControl(props: SwitchControlBooleanProps): ReactElement;
 /** With custom values: the stored type is inferred from `checkedValue` and `uncheckedValue`. */

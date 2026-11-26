@@ -13,6 +13,7 @@ function storage(): Storage | undefined {
   }
 }
 
+/** The remembered language, or `undefined` when there is none or storage cannot be read. */
 function readStored(key: string): string | undefined {
   try {
     return storage()?.getItem(key) ?? undefined;
@@ -21,15 +22,18 @@ function readStored(key: string): string | undefined {
   }
 }
 
+/** The browser's preferred languages, best first; empty where there is no `navigator`. */
 function browserLanguages(): readonly string[] {
   if (typeof navigator === "undefined") return [];
   if (navigator.languages && navigator.languages.length > 0) return navigator.languages;
   return navigator.language ? [navigator.language] : [];
 }
 
+/** Configuration of `createLanguageDetector`. */
 export interface LanguageDetectorOptions {
   /** The discovered languages. */
   readonly languages: readonly string[];
+  /** The `localStorage` key that holds the remembered language. */
   readonly storageKey: string;
 }
 

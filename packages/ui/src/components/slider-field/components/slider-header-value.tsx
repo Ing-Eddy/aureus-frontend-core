@@ -1,7 +1,10 @@
 import { cn } from "@/shadcn/lib/utils";
 
+/** Props of `SliderHeaderValue`. */
 export interface SliderHeaderValueProps {
+  /** The formatted value or range. */
   text: string;
+  /** Extra classes of the text. */
   className?: string;
 }
 

@@ -4,7 +4,9 @@
  * never turned into a local `Date` here.
  */
 
+/** The parts of a calendar date. */
 export interface IsoDateParts {
+  /** From 1 to 9999. */
   year: number;
   /** 1–12. */
   month: number;
@@ -12,18 +14,25 @@ export interface IsoDateParts {
   day: number;
 }
 
+/** The parts of a 24-hour time. */
 export interface IsoTimeParts {
   /** 0–23. */
   hour: number;
+  /** 0–59. */
   minute: number;
+  /** 0–59; 0 when the string has none. */
   second: number;
 }
 
+/** The parts of a date and a time together. */
 export type IsoDateTimeParts = IsoDateParts & IsoTimeParts;
 
+/** The shape of `YYYY-MM-DD`; `parseIsoDate` checks the ranges. */
 const DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+/** The shape of `HH:mm` or `HH:mm:ss`; `parseIsoTime` checks the ranges. */
 const TIME = /^(\d{2}):(\d{2})(?::(\d{2}))?$/;
 
+/** The Gregorian leap-year rule. */
 export function isLeapYear(year: number): boolean {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 }

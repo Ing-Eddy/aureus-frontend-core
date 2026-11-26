@@ -3,6 +3,7 @@ import { ControlField } from "@/internal/components";
 import { mapControllerToValueField } from "@/internal/utils/helpers";
 import type { SliderControlProps } from "./slider-control-types";
 
+/** A single value, or a pair with `range`. */
 type SliderValue = number | [number, number];
 
 /**
@@ -10,6 +11,11 @@ type SliderValue = number | [number, number];
  * the form holds a `number` (or `[low, high]` with `range`), a missing value behaves as `min` (or
  * `[min, max]`), and the validation message is shown as helper text. The form value follows the
  * thumb while it moves; `onValueCommit` still reports the end of each interaction.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <SliderControl name="discount" label={t("order.discount")} min={0} max={50} showValue="tooltip" />
+ * ```
  */
 export function SliderControl({
   name,

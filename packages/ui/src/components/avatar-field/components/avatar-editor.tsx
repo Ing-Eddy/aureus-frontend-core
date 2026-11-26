@@ -6,22 +6,33 @@ import type { CropState, ImageSize } from "../utils";
 import { CropArea } from "./crop-area";
 import { EditorToolbar, type EditorToolbarTexts } from "./editor-toolbar";
 
+/** The names of the editor's controls. */
 export interface AvatarEditorTexts extends EditorToolbarTexts {
+  /** Name of the crop area. */
   cropAreaLabel: string;
+  /** Text of the reset button. */
   resetLabel: ReactNode;
+  /** Text of the apply button. */
   applyLabel: ReactNode;
+  /** Text of the cancel button. */
   cancelLabel: ReactNode;
 }
 
+/** Props of `AvatarEditor`. */
 export interface AvatarEditorProps {
   /** The image to edit: an object URL for a picked file, or the stored photo's URL. */
   src: string;
+  /** The mask shown over the crop. */
   shape: "circle" | "square";
+  /** Names of the controls. */
   texts: AvatarEditorTexts;
+  /** Locale of the zoom value. */
   locale?: string;
+  /** Disabled or loading. */
   disabled: boolean;
   /** Renders and stores the edit; the editor waits for it. */
   onApply: (image: HTMLImageElement, size: ImageSize, state: CropState) => Promise<void>;
+  /** Leaves the editor without applying. */
   onCancel: () => void;
 }
 

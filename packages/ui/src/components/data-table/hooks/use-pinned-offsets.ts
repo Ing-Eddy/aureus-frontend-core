@@ -1,6 +1,7 @@
 import { type RefObject, useLayoutEffect, useState } from "react";
 import { attributeSelector } from "../utils";
 
+/** The measured layout of the pinned columns. */
 export interface PinnedOffsets {
   /** Inset of each pinned leaf column from its edge, by column id. */
   readonly offsets: Readonly<Record<string, number>>;
@@ -12,8 +13,10 @@ export interface PinnedOffsets {
   readonly end: number;
 }
 
+/** The result while nothing is pinned; one object, so no re-render. */
 const NONE: PinnedOffsets = { offsets: {}, widths: {}, start: 0, end: 0 };
 
+/** Whether two measures are equal, to skip a re-render. */
 function sameOffsets(a: PinnedOffsets, b: PinnedOffsets) {
   const keys = Object.keys(a.offsets);
   return (

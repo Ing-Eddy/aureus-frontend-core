@@ -6,6 +6,11 @@ import type { OtpControlProps } from "./otp-control-types";
 /**
  * `OtpField` bound to the surrounding react-hook-form form. Render it inside a `FormProvider`: the
  * form holds the code as a `string`, and its validation message is shown as helper text.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <OtpControl name="code" label={t("auth.code")} length={6} />
+ * ```
  */
 export function OtpControl({
   name,

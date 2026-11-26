@@ -1,5 +1,6 @@
 import type { AppLayoutSide } from "../types";
 
+/** A screen edge, independent of the text direction. */
 export type PhysicalSide = "left" | "right";
 
 /** The screen edge of a logical side in a text direction. */

@@ -11,11 +11,15 @@ export const FieldPopoverAnchor = PopoverAnchor;
 /** Any button that opens the popover (`asChild`), such as the summary of several days. */
 export const FieldPopoverTrigger = PopoverTrigger;
 
+/** Props of `CalendarButton`. */
 export interface CalendarButtonProps {
   /** Accessible name, from the field's `openCalendarLabel`. */
   label: string | undefined;
+  /** Whether the calendar cannot be opened. */
   disabled?: boolean;
+  /** Extra classes of the button. */
   className?: string;
+  /** Reaches the button element. */
   ref?: Ref<HTMLButtonElement>;
 }
 
@@ -39,6 +43,7 @@ export function CalendarButton({ label, disabled, className, ref }: CalendarButt
   );
 }
 
+/** Props of `FieldPopoverContent`. */
 export interface FieldPopoverContentProps {
   /** Names the dialog: the field's label id. */
   "aria-labelledby"?: string;
@@ -46,12 +51,15 @@ export interface FieldPopoverContentProps {
   "aria-label"?: string;
   /** The presets column, beside the calendar (above it in narrow viewports). */
   presets?: ReactNode;
+  /** The calendar and whatever goes beside it. */
   children: ReactNode;
   /** Return focus elsewhere than the trigger by calling `event.preventDefault()`. */
   onCloseAutoFocus?: (event: Event) => void;
   /** Called when focus leaves the content (see `useFieldFocusLeave`). */
   onBlur?: (event: FocusEvent<HTMLDivElement>) => void;
+  /** Reaches the dialog element. */
   ref?: Ref<HTMLDivElement>;
+  /** Extra classes of the dialog. */
   className?: string;
 }
 

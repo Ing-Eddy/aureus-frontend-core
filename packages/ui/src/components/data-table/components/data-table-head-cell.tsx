@@ -21,16 +21,31 @@ import {
 } from "../utils";
 import { DataTableResizeHandle } from "./data-table-resize-handle";
 
+/** The icon of a sort button for the current direction. */
 const sortIcon = { asc: ArrowUpIcon, desc: ArrowDownIcon, none: ArrowUpDownIcon } as const;
+/** TanStack's next sorting order as the direction word `sortLabel` receives. */
 const nextDirection = { asc: "ascending", desc: "descending" } as const;
 
+/** Props of `DataTableHeadCell`. */
 export interface DataTableHeadCellProps<TData extends RowData> {
+  /** The TanStack header to draw: a group, a data column or one of the table's own. */
   header: Header<DataTableFeatures, TData, unknown>;
+  /** Header rows the cell covers: a column without group spans them all. */
   rowSpan: number;
+  /** The pin of the cell, if it sticks to an edge. */
   pin: PinLayout | undefined;
 }
 
-function HeaderText({ content, subtitle }: { content: ReactNode; subtitle?: ReactNode }) {
+/** A header's content, truncated, with its optional subtitle. */
+function HeaderText({
+  content,
+  subtitle,
+}: {
+  /** The header's text or node. */
+  content: ReactNode;
+  /** Smaller text under it. */
+  subtitle?: ReactNode;
+}) {
   return (
     <span className="flex min-w-0 flex-col">
       <span className="truncate">{content}</span>

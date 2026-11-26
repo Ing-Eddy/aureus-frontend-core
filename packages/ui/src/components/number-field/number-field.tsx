@@ -18,6 +18,19 @@ import { formatEditing, getCurrencySymbol } from "./utils";
  * prop: formatting (locale, grouping, decimals, currency, prefix, suffix), negatives, custom step
  * buttons, keyboard stepping, paste, shorthand and remembered expressions. It ships no default
  * texts.
+ *
+ * ```tsx
+ * <NumberField
+ *   label={t("invoice.total")}
+ *   locale="es-BO"
+ *   currency="BOB"
+ *   decimals={2}
+ *   min={0}
+ *   stepper={false}
+ *   value={total}
+ *   onValueChange={setTotal}
+ * />
+ * ```
  */
 export function NumberField(allProps: NumberFieldProps) {
   const {

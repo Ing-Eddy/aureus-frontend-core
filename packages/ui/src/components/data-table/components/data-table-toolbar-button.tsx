@@ -3,6 +3,7 @@ import { cn } from "@/shadcn/lib/utils";
 import { Button } from "@/shadcn/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn/ui/tooltip";
 
+/** Props of `DataTableToolbarButton`: the button's, plus its name. */
 export interface DataTableToolbarButtonProps extends ComponentProps<typeof Button> {
   /** Accessible name and tooltip. */
   label: string;

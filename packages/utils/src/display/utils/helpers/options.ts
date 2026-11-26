@@ -6,6 +6,7 @@ export function emptyText(options: { empty?: string } | undefined, config: Displ
   return options?.empty ?? config.empty;
 }
 
+/** A value's type with its article, for warnings (`"an array"`). */
 function typeName(value: unknown): string {
   if (Array.isArray(value)) return "an array";
   const type = typeof value;

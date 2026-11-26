@@ -1,10 +1,15 @@
 import { useControllableState } from "@/internal/hooks";
 import { type IsoMode, isIsoValue } from "@/internal/utils/helpers";
 
+/** Options of `useDateTimeValue`. */
 export interface UseDateTimeValueOptions {
+  /** What the value holds. */
   mode: IsoMode;
+  /** Controlled value. */
   value?: string | null;
+  /** Initial value when uncontrolled. Defaults to `null`. */
   defaultValue?: string | null;
+  /** Called with every requested change. */
   onValueChange?: (value: string | null) => void;
 }
 

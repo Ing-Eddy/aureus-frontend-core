@@ -8,8 +8,11 @@ export function AppLayoutNavBadge({
   withActions,
   sub = false,
 }: {
+  /** The badge's content. */
   badge: ReactNode;
+  /** Leaves room for the actions button after the badge. */
   withActions: boolean;
+  /** Places the badge for a sub-item row, which is shorter. Defaults to `false`. */
   sub?: boolean;
 }) {
   return (

@@ -12,6 +12,7 @@ import { AppLayoutNavSeparator } from "./app-layout-nav-separator";
 import { AppLayoutNavSubItem } from "./app-layout-nav-sub-item";
 import { AppLayoutNavSubmenu } from "./app-layout-nav-submenu";
 
+/** The sub-items without the hidden ones. */
 function visibleSubItems(items: readonly AppLayoutNavSubItemEntry[]) {
   return items.filter((item) => !item.hidden);
 }
@@ -24,6 +25,9 @@ function visibleChildren(items: readonly AppLayoutNavGroupChildEntry[]) {
   );
 }
 
+/**
+ * The part for a group child: its `id` becomes the React key and its other options become props.
+ */
 function renderChild(entry: AppLayoutNavGroupChildEntry): ReactNode {
   if (entry.type === "separator") return <AppLayoutNavSeparator key={entry.id} />;
   if (entry.type === "item") {
@@ -40,7 +44,11 @@ function renderChild(entry: AppLayoutNavGroupChildEntry): ReactNode {
   );
 }
 
-/** Groups and separators, with runs of rows outside a group placed in a group without title. */
+/**
+ * The navigation's top-level nodes: groups, and separators between them. Consecutive rows outside a
+ * group are placed in a group without title, which also keeps the separators that follow its first
+ * row.
+ */
 function blocks(entries: readonly AppLayoutNavEntry[]): ReactNode[] {
   const result: ReactNode[] = [];
   let run: AppLayoutNavGroupChildEntry[] = [];
@@ -81,9 +89,24 @@ function blocks(entries: readonly AppLayoutNavEntry[]): ReactNode[] {
 }
 
 /**
- * A navigation built from a configuration array: groups, items, submenus and separators. It
- * renders the same parts as writing them by hand. Entries with `hidden` are left out, and so are
- * groups and submenus left empty. Every `id` must be unique.
+ * A navigation built from a configuration array: groups, items, submenus and separators. It renders
+ * the same parts as writing them by hand. Entries with `hidden` are left out, and so are groups and
+ * submenus left empty. Every `id` must be unique (duplicates log a development warning).
+ *
+ * ```tsx
+ * const items: AppLayoutNavEntry[] = [
+ *   { type: "item", id: "home", label: t("nav.home"), href: "/" },
+ *   {
+ *     type: "group",
+ *     id: "admin",
+ *     label: t("nav.admin"),
+ *     hidden: !isAdmin,
+ *     items: [{ type: "item", id: "users", label: t("nav.users"), href: "/users" }],
+ *   },
+ * ];
+ *
+ * <AppLayoutNav items={items} aria-label={t("layout.navigation")} />;
+ * ```
  */
 export function AppLayoutNav({ items, ...rest }: AppLayoutNavProps) {
   useAppLayoutContext("AppLayoutNav");

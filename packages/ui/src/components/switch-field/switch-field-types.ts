@@ -14,7 +14,9 @@ export type SwitchValue = ToggleValue;
 
 /** Content for each state, such as `{ on: "Yes", off: "No" }`. Both are required. */
 export interface SwitchStateContent {
+  /** Shown while the switch is on. */
   on: ReactNode;
+  /** Shown while it is off. */
   off: ReactNode;
 }
 

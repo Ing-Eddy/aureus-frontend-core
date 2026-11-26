@@ -11,11 +11,13 @@ export type TypographyElement = (typeof typographyElements)[number];
 /** Text color, from the theme's color tokens. */
 export type TypographyTone = "default" | "muted" | "primary" | "destructive";
 
+/** Font weight, from regular to bold. */
 export type TypographyWeight = "regular" | "medium" | "semibold" | "bold";
 
 /** Logical alignment: `start` and `end` follow the text direction. */
 export type TypographyAlign = "start" | "center" | "end" | "justify";
 
+/** How lines break: balanced lines, no lone last word, or a single line. */
 export type TypographyWrap = "balance" | "pretty" | "nowrap";
 
 /** Number of visible lines before the text is cut with an ellipsis. */
@@ -56,6 +58,7 @@ export type TypographyClampProps =
       lineClamp?: TypographyLineClamp;
     };
 
+/** Props of `Typography` itself, removed from the element's attributes. */
 type OwnPropKeys = keyof TypographyStyleProps | "truncate" | "lineClamp" | "as" | "asChild";
 
 /** Rendering an element: `as` changes only the element, never the style. */

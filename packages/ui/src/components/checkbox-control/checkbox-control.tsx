@@ -16,6 +16,11 @@ import type {
  * `CheckboxField` bound to the surrounding react-hook-form form. Render it inside a
  * `FormProvider`: the form holds `boolean` (or the custom values), and its validation message is
  * shown as helper text.
+ *
+ * ```tsx
+ * // Inside <FormProvider {...form}>.
+ * <CheckboxControl name="acceptsTerms" checkboxLabel={t("signup.acceptTerms")} required />
+ * ```
  */
 export function CheckboxControl(props: CheckboxControlBooleanProps): ReactElement;
 /** With custom values: the stored type is inferred from `checkedValue` and `uncheckedValue`. */

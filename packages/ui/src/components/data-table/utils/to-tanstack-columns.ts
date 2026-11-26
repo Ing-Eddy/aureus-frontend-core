@@ -9,17 +9,26 @@ import {
   SELECT_COLUMN_ID,
 } from "./data-table-features";
 
+/** A TanStack column definition with the table's features. */
 export type DataTableColumnDef<TData extends RowData> = ColumnDef<DataTableFeatures, TData>;
 
+/** Which of the table's own columns are needed. */
 export interface DisplayColumns {
+  /** The selection checkboxes. */
   select: boolean;
+  /** The expand buttons. */
   expand: boolean;
+  /** The row-actions menus. */
   actions: boolean;
 }
 
 /** TanStack renders nothing itself: the table parts render from `meta.aureus`. */
 const noRender = () => null;
 
+/**
+ * The definition of one of the table's own columns: 40px, never sorted, hidden, resized or
+ * searched.
+ */
 function displayColumn<TData extends RowData>(
   id: string,
   kind: AureusColumnKind,
@@ -36,6 +45,10 @@ function displayColumn<TData extends RowData>(
   } as DataTableColumnDef<TData>;
 }
 
+/**
+ * One consumer column (or group, recursively) as a TanStack definition. Accessor columns are always
+ * searchable, whatever their value type; sorting, hiding and resizing are opt-in.
+ */
 function toColumnDef<TData extends RowData>(
   column: DataTableColumn<TData>,
 ): DataTableColumnDef<TData> {

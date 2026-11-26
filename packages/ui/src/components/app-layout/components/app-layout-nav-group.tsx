@@ -13,6 +13,10 @@ import {
   menuCollapsedClassName,
 } from "../utils";
 
+/**
+ * The chevron of a collapsible group's title: turned towards the start while closed, mirrored in
+ * right-to-left pages.
+ */
 const chevronClassName =
   "ms-auto transition-transform duration-200 motion-reduce:transition-none group-data-[state=closed]/nav-group:-rotate-90 rtl:group-data-[state=closed]/nav-group:rotate-90";
 
@@ -20,6 +24,13 @@ const chevronClassName =
  * A list of navigation rows with an optional title. With `collapsible`, the title is a button that
  * shows or hides the rows. While the sidebar is collapsed the title is hidden, the rows are always
  * shown, and groups are separated by a line.
+ *
+ * ```tsx
+ * <AppLayoutNavGroup label={t("nav.sales")} collapsible>
+ *   <AppLayoutNavItem label={t("nav.invoices")} icon={<ReceiptIcon />} href="/invoices" />
+ *   <AppLayoutNavItem label={t("nav.customers")} icon={<UsersIcon />} href="/customers" />
+ * </AppLayoutNavGroup>
+ * ```
  */
 export function AppLayoutNavGroup({
   label,

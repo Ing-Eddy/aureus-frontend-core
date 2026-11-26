@@ -36,24 +36,38 @@ export function useCloseSheetOnNavigate(): () => void {
   };
 }
 
+/**
+ * Props of the control of a row. Other button attributes, handlers and the ref a tooltip trigger
+ * adds are passed to whichever element is rendered.
+ */
 export interface AppLayoutNavControlProps
   extends Omit<ComponentPropsWithRef<"button">, "onSelect" | "children"> {
+  /** The visible text and the accessible name. */
   label: string;
+  /** Decorative icon before the label. */
   icon?: ReactNode;
+  /** Renders a link with the layout's `renderLink`, unless `disabled`. */
   href?: string;
+  /** Called when the row is chosen. */
   onSelect?: () => void;
+  /** Whether the row is the current page, already resolved. */
   active: boolean;
+  /** Renders a disabled button, also when there is an `href`. Not applied with `asChild`. */
   disabled?: boolean;
   /** With `asChild`, the consumer's element that becomes the control. */
   asChild?: boolean;
+  /** With `asChild`, the element to render as the control. */
   children?: ReactNode;
+  /** Whether the row is a top-level item or a sub-item, which picks its look and slot name. */
   kind: "item" | "sub";
+  /** Shows only the icon or letter; the label is kept for readers. */
   collapsed: boolean;
 }
 
 /**
- * The control of a row: a link (`href`), a button, or the consumer's element (`asChild`), with
- * the icon (or letter) and the label. Choosing it calls `onSelect` and may close the sheet.
+ * The control of a row: a link (`href`), a button, or the consumer's element (`asChild`), with the
+ * icon (or letter) and the label. Choosing it calls `onSelect` and may close the sheet, unless the
+ * consumer's `onClick` prevented the default.
  */
 export function AppLayoutNavControl({
   label,
@@ -134,8 +148,11 @@ export function AppLayoutNavTooltip({
   tooltip,
   children,
 }: {
+  /** The row's label, shown when there is no `tooltip`. */
   label: string;
+  /** Replaces the label as content; `false` renders the row without a tooltip. */
   tooltip?: ReactNode | false;
+  /** The row's control, which becomes the tooltip's trigger. */
   children: ReactElement;
 }) {
   const { physicalSide } = useAppLayoutContext("AppLayoutNavItem");

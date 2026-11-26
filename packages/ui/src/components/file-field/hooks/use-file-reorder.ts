@@ -8,10 +8,13 @@ import {
   useState,
 } from "react";
 
+/** Options of `useFileReorder`. */
 export interface UseFileReorderOptions {
   /** Item ids in their current order. */
   ids: readonly string[];
+  /** Whether items can be moved. */
   enabled: boolean;
+  /** Moves an item from one index to another. */
   move: (from: number, to: number) => void;
   /** Announces the item's new position (1-based) after a move. */
   announce: (id: string, position: number, total: number) => void;
@@ -21,6 +24,7 @@ export interface UseFileReorderOptions {
   direction?: "ltr" | "rtl";
 }
 
+/** The selector of an item's move handle. */
 const handleSelector = (id: string) => `[data-file-handle="${CSS.escape(id)}"]`;
 
 /**

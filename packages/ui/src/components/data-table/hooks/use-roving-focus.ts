@@ -1,5 +1,6 @@
 import { type KeyboardEvent, useCallback, useState } from "react";
 
+/** The move each key makes, by `KeyboardEvent.key`. */
 export type RovingKeyMap = Readonly<Record<string, "previous" | "next" | "first" | "last">>;
 
 /** Row keys: up and down, Home and End. */

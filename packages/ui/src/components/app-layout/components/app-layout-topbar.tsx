@@ -10,6 +10,16 @@ import { AppLayoutSidebarTrigger } from "./app-layout-sidebar-trigger";
  * The bar at the top of the inset area: the sidebar trigger, the breadcrumb, the consumer's
  * `children`, and an actions area at the end. The actions area holds what pages add with
  * `AppLayoutTopbarActions`, followed by `actions`.
+ *
+ * ```tsx
+ * <AppLayoutTopbar
+ *   triggerLabel={t("layout.toggle")}
+ *   breadcrumbLabel={t("layout.breadcrumb")}
+ *   breadcrumb={{ maxItems: 4, ellipsisLabel: t("layout.more") }}
+ *   divider
+ *   actions={<UserMenu />}
+ * />
+ * ```
  */
 export function AppLayoutTopbar({
   trigger = true,

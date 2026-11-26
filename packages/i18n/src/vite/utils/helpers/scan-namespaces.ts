@@ -8,6 +8,7 @@ export const DEFAULT_INCLUDE = ["src/**/locales"] as const;
 /** Folders never searched, at any depth. */
 const SKIPPED_FOLDERS = new Set(["node_modules", "dist"]);
 
+/** Whether a folder is never searched: dependencies, build output and hidden folders. */
 const isSkipped = (name: string) => SKIPPED_FOLDERS.has(name) || name.startsWith(".");
 
 /** One discovered namespace. */
@@ -28,9 +29,13 @@ export interface ScanResult {
   readonly languages: readonly string[];
 }
 
+/** The discovery options of the plugin. See `AureusI18nOptions` for each one. */
 export interface ScanOptions {
+  /** Folder globs to search. Defaults to `DEFAULT_INCLUDE`. */
   readonly include?: readonly string[];
+  /** Folder globs removed from the search. No default. */
   readonly exclude?: readonly string[];
+  /** Folder → explicit namespace name. No default. */
   readonly namespaces?: Readonly<Record<string, string>>;
 }
 
@@ -59,8 +64,9 @@ function languageFiles(root: string, folder: string): Record<string, string> {
 
 /**
  * Finds the namespaces and languages under `root`. A folder matched by `include` and not by
- * `exclude` is a namespace named after the folder that contains it. Folders in `namespaces` are
- * namespaces with the given name. Throws when two folders give the same name, or when nothing is
+ * `exclude` is a namespace named after the folder that contains it (`src/locales` is therefore the
+ * namespace `src`). Folders in `namespaces` are namespaces with the given name. Symbolic links to
+ * folders or files are not followed. Throws when two folders give the same name, or when nothing is
  * found.
  */
 export function scanNamespaces(root: string, options: ScanOptions = {}): ScanResult {

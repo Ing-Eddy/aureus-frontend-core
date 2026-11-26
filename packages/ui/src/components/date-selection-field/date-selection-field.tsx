@@ -38,25 +38,41 @@ import {
 
 /** Selection props as the field reads them: every member is optional inside the library. */
 interface SelectionSources {
+  /** Controlled value of either selection. */
   value?: unknown;
+  /** Initial value of either selection. */
   defaultValue?: unknown;
+  /** Change handler of either selection. */
   onValueChange?: (value: never) => void;
+  /** Name of the calendar button of a range. */
   openCalendarLabel?: string;
+  /** Name of the start of a range. */
   startLabel?: string;
+  /** Name of the end of a range. */
   endLabel?: string;
+  /** Fewest days of a range. */
   minDays?: number;
+  /** Most days of a range. */
   maxDays?: number;
+  /** A range cannot contain disabled days. */
   excludeDisabled?: boolean;
+  /** Most separate days. */
   maxSelected?: number;
+  /** The consumer's summary text. */
   formatSummary?: (dates: readonly string[]) => string;
+  /** Shown while no day is chosen. */
   placeholder?: ReactNode;
+  /** Shortcuts beside the calendar. */
   presets?: readonly DateSelectionPreset<unknown>[];
+  /** Name of their group. */
   presetsLabel?: string;
 }
 
+/** The value of a preset, calling it when it is a function. */
 const resolvePreset = <Value,>(preset: DateSelectionPreset<Value>): Value =>
   typeof preset.value === "function" ? (preset.value as () => Value)() : preset.value;
 
+/** Whether two sorted day lists are equal. */
 const sameDays = (a: readonly string[], b: readonly string[]) =>
   a.length === b.length && a.every((day, index) => day === b[index]);
 
@@ -65,6 +81,21 @@ const sameDays = (a: readonly string[], b: readonly string[]) =>
  * the calendar) or separate days (a sorted list, chosen in the calendar from a summary button).
  * Every extra is opt-in, and there are no default texts: the calendar requires its button names,
  * a range the names of its two ends, and every other text comes from `Intl`.
+ *
+ * ```tsx
+ * <DateSelectionField
+ *   label={t("report.period")}
+ *   selection="range"
+ *   startLabel={t("date.start")}
+ *   endLabel={t("date.end")}
+ *   openCalendarLabel={t("date.openCalendar")}
+ *   previousMonthLabel={t("date.previousMonth")}
+ *   nextMonthLabel={t("date.nextMonth")}
+ *   maxDays={31}
+ *   value={period}
+ *   onValueChange={setPeriod}
+ * />
+ * ```
  */
 export function DateSelectionField(props: DateSelectionFieldProps) {
   const {

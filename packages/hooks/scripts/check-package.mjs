@@ -25,6 +25,7 @@ const pkg = JSON.parse(readFileSync(join(pkgDir, "package.json"), "utf8"));
 const failures = [];
 const fail = (check, message) => failures.push(`[${check}] ${message}`);
 
+// Every file under `dir`, however deep.
 const walk = (dir) =>
   readdirSync(dir).flatMap((entry) => {
     const path = join(dir, entry);

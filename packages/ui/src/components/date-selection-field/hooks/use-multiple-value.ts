@@ -2,9 +2,13 @@ import { useControllableState } from "@/internal/hooks";
 import { isIsoDate } from "@/internal/utils/helpers";
 import { normalizeDays } from "../utils";
 
+/** Options of `useMultipleValue`. */
 export interface UseMultipleValueOptions {
+  /** Controlled list of days. */
   value?: readonly string[];
+  /** Initial days when uncontrolled. Defaults to `[]`. */
   defaultValue?: readonly string[];
+  /** Called with the sorted list. */
   onValueChange?: (value: string[]) => void;
 }
 

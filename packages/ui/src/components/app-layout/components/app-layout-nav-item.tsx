@@ -15,6 +15,19 @@ import {
  * A simple navigation row: a link (`href`) or a button (`onSelect`), with an optional icon, badge
  * and "more actions" menu. While the sidebar is collapsed it shows only its icon (or the first
  * letter of `label`) and the label as a tooltip. Place it inside an `AppLayoutNavGroup`.
+ *
+ * ```tsx
+ * <AppLayoutNavItem
+ *   label={t("nav.invoices")}
+ *   icon={<ReceiptIcon />}
+ *   href="/invoices"
+ *   badge={pending}
+ *   actions={{
+ *     label: t("nav.moreActions"),
+ *     items: [{ id: "new", label: t("nav.newInvoice"), onSelect: createInvoice }],
+ *   }}
+ * />
+ * ```
  */
 export function AppLayoutNavItem({
   label,

@@ -2,9 +2,13 @@ import type { ReactNode } from "react";
 import { fieldTextChecks, useMissingTexts } from "@/internal/hooks";
 import type { FieldStatusInternal } from "@/internal/types";
 
+/** The props that can name a checkbox group, plus those whose texts are checked. */
 export interface CheckboxGroupNameSources extends FieldStatusInternal {
+  /** The visible label. */
   label?: ReactNode;
+  /** Accessible name without a label. */
   "aria-label"?: string;
+  /** Ids of the elements that name the group. */
   "aria-labelledby"?: string;
 }
 

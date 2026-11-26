@@ -3,16 +3,27 @@ import { useCropDrag } from "../hooks";
 import type { CropState, ImageSize } from "../utils";
 import { rotatedSize } from "../utils";
 
+/** Props of `CropArea`. */
 export interface CropAreaProps {
+  /** The image being edited. */
   src: string;
+  /** Its natural size. */
   size: ImageSize;
+  /** The current framing. */
   state: CropState;
+  /** Circle or square mask. */
   shape: "circle" | "square";
+  /** Accessible name of the area. */
   label: string;
+  /** Moves the image, in fractions of the window. */
   moveBy: (dx: number, dy: number) => void;
+  /** Sets the zoom. */
   zoomTo: (zoom: number) => void;
+  /** Centres the image. */
   center: () => void;
+  /** Ignores pointer and keys. */
   disabled: boolean;
+  /** Extra classes of the area. */
   className?: string;
 }
 

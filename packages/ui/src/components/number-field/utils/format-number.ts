@@ -1,10 +1,16 @@
 import type { NumberSymbols } from "./number-locale";
 
+/** How a number is written. */
 export interface FormatOptions {
+  /** The locale's separators. */
   symbols: NumberSymbols;
+  /** Separates thousands. */
   grouping?: boolean;
+  /** Fraction digits used by padding. */
   decimals?: number;
+  /** Pads the fraction with zeros to `decimals`. */
   padDecimals?: boolean;
+  /** Minus sign (default) or parentheses, when not editing. */
   negativeFormat?: "minus" | "parentheses";
 }
 
@@ -21,6 +27,7 @@ function plain(abs: number, decimals?: number, pad?: boolean): string {
   return abs.toLocaleString("en-US", { useGrouping: false, maximumFractionDigits: 20 });
 }
 
+/** A non-negative number with the locale's separators. */
 function compose(abs: number, options: FormatOptions): string {
   const { symbols, grouping, decimals, padDecimals } = options;
   const [integer = "0", fraction] = plain(abs, decimals, padDecimals).split(".");
@@ -59,9 +66,13 @@ export function formatPartial(draft: string, options: FormatOptions): string {
   return `${negative ? "-" : ""}${head}${rest}`;
 }
 
+/** What typed text may contain. */
 export interface SanitizeOptions {
+  /** The locale's separators. */
   symbols: NumberSymbols;
+  /** Maximum fraction digits; 0 rejects the separator. */
   decimals?: number;
+  /** Keeps a leading minus. Defaults to `true`. */
   allowNegative?: boolean;
   /** Keep `k`, `m`, `b` suffixes. */
   shorthand?: boolean;

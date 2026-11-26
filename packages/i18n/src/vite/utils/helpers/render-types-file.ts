@@ -4,8 +4,10 @@ import type { ScanResult } from "./scan-namespaces";
 /** The default `typesFile` of the plugin. */
 export const DEFAULT_TYPES_FILE = "src/types/i18next.d.ts";
 
+/** Two spaces per nesting level. */
 const indentOf = (depth: number) => "  ".repeat(depth);
 
+/** Names that can be written without quotes. ASCII only: any other name is quoted. */
 const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
 
 /** A property name, quoted only when needed: the way Biome and Prettier format it by default. */
@@ -34,9 +36,11 @@ function renderType(value: unknown, depth: number): string {
   return "unknown";
 }
 
+/** Options of `renderTypesFile`. */
 export interface RenderTypesOptions {
   /** The language the types are generated from. */
   readonly typesFrom: string;
+  /** Declared as i18next's `defaultNS`; omitted when there is none. */
   readonly defaultNamespace?: string | undefined;
 }
 

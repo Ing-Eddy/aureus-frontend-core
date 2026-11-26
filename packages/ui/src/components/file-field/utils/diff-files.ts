@@ -1,6 +1,7 @@
 import type { FileItem } from "../types";
 import { toFileList } from "./file-guards";
 
+/** A file field's value in any of its shapes. */
 type FileValue<E> = FileItem<E> | readonly FileItem<E>[] | null | undefined;
 
 /** What changed between the initial value of a file field and its current value. */
@@ -16,6 +17,11 @@ export interface FileChanges<E> {
 /**
  * Compares the initial value (for example the form's `defaultValues`) with the current one, by
  * item id, so an update form sends only what changed.
+ *
+ * ```ts
+ * const { added, removed } = diffFiles<Attachment>(invoice.attachments, values.attachments);
+ * await save({ upload: added, delete: removed.map((file) => file.id) });
+ * ```
  */
 export function diffFiles<E>(initial: FileValue<E>, current: FileValue<E>): FileChanges<E> {
   const currentItems = toFileList(current);

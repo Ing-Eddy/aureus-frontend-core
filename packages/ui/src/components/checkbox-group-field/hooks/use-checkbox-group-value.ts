@@ -3,13 +3,20 @@ import { useControllableState } from "@/internal/hooks";
 import { isDev } from "@/internal/utils/constants";
 import type { CheckboxGroupOption } from "../types";
 
+/** Whether all, some or none of the enabled options are checked. */
 export type CheckboxGroupSelectAllState = "all" | "some" | "none";
 
+/** Options of `useCheckboxGroupValue`. */
 export interface UseCheckboxGroupValueOptions {
+  /** The choices; they set the order of the value. */
   options: readonly CheckboxGroupOption[];
+  /** Controlled value. */
   value?: string[];
+  /** Initial value when uncontrolled. Defaults to `[]`. */
   defaultValue?: string[];
+  /** Called with the ordered value. */
   onValueChange?: (value: string[]) => void;
+  /** Most checked options. No default. */
   maxSelected?: number;
   /** Name used in development warnings. */
   componentName: string;

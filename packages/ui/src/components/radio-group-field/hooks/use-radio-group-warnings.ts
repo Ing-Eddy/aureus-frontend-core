@@ -2,11 +2,19 @@ import type { ReactNode } from "react";
 import { fieldTextChecks, useMissingTexts } from "@/internal/hooks";
 import type { FieldStatusInternal } from "@/internal/types";
 
+/** The props of a radio group that can be misused. */
 export interface RadioGroupWarningSources extends FieldStatusInternal {
+  /** The visible label. */
   label?: ReactNode;
+  /** Accessible name without a label. */
   "aria-label"?: string;
+  /** Ids of the elements that name the group. */
   "aria-labelledby"?: string;
-  otherOption?: { inputLabel?: string };
+  /** The other option, whose input needs a name. */
+  otherOption?: {
+    /** Accessible name of its text input. */
+    inputLabel?: string;
+  };
 }
 
 /** The problems of a radio group's texts: no group name, or an other option without input label. */

@@ -1,8 +1,10 @@
 import type { SelectOption } from "../types";
 
+/** Options that share a `group`. */
 export interface OptionGroup {
   /** Group title, or `undefined` for options without a group. */
   title?: string;
+  /** The options, in their original order. */
   options: SelectOption[];
 }
 

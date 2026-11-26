@@ -2,10 +2,15 @@ import type { ReactNode } from "react";
 import { fieldTextChecks, useMissingTexts } from "@/internal/hooks";
 import type { FieldStatusInternal } from "@/internal/types";
 
+/** The props that can name a switch, plus those whose texts are checked. */
 export interface SwitchNameSources extends Pick<FieldStatusInternal, "info" | "infoLabel"> {
+  /** The label above the field. */
   label?: ReactNode;
+  /** The text beside the switch. */
   switchLabel?: ReactNode;
+  /** Accessible name without visible text. */
   "aria-label"?: string;
+  /** Ids of the elements that name the switch. */
   "aria-labelledby"?: string;
 }
 

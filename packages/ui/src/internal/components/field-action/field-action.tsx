@@ -5,6 +5,7 @@ import { resolveActionSize } from "@/internal/utils/helpers";
 import { InputGroupButton } from "@/shadcn/ui/input-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn/ui/tooltip";
 
+/** Props of `FieldAction`: the public action plus the field's name. */
 export type FieldActionInternalProps = FieldActionProps & {
   /** Name of the field that renders the action, for its development warnings. */
   componentName?: string;

@@ -3,15 +3,18 @@ import { type ReactNode, useState } from "react";
 import { cn } from "@/shadcn/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn/ui/tooltip";
 
+/** Props of `FieldInfo`. */
 export interface FieldInfoProps {
   /** Id of the screen-reader copy of the content, referenced by the input's `aria-describedby`. */
   id: string;
+  /** The tooltip's content. */
   content: ReactNode;
   /**
    * Accessible name of the button, from the field's `infoLabel`. The public types require it with
    * `info`; it is only `undefined` in untyped code, which gets a development warning.
    */
   label: string | undefined;
+  /** Extra classes of the button. */
   className?: string;
 }
 

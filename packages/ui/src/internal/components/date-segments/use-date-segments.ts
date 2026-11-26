@@ -32,14 +32,23 @@ import {
   withDate,
 } from "./segment-state";
 
+/** Options of `useDateSegments`; see `DateSegmentsProps`. */
 export interface UseDateSegmentsOptions {
+  /** Whether it edits a date, a time or both. */
   mode: IsoMode;
+  /** Order, digits and names. Defaults to the browser's. */
   locale?: string;
+  /** Resolved hour cycle. */
   hourCycle: 12 | 24;
+  /** Defaults to `"minute"`. */
   granularity?: TimeGranularity;
+  /** Defaults to `1`. */
   minuteStep?: number;
+  /** Defaults to `1`. */
   secondStep?: number;
+  /** Earliest ISO value. */
   min?: string | null;
+  /** Latest ISO value. */
   max?: string | null;
   /** The current value; a value that differs from the last one emitted replaces the segments. */
   value: string | null;
@@ -51,21 +60,30 @@ export interface UseDateSegmentsOptions {
 
 /** One segment ready to render. */
 export interface SegmentView {
+  /** Which part of the value it edits. */
   type: SegmentType;
   /** Index among the segments (not the layout). */
   index: number;
   /** Shown text: the typed digits, the formatted value, or dashes while empty. */
   text: string;
+  /** Nothing is entered: `text` is dashes. */
   isPlaceholder: boolean;
+  /** Accessible name from the browser's locale data; `undefined` where it has none. */
   name: string | undefined;
+  /** Lowest value of the segment. */
   min: number;
+  /** Highest value of the segment, which follows the month and year for the day. */
   max: number;
+  /** The numeric value for `aria-valuenow`; `undefined` while empty. */
   valueNow: number | undefined;
+  /** The value as announced: the month's name, the day period or the digits. */
   valueText: string | undefined;
 }
 
+/** Repeated to fill an empty segment. */
 const PLACEHOLDER = "–";
 
+/** The ISO date of the segments once day, month and year form a real date. */
 function datePartOf(state: SegmentState): string | null {
   const { year, month, day } = state.values;
   if (year === null || month === null || day === null || isYearPending(state)) return null;

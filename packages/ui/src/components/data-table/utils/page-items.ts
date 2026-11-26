@@ -1,6 +1,7 @@
 /** A page number, or a gap between page numbers. */
 export type PageItem = number | "start-gap" | "end-gap";
 
+/** The integers from `from` to `to`, both included. */
 const range = (from: number, to: number) =>
   Array.from({ length: to - from + 1 }, (_, index) => from + index);
 

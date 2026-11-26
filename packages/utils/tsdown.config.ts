@@ -1,5 +1,6 @@
 import { defineConfig } from "tsdown";
 
+// Build of the published package: one JavaScript file and declarations per source file.
 export default defineConfig({
   // Tests never ship: `*-tests` files anywhere and every `tests/` folder.
   entry: ["src/**/*.ts", "!src/**/*-tests.ts", "!src/**/tests/**"],

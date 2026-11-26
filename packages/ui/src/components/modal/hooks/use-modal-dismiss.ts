@@ -2,13 +2,16 @@ import type { Dialog as DialogPrimitive } from "radix-ui";
 import type { ModalContentProps } from "../types";
 import type { ModalContextValue } from "./use-modal";
 
+/** The event of `onInteractOutside` (a press or focus). */
 type InteractOutsideEvent = Parameters<
   NonNullable<DialogPrimitive.DialogContentProps["onInteractOutside"]>
 >[0];
+/** The event of `onPointerDownOutside`. */
 type PointerDownOutsideEvent = Parameters<
   NonNullable<DialogPrimitive.DialogContentProps["onPointerDownOutside"]>
 >[0];
 
+/** Radix's event type for focus moving outside the panel. */
 const FOCUS_OUTSIDE = "dismissableLayer.focusOutside";
 
 /**

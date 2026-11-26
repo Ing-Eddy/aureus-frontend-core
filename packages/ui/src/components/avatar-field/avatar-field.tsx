@@ -23,6 +23,21 @@ import { AvatarEditError, type CropState, type ImageSize, renderCrop } from "./u
  * or a fallback, opens a dialog to inspect, change, remove or open the photo, and, with
  * `editable`, an editor to crop, zoom, rotate and flip it. Its value is the file field's model,
  * so `diffFiles`, `toFormData` and `upload` work as in `FileField`. It ships no default texts.
+ *
+ * ```tsx
+ * <AvatarField
+ *   label={t("user.photo")}
+ *   initialsFrom={user.name}
+ *   getFileInfo={(stored: Attachment) => ({ name: stored.name, url: stored.url })}
+ *   chooseLabel={t("avatar.choose")}
+ *   changeLabel={t("avatar.change")}
+ *   inspectLabel={(name) => t("avatar.view", { name })}
+ *   dialogTitle={t("avatar.title")}
+ *   closeLabel={t("common.close")}
+ *   value={photo}
+ *   onValueChange={setPhoto}
+ * />
+ * ```
  */
 export function AvatarField<E = unknown>(props: AvatarFieldProps<E>): ReactElement;
 export function AvatarField(props: AvatarFieldProps<unknown>): ReactElement {

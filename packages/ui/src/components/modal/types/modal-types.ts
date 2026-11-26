@@ -16,7 +16,7 @@ export type ModalModeSetting = "responsive" | ModalMode;
 export type ModalOpenChangeReason =
   /** `ModalTrigger` was activated, or `useModal().setOpen(true)` was called. */
   | "trigger"
-  /** `ModalClose`, or `useModal().close()` / `setOpen()`. */
+  /** `ModalClose`, `useModal().close()` or `useModal().setOpen(false)`. */
   | "close"
   /** The built-in close button of `ModalContent`. */
   | "close-button"
@@ -27,7 +27,9 @@ export type ModalOpenChangeReason =
   /** Dragging the drawer closed. */
   | "swipe";
 
+/** The second argument of `onOpenChange`. */
 export interface ModalOpenChangeDetails {
+  /** What asked for the change. */
   reason: ModalOpenChangeReason;
 }
 
@@ -40,7 +42,9 @@ export type ModalDrawerDirection = "bottom" | "top" | "left" | "right";
 /** A drawer resting position: a fraction of the viewport (`0.5`) or a CSS length (`"320px"`). */
 export type ModalSnapPoint = number | string;
 
+/** Props of `Modal`. */
 export interface ModalProps {
+  /** `ModalTrigger`, `ModalContent` and anything around them. */
   children?: ReactNode;
 
   /** Controlled open state. */
@@ -93,6 +97,7 @@ export interface ModalProps {
   drawerRepositionInputs?: boolean;
 }
 
+/** The focus and dismissal events of the panel, typed as Radix Dialog types them. */
 type ContentEvents = Pick<
   DialogPrimitive.DialogContentProps,
   "onOpenAutoFocus" | "onCloseAutoFocus" | "onEscapeKeyDown" | "onInteractOutside"
@@ -113,6 +118,7 @@ export type ModalCloseButtonTexts =
       closeLabel: string;
     };
 
+/** The props of `ModalContent` except the close button. Other `div` attributes go to the panel. */
 export interface ModalContentBaseProps
   extends Omit<ComponentProps<"div">, keyof ContentEvents | "title">,
     ContentEvents {
@@ -134,23 +140,28 @@ export interface ModalContentBaseProps
   handleClassName?: string;
 }
 
+/** Props of `ModalContent`. */
 export type ModalContentProps = ModalContentBaseProps & ModalCloseButtonTexts;
 
+/** Props of `ModalTrigger`. */
 export interface ModalTriggerProps extends ComponentProps<"button"> {
   /** Renders the only child instead of a `button`, merging the props. Defaults to `false`. */
   asChild?: boolean;
 }
 
+/** Props of `ModalClose`. */
 export interface ModalCloseProps extends ComponentProps<"button"> {
   /** Renders the only child instead of a `button`, merging the props. Defaults to `false`. */
   asChild?: boolean;
 }
 
+/** Props of `ModalHeader`, `ModalBody` and `ModalFooter`. */
 export interface ModalSectionProps extends ComponentProps<"div"> {
   /** Renders the only child instead of a `div`, merging the props. Defaults to `false`. */
   asChild?: boolean;
 }
 
+/** Props of `ModalTitle`. */
 export interface ModalTitleProps extends ComponentProps<"h2"> {
   /** Renders the only child instead of an `h2`, merging the props. Defaults to `false`. */
   asChild?: boolean;
@@ -158,6 +169,7 @@ export interface ModalTitleProps extends ComponentProps<"h2"> {
   visuallyHidden?: boolean;
 }
 
+/** Props of `ModalDescription`. */
 export interface ModalDescriptionProps extends ComponentProps<"p"> {
   /** Renders the only child instead of a `p`, merging the props. Defaults to `false`. */
   asChild?: boolean;
@@ -167,6 +179,7 @@ export interface ModalDescriptionProps extends ComponentProps<"p"> {
 
 /** What `useModal()` returns inside a `Modal`. */
 export interface UseModalResult {
+  /** Whether the modal is open. */
   open: boolean;
   /** The current presentation. */
   mode: ModalMode;

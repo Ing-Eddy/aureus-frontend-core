@@ -1,10 +1,14 @@
 /** How a slider turns its values into text. `formatValue` wins over `locale`/`formatOptions`. */
 export interface SliderFormatSources {
+  /** Locale of the numbers. Defaults to the browser's. */
   locale?: string;
+  /** `Intl.NumberFormat` options. */
   formatOptions?: Intl.NumberFormatOptions;
+  /** The consumer's formatter, which replaces `Intl`. */
   formatValue?: (value: number) => string;
 }
 
+/** The texts of a slider's values. */
 export interface SliderFormatter {
   /** One value, as shown and as announced (`aria-valuetext`). */
   format: (value: number) => string;

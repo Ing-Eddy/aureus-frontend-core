@@ -9,12 +9,15 @@ import {
 } from "@/shadcn/ui/dropdown-menu";
 import type { DataTableRowActionsOptions } from "../types";
 
+/** Props of `DataTableRowActions`. */
 export interface DataTableRowActionsProps<TData extends RowData> {
+  /** The row's data, passed to the actions. */
   row: TData;
+  /** The table's `rowActions` prop. */
   options: DataTableRowActionsOptions<TData>;
 }
 
-/** The actions menu of one row. */
+/** The actions menu of one row. Nothing is rendered when the row has no visible action. */
 export function DataTableRowActions<TData extends RowData>({
   row,
   options,

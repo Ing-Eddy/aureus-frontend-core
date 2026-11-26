@@ -1,9 +1,12 @@
 import type { NumberSymbols } from "./number-locale";
 
+/** Options of `parseNumber`. */
 export interface ParseOptions {
+  /** Whether a negative result is accepted. Defaults to `true`. */
   allowNegative?: boolean;
 }
 
+/** The hyphen and the Unicode minus sign. */
 const MINUS = /[-−]/;
 /** Characters that never carry meaning in a number: currency symbols, letters, spaces… */
 const NOISE = /[^\d.,\-−()]/g;

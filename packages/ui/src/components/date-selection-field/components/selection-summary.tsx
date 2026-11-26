@@ -3,19 +3,27 @@ import type { ReactNode, Ref } from "react";
 import { FieldPopoverTrigger } from "@/internal/components";
 import { cn } from "@/shadcn/lib/utils";
 
+/** Props of `SelectionSummary`. */
 export interface SelectionSummaryProps {
+  /** Id of the button. */
   id: string;
   /** The formatted days, or empty. */
   summary: string;
+  /** Shown while no day is chosen. */
   placeholder?: ReactNode;
   /** Ids that name the button before the summary (the label), when there is a label. */
   labelledBy?: string;
   /** Name of the button when there is no label. */
   ariaLabel?: string;
+  /** Ids that describe the button. */
   describedBy?: string;
+  /** Marks it as invalid. */
   invalid?: boolean;
+  /** Disabled or loading. */
   disabled?: boolean;
+  /** Reaches the button. */
   ref?: Ref<HTMLButtonElement>;
+  /** Extra classes of the button. */
   className?: string;
 }
 

@@ -16,13 +16,38 @@ import {
 import type { AppLayoutProps } from "./types";
 import { resolvePhysicalSide, rootClassName, rootInsetClassName } from "./utils";
 
+/**
+ * What the root assumes until an `AppLayoutSidebar` registers its own configuration, and in a
+ * layout without a sidebar. It matches that component's defaults.
+ */
 const DEFAULT_SIDEBAR: SidebarConfig = { variant: "sidebar", collapsible: "icon" };
 
 /**
- * An application shell: a navigation sidebar (a sheet below `breakpoint`), and an inset area with
- * a top bar and a main area that scrolls on its own. `AppLayout` holds the sidebar state, the
- * side, the breadcrumb trail and the link settings; compose it with `AppLayoutSidebar` and
+ * An application shell: a navigation sidebar (a sheet below `breakpoint`), and an inset area with a
+ * top bar and a main area that scrolls on its own. `AppLayout` holds the sidebar state, the side,
+ * the breadcrumb trail and the link settings; compose it with `AppLayoutSidebar` and
  * `AppLayoutInset`. The document body never scrolls. It renders no text of its own.
+ *
+ * ```tsx
+ * <AppLayout skipLinkLabel={t("layout.skip")} persistKey="app.sidebar">
+ *   <AppLayoutSidebar mobileTitle={t("layout.navigation")}>
+ *     <AppLayoutSidebarHeader>
+ *       <Logo />
+ *     </AppLayoutSidebarHeader>
+ *     <AppLayoutSidebarContent>
+ *       <AppLayoutNav items={items} />
+ *     </AppLayoutSidebarContent>
+ *   </AppLayoutSidebar>
+ *   <AppLayoutInset>
+ *     <AppLayoutTopbar
+ *       triggerLabel={t("layout.toggle")}
+ *       breadcrumbLabel={t("layout.breadcrumb")}
+ *       actions={<UserMenu />}
+ *     />
+ *     <AppLayoutMain scrollResetKey={pathname}>{page}</AppLayoutMain>
+ *   </AppLayoutInset>
+ * </AppLayout>
+ * ```
  */
 export function AppLayout({
   children,

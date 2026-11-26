@@ -2,6 +2,10 @@ import { isNil, warnOnce } from "@/internal/utils/helpers";
 import type { BooleanOptions, DisplayConfig } from "../types";
 import { emptyText, warnType } from "../utils/helpers";
 
+/**
+ * `Display.boolean`: the `true` or `false` label. A value of another type, or a missing label
+ * (untyped code), gives the `empty` text with a development warning.
+ */
 export function displayBoolean(
   value: unknown,
   options: BooleanOptions,

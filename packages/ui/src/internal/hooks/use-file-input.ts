@@ -9,17 +9,29 @@ import {
 import type { FileRejection } from "@/internal/types";
 import { type CurrentFiles, type FileRestrictions, validateFiles } from "@/internal/utils/helpers";
 
+/** Options of `useFileInput`. */
 export interface UseFileInputOptions {
+  /** Whether files are added to the current ones, or one file replaces them. */
   multiple: boolean;
+  /**
+   * Checked on the picked files, before `transform`. Without `multiple`, the count is one and the
+   * total size is not checked.
+   */
   restrictions: FileRestrictions;
   /** What the value holds now, for the count and total-size limits. */
   getCurrent: () => CurrentFiles;
+  /**
+   * Replaces each accepted file before it enters the value. A rejected promise rejects the file
+   * with reason `"transform"`.
+   */
   transform?: (file: File) => Promise<File>;
   /** Called with the accepted (and transformed) files, in pick order. */
   onAccept: (files: File[]) => void;
+  /** Called with the files that did not enter, when there are any. */
   onReject?: (rejections: FileRejection[]) => void;
   /** Ignores every way in (picker, drop, paste). */
   disabled: boolean;
+  /** Whether pasted files are added. */
   pasteable: boolean;
 }
 

@@ -8,9 +8,13 @@ import { dialogContentClassName, dialogSizeClassNames } from "../utils";
 import { ModalCloseButton } from "./modal-close-button";
 import { ModalPanelLifecycle } from "./modal-panel-lifecycle";
 
+/** What `ModalContent` gives either presentation. */
 export interface ModalViewProps {
+  /** The surrounding modal. */
   context: ModalContextValue;
+  /** The props of `ModalContent`. */
   props: ModalContentProps;
+  /** Whether the missing-title warning was already logged, kept across mode changes. */
   titleWarned: RefObject<boolean>;
 }
 

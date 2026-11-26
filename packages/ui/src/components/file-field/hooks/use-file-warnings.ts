@@ -9,24 +9,43 @@ import type { FieldStatusInternal } from "@/internal/types";
 
 /** The props the warnings read. Untyped code may leave any of them out. */
 export interface FileWarningSources extends FieldStatusInternal {
+  /** The visible label. */
   label?: ReactNode;
+  /** Accessible name without a label. */
   "aria-label"?: string;
+  /** Ids of the elements that name the field. */
   "aria-labelledby"?: string;
+  /** Several files. */
   multiple?: boolean;
+  /** List, grid or single. */
   appearance?: string;
+  /** Content of the choose button. */
   chooseLabel?: unknown;
+  /** Name of the remove buttons. */
   removeLabel?: unknown;
+  /** Describes existing files. */
   getFileInfo?: unknown;
+  /** The drop area is on. */
   dropzone?: boolean;
+  /** Its text. */
   dropzoneText?: unknown;
+  /** Name of the replace button. */
   replaceLabel?: unknown;
+  /** Immediate upload is on. */
   upload?: unknown;
+  /** Name of the progress bars. */
   uploadProgressLabel?: unknown;
+  /** Name of the cancel buttons. */
   cancelUploadLabel?: unknown;
+  /** Name of the retry buttons. */
   retryUploadLabel?: unknown;
+  /** Text of a failed upload. */
   uploadErrorText?: unknown;
+  /** Reordering is on. */
   reorderable?: boolean;
+  /** Name of the move handles. */
   moveLabel?: unknown;
+  /** Announcement of a move. */
   moveAnnouncement?: unknown;
 }
 

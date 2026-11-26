@@ -1,13 +1,17 @@
 import type { DayPickerProps } from "react-day-picker";
 
+/** A day of the week, 0 for Sunday. */
 type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 /** What the calendar needs to speak the field's locale. */
 export interface CalendarTexts {
+  /** The visible texts. */
   formatters: NonNullable<DayPickerProps["formatters"]>;
+  /** The accessible names. */
   labels: NonNullable<DayPickerProps["labels"]>;
 }
 
+/** The calendar every text uses, whatever the locale's default. */
 const GREGORIAN = { calendar: "gregory" } as const;
 
 /**

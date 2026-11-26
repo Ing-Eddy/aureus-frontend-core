@@ -6,13 +6,21 @@ import { cn } from "@/shadcn/lib/utils";
 import { FieldLabel } from "@/shadcn/ui/field";
 import { RequiredMark } from "./required-mark";
 
+/** Props of `FieldHeader`. */
 export interface FieldHeaderProps {
+  /** Id of the control; the label's id is derived from it. */
   inputId: string;
+  /** Id of the info content, for the control's `aria-describedby`. */
   infoId: string;
+  /** Text of the label. */
   label?: ReactNode;
+  /** Shows the required mark. */
   required?: boolean;
+  /** Content of the info tooltip. */
   info?: ReactNode;
+  /** Accessible name of the info button. */
   infoLabel?: string;
+  /** Extra classes of the parts. */
   classNames?: FieldClassNames;
   /**
    * Associates the label with the control through `htmlFor` (the default). `false` renders it

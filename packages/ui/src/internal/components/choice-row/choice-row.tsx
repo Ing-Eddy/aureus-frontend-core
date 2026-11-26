@@ -3,6 +3,7 @@ import { RequiredMark } from "@/internal/components/field-shell";
 import { cn } from "@/shadcn/lib/utils";
 import { choiceStyles } from "./choice-styles";
 
+/** Props of `ChoiceRow`. */
 export interface ChoiceRowProps {
   /** Prefix of every part's `data-slot` (`checkbox-row`, `radio-label`…). Defaults to `"checkbox"`. */
   slot?: "checkbox" | "radio" | "switch";
@@ -24,13 +25,21 @@ export interface ChoiceRowProps {
   requiredMark?: boolean;
   /** Spinner and action, at the inline end. */
   end?: ReactNode;
+  /** The side of the text the control is on, following the text direction. */
   position: "start" | "end";
+  /** A plain row, or a bordered card that toggles the control wherever it is clicked. */
   appearance: "plain" | "card";
+  /** Draws the card's border as destructive. */
   error?: boolean;
+  /** The control cannot be changed: the text is dimmed and does not look clickable. */
   locked: boolean;
+  /** Extra classes of the row. */
   className?: string;
+  /** Extra classes of the text. */
   textClassName?: string;
+  /** Extra classes of the description. */
   descriptionClassName?: string;
+  /** Extra classes of the required mark. */
   requiredMarkClassName?: string;
 }
 

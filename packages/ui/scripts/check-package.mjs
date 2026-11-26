@@ -25,6 +25,7 @@ const pkg = JSON.parse(readFileSync(join(pkgDir, "package.json"), "utf8"));
 const failures = [];
 const fail = (check, message) => failures.push(`[${check}] ${message}`);
 
+// The names, without extension, of the files of `dir` that end in `ext`.
 const basenames = (dir, ext) =>
   existsSync(dir)
     ? readdirSync(dir)
@@ -32,6 +33,7 @@ const basenames = (dir, ext) =>
         .map((file) => file.slice(0, -ext.length))
     : [];
 
+// Every file under `dir`, however deep.
 const walk = (dir) =>
   readdirSync(dir).flatMap((entry) => {
     const path = join(dir, entry);

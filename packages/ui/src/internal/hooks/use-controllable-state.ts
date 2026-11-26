@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 
+/** Options of `useControllableState`. */
 export interface UseControllableStateOptions<T> {
   /** Controlled value. When it is not `undefined`, the hook only reports changes. */
   value?: T;

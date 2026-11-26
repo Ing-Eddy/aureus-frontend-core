@@ -3,7 +3,12 @@ import { useAppLayoutContext } from "../hooks";
 import { railClassName, railSideClassNames } from "../utils";
 
 /** A thin button on the sidebar's inner edge that toggles it. Not in the tab order. */
-export function AppLayoutSidebarRail({ label }: { label: string }) {
+export function AppLayoutSidebarRail({
+  label,
+}: {
+  /** Accessible name of the button. */
+  label: string;
+}) {
   const { toggle, side } = useAppLayoutContext("AppLayoutSidebar");
   return (
     <button

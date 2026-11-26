@@ -3,11 +3,17 @@ import { cn } from "@/shadcn/lib/utils";
 import type { SelectOption } from "../types";
 import { selectStyles } from "./styles";
 
+/** Props of `SelectChips`. */
 export interface SelectChipsProps {
+  /** The selected options, one chip each. */
   options: SelectOption[];
+  /** Accessible name of a chip's remove button. */
   removeChipLabel: (option: SelectOption) => string;
+  /** Called with the value to remove. */
   onRemove: (value: string) => void;
+  /** Disables the remove buttons. */
   disabled?: boolean;
+  /** Extra classes of each chip. */
   className?: string;
 }
 

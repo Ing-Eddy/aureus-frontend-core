@@ -4,6 +4,7 @@ import { useMissingTitleWarning, useModalContext } from "../hooks";
 /** The longest panel animation (Vaul's 500 ms), plus a margin: the fallback for completion. */
 const COMPLETE_FALLBACK_MS = 600;
 
+/** Whether the panel has a CSS animation or transition to wait for. */
 const isAnimated = (node: HTMLElement) => {
   const style = getComputedStyle(node);
   const animation = style.animationName && style.animationName !== "none";
@@ -11,9 +12,13 @@ const isAnimated = (node: HTMLElement) => {
   return Boolean(animation || transition);
 };
 
+/** Props of `ModalPanelLifecycle`. */
 export interface ModalPanelLifecycleProps {
+  /** The panel element. */
   panelRef: RefObject<HTMLDivElement | null>;
+  /** How many `ModalTitle`s the panel holds. */
   titleCount: RefObject<number>;
+  /** Whether the missing-title warning was logged. */
   titleWarned: RefObject<boolean>;
 }
 

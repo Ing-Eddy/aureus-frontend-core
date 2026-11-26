@@ -6,8 +6,13 @@ import { useAppLayoutContext, useAppLayoutWarnings } from "../hooks";
 import type { AppLayoutSidebarTriggerProps } from "../types";
 
 /**
- * Toggles the sidebar: collapses or expands it on desktop and opens or closes the sheet on
- * mobile. Named by `label`; its default icon follows the sidebar's side.
+ * Toggles the sidebar: collapses or expands it on desktop and opens or closes the sheet on mobile.
+ * Named by `label`; its default icon follows the sidebar's side. An `onClick` that prevents the
+ * default stops the toggle.
+ *
+ * ```tsx
+ * <AppLayoutSidebarTrigger label={t("layout.toggle")} />
+ * ```
  */
 export function AppLayoutSidebarTrigger({
   label,

@@ -1,15 +1,26 @@
 import { REGEXP_ONLY_CHARS, REGEXP_ONLY_DIGITS, REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 
-/** Characters an OTP accepts. A custom set gives a regexp source matching the whole value. */
+/**
+ * Characters an OTP accepts. A custom `pattern` must match each single character as well as any
+ * partial value (for example `"^[0-9A-F]*$"`), because characters are filtered one by one; a
+ * pattern that requires the full length rejects everything.
+ */
 export type OtpCharset =
   | "digits"
   | "letters"
   | "alphanumeric"
-  | { pattern: string; inputMode?: "numeric" | "text" };
+  | {
+      /** Regexp source of the accepted characters, such as `"^[0-9A-F]*$"`. */
+      pattern: string;
+      /** Mobile keyboard. Defaults to `"text"`. */
+      inputMode?: "numeric" | "text";
+    };
 
+/** What the input needs to know about a charset. */
 export interface ResolvedCharset {
   /** Regexp source for the input's `pattern` (checked on the whole value by `input-otp`). */
   pattern: string;
+  /** Mobile keyboard. */
   inputMode: "numeric" | "text";
 }
 
@@ -29,9 +40,13 @@ function matchesChar(pattern: string, char: string) {
   return new RegExp(pattern).test(char);
 }
 
+/** Options of `sanitizeOtp`. */
 export interface SanitizeOptions {
+  /** Most characters kept. */
   length: number;
+  /** Accepted characters. Defaults to `"digits"`. */
   charset?: OtpCharset;
+  /** Turns letters into uppercase before filtering. */
   uppercase?: boolean;
 }
 

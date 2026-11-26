@@ -8,6 +8,7 @@ import { fieldAddonClassName, fieldFrameClassName } from "@/internal/utils/const
 import { cn } from "@/shadcn/lib/utils";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn/ui/input-group";
 
+/** Props of `InputField`: the shared field props, native input attributes and the frame's slots. */
 export type InputFieldProps = FieldBaseProps &
   FieldStatusInternal &
   Omit<

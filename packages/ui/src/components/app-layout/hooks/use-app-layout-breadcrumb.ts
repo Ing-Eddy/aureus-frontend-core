@@ -3,8 +3,16 @@ import type { AppLayoutBreadcrumbItem, UseAppLayoutBreadcrumbResult } from "../t
 import { useAppLayoutBreadcrumbContext } from "./use-app-layout-context";
 
 /**
- * The breadcrumb trail of the surrounding `AppLayout`, with functions to change it. They act on
- * the trail currently shown.
+ * The breadcrumb trail of the surrounding `AppLayout`, with functions to change it. They act on the
+ * trail currently shown.
+ *
+ * ```tsx
+ * const { update } = useAppLayoutBreadcrumb();
+ *
+ * useEffect(() => {
+ *   if (invoice) update("invoice", { label: invoice.number });
+ * }, [invoice, update]);
+ * ```
  */
 export function useAppLayoutBreadcrumb(): UseAppLayoutBreadcrumbResult {
   const { items, setItems, push, pop, update, clear } =
@@ -27,7 +35,15 @@ function trailKey(items: readonly AppLayoutBreadcrumbItem[]): string {
  * Shows `items` as the breadcrumb while the calling component is mounted, and restores the trail
  * that was shown before when it unmounts. The trail is updated when an item's `id`, text label or
  * `href` changes, so an inline array does not cause extra renders; change `id` to refresh a label
- * that is a React node.
+ * that is a React node, an `icon` or an `onSelect`. When nested components that call it mount
+ * together, the outer one's trail is shown.
+ *
+ * ```tsx
+ * useAppLayoutBreadcrumbItems([
+ *   { label: t("nav.invoices"), href: "/invoices" },
+ *   { id: "invoice", label: invoice.number },
+ * ]);
+ * ```
  */
 export function useAppLayoutBreadcrumbItems(items: readonly AppLayoutBreadcrumbItem[]) {
   const { pushLayer, updateLayer, removeLayer } = useAppLayoutBreadcrumbContext(

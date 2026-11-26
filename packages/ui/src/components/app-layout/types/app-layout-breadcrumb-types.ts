@@ -33,6 +33,7 @@ export type AppLayoutBreadcrumbDisplay = AppLayoutBreadcrumbCollapse & {
   separator?: ReactNode;
 };
 
+/** Props of `AppLayoutBreadcrumb`. */
 export type AppLayoutBreadcrumbProps = Omit<ComponentPropsWithoutRef<"nav">, "children"> &
   AppLayoutBreadcrumbDisplay & {
     /** Accessible name of the breadcrumb navigation landmark. Required: there is no default. */
@@ -41,6 +42,7 @@ export type AppLayoutBreadcrumbProps = Omit<ComponentPropsWithoutRef<"nav">, "ch
 
 /** The breadcrumb trail of the surrounding `AppLayout`, and functions to change it. */
 export interface UseAppLayoutBreadcrumbResult {
+  /** The trail currently shown, from first to last. */
   items: readonly AppLayoutBreadcrumbItem[];
   /** Replaces the trail. */
   setItems: (items: readonly AppLayoutBreadcrumbItem[]) => void;

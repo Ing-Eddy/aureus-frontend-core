@@ -8,27 +8,44 @@ import type { FileItemTexts } from "./file-item";
 import { FileProgress } from "./file-progress";
 import { FileTypeIcon } from "./file-type-icon";
 
+/** Props of `FileSingle`. */
 export interface FileSingleProps {
+  /** The item's id. */
   id: string;
+  /** Name, size, type and URL to show. */
   info: FileInfo;
+  /** Image to show large. */
   previewUrl?: string;
+  /** The upload in progress or failed. */
   upload?: FileUploadState;
+  /** Locale of the size. */
   locale?: string;
+  /** Disabled or loading. */
   disabled: boolean;
+  /** Texts of the actions. */
   texts: FileItemTexts;
   /** The replace control: the field's trigger, as an icon button. */
   replaceTrigger: ReactNode;
+  /** Removes the file. */
   onRemove: () => void;
+  /** Cancels its upload. */
   onCancel: () => void;
+  /** Retries its upload. */
   onRetry: () => void;
   /** With `dropzone`, files dropped on the preview replace the file. */
   dropHandlers?: {
+    /** Marks the area as dragged over. */
     onDragEnter: (event: DragEvent<HTMLElement>) => void;
+    /** Allows the drop. */
     onDragOver: (event: DragEvent<HTMLElement>) => void;
+    /** Ends the highlight when the drag leaves. */
     onDragLeave: (event: DragEvent<HTMLElement>) => void;
+    /** Adds the dropped files. */
     onDrop: (event: DragEvent<HTMLElement>) => void;
   };
+  /** Files are being dragged over the preview. */
   dragging?: boolean;
+  /** Extra classes of the preview. */
   className?: string;
 }
 

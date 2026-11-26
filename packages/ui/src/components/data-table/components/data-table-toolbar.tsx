@@ -11,13 +11,33 @@ import { DataTableToolbarButton } from "./data-table-toolbar-button";
 
 /** Whether the toolbar has anything to show. */
 export function hasToolbar(props: {
+  /** The search box. */
   search?: unknown;
+  /** The reload button. */
   reload?: unknown;
+  /** The filters button. */
   filters?: unknown;
+  /** The columns button. */
   columnToggle?: unknown;
-  toolbarActions?: readonly { hidden?: boolean }[];
-  selection?: { actions?: unknown; renderActions?: unknown };
-  header?: { toolbar?: unknown } | false;
+  /** Custom buttons; only visible ones count. */
+  toolbarActions?: readonly {
+    /** A hidden action shows nothing. */
+    hidden?: boolean;
+  }[];
+  /** Selection counts only when it has bulk actions. */
+  selection?: {
+    /** The bulk actions. */
+    actions?: unknown;
+    /** The consumer's own bulk-actions content. */
+    renderActions?: unknown;
+  };
+  /** The header options, for the consumer's toolbar slot. */
+  header?:
+    | {
+        /** The consumer's toolbar content. */
+        toolbar?: unknown;
+      }
+    | false;
 }) {
   const toolbar = props.header ? props.header.toolbar : undefined;
   return Boolean(

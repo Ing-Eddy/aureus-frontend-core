@@ -1,20 +1,28 @@
 import { clamp, type SliderLimits, snapToward } from "./snap";
 
+/** A key press on a thumb and the state it applies to. */
 export interface SliderKeyInput {
+  /** `KeyboardEvent.key`. */
   key: string;
+  /** Shift makes arrows move `largeStep`. */
   shiftKey: boolean;
   /** Index of the focused thumb. */
   index: number;
   /** The current, normalized values. */
   values: readonly number[];
+  /** Direction of the track. */
   orientation: "horizontal" | "vertical";
+  /** Text direction, which flips the horizontal arrows. */
   direction: "ltr" | "rtl";
+  /** The limits of the values. */
   limits: SliderLimits;
   /** PageUp/PageDown and Shift+arrow distance (ignored with marks: they move two marks). */
   largeStep: number;
 }
 
+/** Keys that raise the value in any orientation. */
 const INCREASE = new Set(["ArrowUp", "PageUp"]);
+/** Keys that lower it. */
 const DECREASE = new Set(["ArrowDown", "PageDown"]);
 
 /** +1, -1, or 0 when the key does not move the thumb by a step. */

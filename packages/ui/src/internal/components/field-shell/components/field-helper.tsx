@@ -2,12 +2,17 @@ import type { ReactNode } from "react";
 import { cn } from "@/shadcn/lib/utils";
 import { FieldDescription, FieldError } from "@/shadcn/ui/field";
 
+/** Props of `FieldHelper`. */
 export interface FieldHelperProps {
   /** Referenced by the input's `aria-describedby`. */
   id: string;
+  /** The help shown below the control. */
   helperText?: ReactNode;
+  /** Whether the field is invalid. */
   error?: boolean;
+  /** Replaces the helper text while `error` is true. */
   errorMessage?: ReactNode;
+  /** Extra classes of the text. */
   className?: string;
 }
 

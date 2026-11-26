@@ -17,6 +17,18 @@ import type { TextAreaFieldProps } from "./text-area-field-types";
  * loading and disabled states as every field. It grows with its content (and can be resized),
  * and keeps its spinner, counter and action in a footer bar attached to the bottom edge. It
  * ships no default texts.
+ *
+ * ```tsx
+ * <TextAreaField
+ *   label={t("order.notes")}
+ *   name="notes"
+ *   minRows={3}
+ *   maxRows={8}
+ *   maxLength={500}
+ *   showCount
+ *   countLabel={(count, maxLength) => t("common.characters", { count, maxLength })}
+ * />
+ * ```
  */
 export function TextAreaField(props: TextAreaFieldProps) {
   const {

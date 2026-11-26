@@ -2,16 +2,25 @@ import type { ChangeEvent, Ref } from "react";
 import { cn } from "@/shadcn/lib/utils";
 import { Input } from "@/shadcn/ui/input";
 
+/** Props of `RadioOtherInput`. */
 export interface RadioOtherInputProps {
+  /** Id of the input. */
   id: string;
+  /** The typed text. */
   value: string;
+  /** Called with the new text. */
   onChange: (value: string) => void;
   /** Accessible name. Required by the other option's props. */
   label: string;
+  /** Hint inside the empty input. */
   placeholder?: string;
+  /** Disables the input. */
   disabled?: boolean;
+  /** Marks the input as invalid. */
   error?: boolean;
+  /** Extra classes of the input. */
   className?: string;
+  /** Reaches the input. */
   ref?: Ref<HTMLInputElement>;
 }
 

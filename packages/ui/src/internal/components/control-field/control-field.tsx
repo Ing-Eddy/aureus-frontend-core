@@ -4,6 +4,7 @@ import { useRequiredFormContext, useUnknownFieldWarning } from "@/internal/hooks
 import type { ControlBaseProps } from "@/internal/types";
 import type { ControllerContext } from "@/internal/utils/helpers";
 
+/** Props of `ControlField`: the control's binding props plus how to render the field. */
 export interface ControlFieldProps extends ControlBaseProps {
   /** Name used in error messages and warnings, e.g. `"TextControl"`. */
   componentName: string;

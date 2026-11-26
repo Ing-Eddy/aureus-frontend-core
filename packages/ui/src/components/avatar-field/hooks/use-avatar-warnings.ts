@@ -9,41 +9,75 @@ import type { FieldStatusInternal } from "@/internal/types";
 
 /** The props the warnings read. Untyped code may leave any of them out. */
 export interface AvatarWarningSources extends FieldStatusInternal {
+  /** The visible label. */
   label?: ReactNode;
+  /** Accessible name without a label. */
   "aria-label"?: string;
+  /** Ids of the elements that name the field. */
   "aria-labelledby"?: string;
+  /** Describes the stored photo. */
   getFileInfo?: unknown;
+  /** Only shows the photo. */
   readOnly?: boolean;
+  /** Pasting is on. */
   pasteable?: boolean;
+  /** Name of the button without a photo. */
   chooseLabel?: unknown;
+  /** Name of the button with a photo. */
   changeLabel?: unknown;
+  /** Name of the avatar button. */
   inspectLabel?: unknown;
+  /** Title of the dialog. */
   dialogTitle?: unknown;
+  /** Name of the close button. */
   closeLabel?: unknown;
+  /** Removing is on. */
   removable?: boolean;
+  /** Text of the remove button. */
   removeLabel?: unknown;
+  /** The link to the original is on. */
   downloadable?: boolean;
+  /** Text of that link. */
   downloadLabel?: unknown;
+  /** The editor is on. */
   editable?: boolean;
+  /** Text of the edit button. */
   editLabel?: unknown;
+  /** Name of the crop area. */
   cropAreaLabel?: unknown;
+  /** Name of the zoom slider. */
   zoomLabel?: unknown;
+  /** Name of the rotate-left button. */
   rotateLeftLabel?: unknown;
+  /** Name of the rotate-right button. */
   rotateRightLabel?: unknown;
+  /** Name of the horizontal flip button. */
   flipHorizontalLabel?: unknown;
+  /** Name of the vertical flip button. */
   flipVerticalLabel?: unknown;
+  /** Text of the reset button. */
   resetLabel?: unknown;
+  /** Text of the apply button. */
   applyLabel?: unknown;
+  /** Text of the cancel button. */
   cancelLabel?: unknown;
+  /** Dropping is on. */
   dropzone?: boolean;
+  /** Its text. */
   dropzoneText?: unknown;
+  /** Immediate upload is on. */
   upload?: unknown;
+  /** Name of the progress ring. */
   uploadProgressLabel?: unknown;
+  /** Name of the cancel button. */
   cancelUploadLabel?: unknown;
+  /** Name of the retry button. */
   retryUploadLabel?: unknown;
+  /** Text of a failed upload. */
   uploadErrorText?: unknown;
 }
 
+/** The texts `editable` requires. */
 const editorTexts = [
   "editLabel",
   "cropAreaLabel",
@@ -56,12 +90,14 @@ const editorTexts = [
   "applyLabel",
   "cancelLabel",
 ] as const;
+/** The texts `upload` requires. */
 const uploadTexts = [
   "uploadProgressLabel",
   "cancelUploadLabel",
   "retryUploadLabel",
   "uploadErrorText",
 ] as const;
+/** The props every avatar field requires. */
 const alwaysTexts = ["inspectLabel", "dialogTitle", "closeLabel", "getFileInfo"] as const;
 
 /** Every problem the types catch, checked again for untyped code. */
