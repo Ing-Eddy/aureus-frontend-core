@@ -358,7 +358,7 @@ Stepping MUST be exact for decimal steps (scaled-integer arithmetic). Rounding t
 ### Requirement: Number formatting
 Formatting SHALL be configured by independent props. None of them may change another prop's default, and without any of them the field shows the digits as typed (for example `122345`).
 
-- `locale` (default `en-US`) selects the group and decimal separator symbols.
+- `locale` (default: the browser's) selects the group and decimal separator symbols and the currency symbol. The separators MUST be the ones that go with Latin digits, which are the digits the field shows and reads.
 - `grouping` (default off) adds thousands separators while typing and when blurred.
 - `decimals` (default unlimited) caps the number of fraction digits that can be typed; `0` allows only integers.
 - `padDecimals` (default off) pads the fraction with zeros up to `decimals` on blur, and does nothing without `decimals`.
@@ -367,6 +367,10 @@ Formatting SHALL be configured by independent props. None of them may change ano
 - `align` (`start` or `end`) aligns the number inside the input.
 
 While the user types with `grouping` on, separators MUST be inserted live, and the caret MUST stay after the same digit it followed before the reformat. The number MUST render left-to-right inside the input, even in right-to-left layouts.
+
+#### Scenario: Browser locale by default
+- **WHEN** a `NumberField` with `grouping` and no `locale` holds `1234.5` in a browser whose language is `es-ES`
+- **THEN** it shows "1.234,5"
 
 #### Scenario: Plain by default
 - **WHEN** a `NumberField` without formatting props receives "122345"
@@ -470,7 +474,7 @@ The input MUST use the `decimal` input mode (`numeric` when only non-negative in
   - it is also forgotten when the component unmounts.
 
 #### Scenario: Pasting a formatted amount
-- **WHEN** a user pastes "$1,234.50" into a `NumberField` with the default locale
+- **WHEN** a user pastes "$1,234.50" into a `NumberField` with `locale="en-US"`
 - **THEN** its value is `1234.5`
 
 #### Scenario: Shorthand

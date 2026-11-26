@@ -20,7 +20,7 @@ export const docs = defineComponentDocs({
       allowNegative: { type: "boolean", default: "true" },
       step: { type: "number", default: "1" },
       largeStep: { type: "number", default: "step × 10" },
-      locale: { type: "string", default: '"en-US"' },
+      locale: { type: "string", default: "the browser's" },
       grouping: { type: "boolean", default: "false" },
       decimals: { type: "number", default: "unlimited" },
       padDecimals: { type: "boolean", default: "false" },
@@ -120,7 +120,8 @@ export const docs = defineComponentDocs({
         allowNegative: "When false, the minus sign cannot be typed or pasted.",
         step: "Step of the arrow keys and the buttons. Decimal steps are exact (0.1 + 0.2 = 0.3).",
         largeStep: "Step with Shift, Page Up and Page Down.",
-        locale: "Separator symbols: `en-US` gives 1,234.5, `es-ES` gives 1.234,5.",
+        locale:
+          "Separator and currency symbols: `en-US` gives 1,234.5, `es-ES` gives 1.234,5. Without it the browser's language decides; pass it when everyone must see the same format.",
         grouping:
           "Thousands separators on or off: 123,345 or 123345. Independent of every other prop.",
         decimals:
@@ -250,7 +251,8 @@ export const docs = defineComponentDocs({
         allowNegative: "Con false, el signo menos no se puede escribir ni pegar.",
         step: "Paso de las flechas y de los botones. Los pasos decimales son exactos (0.1 + 0.2 = 0.3).",
         largeStep: "Paso con Shift, Re Pág y Av Pág.",
-        locale: "Símbolos de separación: `en-US` da 1,234.5 y `es-ES` da 1.234,5.",
+        locale:
+          "Símbolos de separación y de moneda: `en-US` da 1,234.5 y `es-ES` da 1.234,5. Sin ella decide el idioma del navegador; pásala cuando todos deban ver el mismo formato.",
         grouping:
           "Separador de miles sí o no: 123,345 o 123345. Independiente de todas las demás props.",
         decimals:

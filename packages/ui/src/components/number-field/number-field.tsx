@@ -11,7 +11,7 @@ import { cn } from "@/shadcn/lib/utils";
 import { InputGroupAddon, InputGroupText } from "@/shadcn/ui/input-group";
 import { useNumberInput } from "./hooks";
 import type { NumberFieldProps } from "./number-field-types";
-import { formatEditing, getCurrencySymbol } from "./utils";
+import { browserLocale, formatEditing, getCurrencySymbol } from "./utils";
 
 /**
  * A number input with the shared field layout. Every number behaviour is an independent, opt-in
@@ -43,7 +43,7 @@ export function NumberField(allProps: NumberFieldProps) {
     allowNegative = true,
     step = 1,
     largeStep,
-    locale = "en-US",
+    locale: localeProp,
     grouping = false,
     decimals,
     padDecimals = false,
@@ -94,6 +94,7 @@ export function NumberField(allProps: NumberFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const mergedRef = useMemo(() => mergeRefs(inputRef, ref), [ref]);
   const locked = Boolean(disabled || loading || readOnly);
+  const locale = localeProp ?? browserLocale();
 
   const number = useNumberInput({
     inputRef,

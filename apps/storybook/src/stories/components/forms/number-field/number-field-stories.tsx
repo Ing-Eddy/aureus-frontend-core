@@ -156,6 +156,7 @@ export const Grouping: Story = {
         incrementLabel="Increase"
         decrementLabel="Decrease"
         label="With grouping (en-US)"
+        locale="en-US"
         defaultValue={1234567.5}
         grouping
       />
@@ -196,6 +197,7 @@ export const Decimals: Story = {
         incrementLabel="Increase"
         decrementLabel="Decrease"
         label="Two decimals"
+        locale="en-US"
         decimals={2}
         defaultValue={12.5}
       />
@@ -203,6 +205,7 @@ export const Decimals: Story = {
         incrementLabel="Increase"
         decrementLabel="Decrease"
         label="Two decimals, padded"
+        locale="en-US"
         decimals={2}
         padDecimals
         defaultValue={12.5}
@@ -211,6 +214,7 @@ export const Decimals: Story = {
         incrementLabel="Increase"
         decrementLabel="Decrease"
         label="Three decimals, padded"
+        locale="en-US"
         decimals={3}
         padDecimals
         defaultValue={0.5}
@@ -236,12 +240,20 @@ export const PrefixSuffixCurrency: Story = {
         incrementLabel="Increase"
         decrementLabel="Decrease"
         label="Budget"
+        locale="en-US"
         currency="USD"
         decimals={0}
         grouping
         defaultValue={12000}
       />
-      <NumberField label="Rate" suffix="%" decimals={3} defaultValue={4.125} stepper={false} />
+      <NumberField
+        label="Rate"
+        locale="en-US"
+        suffix="%"
+        decimals={3}
+        defaultValue={4.125}
+        stepper={false}
+      />
       <NumberField
         incrementLabel="Increase"
         decrementLabel="Decrease"
@@ -468,6 +480,7 @@ export const Rtl: Story = {
     <div dir="rtl">
       <NumberField
         label="Quantity"
+        locale="en-US"
         defaultValue={-1234.5}
         grouping
         incrementLabel="Increase"

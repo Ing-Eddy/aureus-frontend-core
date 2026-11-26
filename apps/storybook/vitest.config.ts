@@ -24,7 +24,10 @@ export default mergeConfig(
             browser: {
               enabled: true,
               headless: true,
-              provider: playwright({ contextOptions: { reducedMotion: "reduce" } }),
+              // A fixed locale: components default to the browser's.
+              provider: playwright({
+                contextOptions: { reducedMotion: "reduce", locale: "en-US" },
+              }),
               instances: [{ browser: "chromium" }],
             },
           },

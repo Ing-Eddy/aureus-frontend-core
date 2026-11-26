@@ -178,6 +178,7 @@ const steps = { incrementLabel: "Increase", decrementLabel: "Decrease" };
 ```
 
 - **Every prop is independent and opt-in.** Without props the field shows digits as typed. `grouping`, `decimals`, `padDecimals`, `currency`, `prefix`, `suffix`, `align` and the negative format never change each other's defaults: `currency` only adds a symbol. The implementation decides which combination is right.
+- **Locale.** Separators and the currency symbol follow the browser's language. Pass `locale` (for example `locale="es-BO"`) when everyone must see the same format, or your app's language when the user chooses it.
 - **The value is `number | null`.** The control stores a number in the form, so schemas such as `z.number()` work directly.
 - **Step buttons.** `stepperLayout="stacked"` (▲▼ at the end) or `"split"` (− and + on each side); on touch screens stacked becomes split automatically. `stepper={false}` hides them. While they are shown, `incrementLabel` and `decrementLabel` are required. Holding a button repeats the step.
 - **Keyboard.** Arrows step by `step`, Shift or Page Up/Down by `largeStep`, Home/End go to `min`/`max`, Enter commits, Escape restores the last committed value.
@@ -665,6 +666,7 @@ const pasos = { incrementLabel: "Aumentar", decrementLabel: "Disminuir" };
 ```
 
 - **Cada prop es independiente y opcional.** Sin props, el campo muestra los dígitos tal como se escriben. `grouping`, `decimals`, `padDecimals`, `currency`, `prefix`, `suffix`, `align` y el formato de negativos nunca cambian los valores por defecto de las demás: `currency` solo añade un símbolo. La implementación decide qué combinación es la correcta.
+- **Idioma.** Los separadores y el símbolo de la moneda siguen el idioma del navegador. Pasa `locale` (por ejemplo `locale="es-BO"`) cuando todos deban ver el mismo formato, o el idioma de tu app cuando lo elige el usuario.
 - **El valor es `number | null`.** El control guarda un número en el formulario, así schemas como `z.number()` funcionan directamente.
 - **Botones de paso.** `stepperLayout="stacked"` (▲▼ al final) o `"split"` (− y + a cada lado); en pantallas táctiles, el apilado pasa a split automáticamente. `stepper={false}` los oculta. Mientras se muestran, `incrementLabel` y `decrementLabel` son obligatorios. Mantener pulsado un botón repite el paso.
 - **Teclado.** Las flechas suman `step`, Shift o Re Pág/Av Pág suman `largeStep`, Inicio/Fin van a `min`/`max`, Enter confirma y Escape restaura el último valor confirmado.

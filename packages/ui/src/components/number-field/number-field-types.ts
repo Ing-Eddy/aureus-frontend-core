@@ -26,7 +26,10 @@ export interface NumberFieldOptions {
   /** Step with Shift, PageUp and PageDown. Defaults to ten times `step`. */
   largeStep?: number;
 
-  /** Locale of the group and decimal separators. Defaults to `"en-US"`. */
+  /**
+   * Locale of the group and decimal separators and of the currency symbol. Defaults to the
+   * browser's. Pass it when every user must see the same format.
+   */
   locale?: string;
   /** Shows thousands separators ("123,345"). Defaults to `false` ("123345"). */
   grouping?: boolean;

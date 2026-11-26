@@ -15,6 +15,11 @@ describe("number-locale", () => {
     expect(getNumberSymbols("en-US")).toBe(getNumberSymbols("en-US"));
   });
 
+  it("gives the separators that go with Latin digits", () => {
+    expect(getNumberSymbols("ar-EG")).toEqual({ group: ",", decimal: "." });
+    expect(getNumberSymbols("es-ES-u-nu-arab")).toEqual({ group: ".", decimal: "," });
+  });
+
   it("reads currency symbols and codes", () => {
     expect(getCurrencySymbol("en-US", "USD")).toBe("$");
     expect(getCurrencySymbol("en-US", "EUR")).toBe("€");

@@ -11,7 +11,7 @@ export {
   sanitize,
 } from "./format-number";
 export type { CurrencyDisplay, NumberSymbols } from "./number-locale";
-export { getCurrencySymbol, getNumberSymbols } from "./number-locale";
+export { browserLocale, getCurrencySymbol, getNumberSymbols } from "./number-locale";
 export type { ParseOptions } from "./parse-number";
 export { parseNumber } from "./parse-number";
 export { applyShorthand, hasShorthand } from "./shorthand";

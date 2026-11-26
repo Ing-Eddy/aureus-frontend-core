@@ -73,6 +73,7 @@ const meta = {
     return <NumberControl {...(props as NumberControlProps)} action={action} />;
   },
   args: {
+    locale: "en-US",
     name: "amount",
     label: "Amount",
     helperText: "Between 1 and 10,000.",
