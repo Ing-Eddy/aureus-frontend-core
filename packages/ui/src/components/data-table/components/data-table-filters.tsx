@@ -7,7 +7,7 @@ import { DataTableToolbarButton } from "./data-table-toolbar-button";
 
 /** The advanced filters button: a popover with the consumer's content, and the active count. */
 export function DataTableFilters<TData extends RowData>() {
-  const { props, state } = useDataTableContext<TData>();
+  const { props, state, direction } = useDataTableContext<TData>();
   const filters = props.filters;
   if (!filters) return null;
 
@@ -20,7 +20,7 @@ export function DataTableFilters<TData extends RowData>() {
               <SlidersHorizontalIcon aria-hidden />
             </DataTableToolbarButton>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-80 max-w-[calc(100vw-2rem)]">
+          <PopoverContent dir={direction} align="end" className="w-80 max-w-[calc(100vw-2rem)]">
             {filters.content}
           </PopoverContent>
         </Popover>

@@ -1,5 +1,6 @@
 import { cn } from "cn";
-import { useContext, useId, useLayoutEffect } from "react";
+import { Slot } from "radix-ui";
+import { type MouseEvent, useContext, useId, useLayoutEffect } from "react";
 import { DropdownMenuItem } from "@/shadcn/ui/dropdown-menu";
 import { SubmenuContext, useAppLayoutWarnings } from "../hooks";
 import type { AppLayoutNavSubItemProps } from "../types";
@@ -12,8 +13,8 @@ import { AppLayoutNavControl, useResolvedActive } from "./app-layout-nav-control
 /**
  * A row inside an `AppLayoutNavSubmenu`, with the options of an item except `tooltip`. It reports
  * whether it is active, so the submenu is marked active and opens. While the sidebar is collapsed
- * it is shown in the submenu's flyout menu, without badge or actions; `asChild`, `className` and
- * other element attributes are not applied there.
+ * it is shown in the submenu's flyout menu, without badge or actions; `className` and other
+ * element attributes are not applied there.
  *
  * ```tsx
  * <AppLayoutNavSubItem label={t("nav.reports")} href="/sales/reports" />
@@ -58,6 +59,35 @@ export function AppLayoutNavSubItem({
         {label}
       </>
     );
+    if (asChild) {
+      // The consumer's element is the menu entry, so choosing it does what it does when expanded.
+      return (
+        <DropdownMenuItem
+          asChild
+          disabled={disabled}
+          onSelect={onSelect}
+          onClickCapture={
+            disabled
+              ? (event: MouseEvent) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+              : undefined
+          }
+          data-active={resolvedActive}
+        >
+          <Slot.Root aria-current={resolvedActive ? "page" : undefined}>
+            {icon ? (
+              <span aria-hidden="true" className="contents">
+                {icon}
+              </span>
+            ) : null}
+            <Slot.Slottable>{children}</Slot.Slottable>
+            {label}
+          </Slot.Root>
+        </DropdownMenuItem>
+      );
+    }
     if (href !== undefined && !disabled) {
       return (
         <DropdownMenuItem asChild onSelect={onSelect} data-active={resolvedActive}>

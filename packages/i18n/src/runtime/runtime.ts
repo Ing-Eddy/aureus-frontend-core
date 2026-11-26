@@ -41,7 +41,9 @@ export function createI18n(config: CreateI18nConfig): i18n {
 
   if (isDev) {
     resources.onUpdate(({ language, namespace, content }) => {
-      instance.addResourceBundle(language, namespace, content, false, true);
+      // i18next reads bundles under the canonical code (`pt-br.json` is `pt-BR`).
+      const code = instance.services.languageUtils.formatLanguageCode(language);
+      instance.addResourceBundle(code, namespace, content, false, true);
       // Re-renders the components bound to the instance without changing (or storing) the language.
       instance.emit("languageChanged", instance.language);
     });
@@ -51,9 +53,9 @@ export function createI18n(config: CreateI18nConfig): i18n {
     ...withoutManagedOptions(config.options),
     fallbackLng: config.fallbackLng,
     ...(config.lng === undefined ? {} : { lng: config.lng }),
+    // Exactly the discovered languages. i18next's defaults then do the rest: `es-ES` uses `es`,
+    // and a region-only language such as `pt-BR` is loaded under its full name.
     supportedLngs: [...resources.languages],
-    nonExplicitSupportedLngs: true,
-    load: "languageOnly",
     ns: defaultNamespace === undefined ? [] : [defaultNamespace],
     defaultNS: defaultNamespace ?? false,
   });

@@ -26,12 +26,24 @@ type Token =
 const PRECEDENCE = { "+": 1, "-": 1, "*": 2, "/": 2, neg: 3 } as const;
 
 /**
+ * Whether `text` is one amount in accounting parentheses, such as "(1,234.50)" or "$(5)": a
+ * negative number, not an expression. A shorthand suffix inside ("(5k)") does not count, so its
+ * "k" is never dropped silently.
+ */
+function isAccountingAmount(text: string): boolean {
+  if (/\d\s*[kmb]\b/i.test(text)) return false;
+  return /^\([\d.,]+\)$/.test(text.replace(/[^\d.,+\-*/()−×÷]/g, ""));
+}
+
+/**
  * Whether `text` should be evaluated as an expression: it starts with "=", or it has an
- * operator after its first character ("-5" is a number, "5-3" and "=-5" are expressions).
+ * operator or parenthesis after its first character ("-5" is a number, "5-3" and "=-5" are
+ * expressions). An amount in accounting parentheses is a number.
  */
 export function isExpression(text: string): boolean {
   const trimmed = text.trim();
   if (trimmed.startsWith("=")) return true;
+  if (isAccountingAmount(trimmed)) return false;
   return /[+\-*/()−×÷]/.test(trimmed.slice(1));
 }
 

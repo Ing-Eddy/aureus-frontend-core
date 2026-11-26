@@ -374,4 +374,18 @@ Every change to a published package needs a changeset:
 pnpm changeset
 ```
 
-When the PR is merged to `main`, CI opens a "Version Packages" PR. Merging that PR publishes to npm (trusted publishing, with provenance).
+When the PR is merged to `main`, CI opens a "version packages" PR. Merging that PR publishes to npm (trusted publishing, with provenance), after linting, building, testing and checking the packages.
+
+The workflow is `.github/workflows/release.yml`. Publishing stores no npm token, so it depends on this setup:
+
+- **GitHub:** Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests".
+- **npm:** each package has a trusted publisher for this repository and the workflow `release.yml`, allowed to run `npm publish`.
+- **A new package** does not exist on npm yet, and a trusted publisher can only be added to an existing one. Publish its first version once from your machine, before merging the "version packages" PR:
+
+  ```sh
+  pnpm login
+  pnpm build
+  pnpm --filter @aureus-core/<name> publish --access public --no-provenance
+  ```
+
+  Then add its trusted publisher and merge the PR within two days, or the new publisher expires.

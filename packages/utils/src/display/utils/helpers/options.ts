@@ -13,12 +13,20 @@ function typeName(value: unknown): string {
   return `${/^[aeiou]/.test(type) ? "an" : "a"} ${type}`;
 }
 
-/** Warns once that `fn` received a value of the wrong type. */
-export function warnType(fn: string, expected: string, value: unknown): void {
+/**
+ * Warns once that `fn` received a value of the wrong type. `outcome` says what the call does
+ * instead.
+ */
+export function warnType(
+  fn: string,
+  expected: string,
+  value: unknown,
+  outcome = "the empty text is shown",
+): void {
   const received = typeName(value);
   warnOnce(
-    `display:type:${fn}:${received}`,
-    `display: ${fn}() expected ${expected} but received ${received}; the empty text is shown.`,
+    `display:type:${fn}:${expected}:${received}`,
+    `display: ${fn}() expected ${expected} but received ${received}; ${outcome}.`,
   );
 }
 

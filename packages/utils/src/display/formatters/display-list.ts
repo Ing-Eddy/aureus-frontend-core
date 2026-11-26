@@ -23,7 +23,7 @@ export function displayList(
   for (const item of values) {
     if (isNil(item)) continue;
     if (typeof item !== "string") {
-      warnType("list", "string items", item);
+      warnType("list", "string items", item, "the item is skipped");
       continue;
     }
     const text = item.trim();

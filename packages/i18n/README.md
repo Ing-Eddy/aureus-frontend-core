@@ -9,6 +9,7 @@ i18next for Aureus apps (Vite + React), configured from the folder layout. Keep 
 - **No registration.** Create `src/features/payments/locales/es.json` and the `payments` namespace exists.
 - **Autocompletion and type errors.** Namespaces and keys of `useTranslation()` and `t()` are suggested, and a wrong one is a type error.
 - **Typed interpolation.** `"Hola, {{name}}"` requires `{ name }`.
+- **Any language code.** The file name is the language: `es.json`, `es-MX.json` or only `pt-BR.json`. A region without a file of its own (`es-ES`) uses its base language (`es`).
 - **Lazy loading.** One chunk per language and namespace, downloaded the first time a screen needs it.
 - **Keys kept in sync.** A key or file missing in a language is a warning in development and an error in `vite build`.
 - **Instant text edits.** Edited texts update without a reload. A new or deleted module reloads the page by itself.

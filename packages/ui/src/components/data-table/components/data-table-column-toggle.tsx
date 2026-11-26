@@ -14,7 +14,7 @@ import { DataTableToolbarButton } from "./data-table-toolbar-button";
 
 /** The column visibility menu: one checkbox per hideable column, and the hidden count. */
 export function DataTableColumnToggle<TData extends RowData>() {
-  const { props, table } = useDataTableContext<TData>();
+  const { props, table, direction } = useDataTableContext<TData>();
   const options = props.columnToggle;
   if (!options) return null;
   const columns = table
@@ -23,7 +23,7 @@ export function DataTableColumnToggle<TData extends RowData>() {
   const hidden = columns.filter((column) => !column.getIsVisible()).length;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu dir={direction}>
       <DataTableToolbarBadge count={hidden}>
         {(describedBy) => (
           <DropdownMenuTrigger asChild>

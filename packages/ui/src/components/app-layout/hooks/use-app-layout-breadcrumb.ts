@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import type { AppLayoutBreadcrumbItem, UseAppLayoutBreadcrumbResult } from "../types";
 import { useAppLayoutBreadcrumbContext } from "./use-app-layout-context";
 
@@ -31,12 +31,15 @@ function trailKey(items: readonly AppLayoutBreadcrumbItem[]): string {
     .join("\u0001");
 }
 
+/** Counts the callers of `useAppLayoutBreadcrumbItems`, to order their layers. */
+let callers = 0;
+
 /**
  * Shows `items` as the breadcrumb while the calling component is mounted, and restores the trail
  * that was shown before when it unmounts. The trail is updated when an item's `id`, text label or
  * `href` changes, so an inline array does not cause extra renders; change `id` to refresh a label
- * that is a React node, an `icon` or an `onSelect`. When nested components that call it mount
- * together, the outer one's trail is shown.
+ * that is a React node, an `icon` or an `onSelect`. Of several callers, the one that first
+ * rendered last is shown: a page over its section, even when both mount together.
  *
  * ```tsx
  * useAppLayoutBreadcrumbItems([
@@ -50,14 +53,17 @@ export function useAppLayoutBreadcrumbItems(items: readonly AppLayoutBreadcrumbI
     "useAppLayoutBreadcrumbItems",
   );
   const token = useId();
+  // Taken on the first render. React renders a parent before its children, so a nested caller
+  // always ranks above the outer one, although its effects run first.
+  const [order] = useState(() => ++callers);
   const itemsRef = useRef(items);
   itemsRef.current = items;
   const key = trailKey(items);
 
   useLayoutEffect(() => {
-    pushLayer(token, itemsRef.current);
+    pushLayer(token, order, itemsRef.current);
     return () => removeLayer(token);
-  }, [token, pushLayer, removeLayer]);
+  }, [token, order, pushLayer, removeLayer]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: `key` stands for the items' content.
   useLayoutEffect(() => {

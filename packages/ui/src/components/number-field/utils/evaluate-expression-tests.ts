@@ -52,6 +52,15 @@ describe("evaluateExpression", () => {
     expect(isExpression("=42")).toBe(true);
   });
 
+  it("reads one amount in accounting parentheses as a number", () => {
+    for (const text of ["(5)", "(1,234.50)", "$(1,234.50)", "($ 1,234.50)", "(5.00) BOB"]) {
+      expect(isExpression(text), text).toBe(false);
+    }
+    for (const text of ["(2+3)", "(-5)", "(5)+1", "2(3)", "(2)*(3)", "=(5)", "(5k)"]) {
+      expect(isExpression(text), text).toBe(true);
+    }
+  });
+
   it("never executes code", () => {
     // jsdom gives `import.meta.url` a non-file scheme; resolve from the test file path instead.
     const here = dirname(fileURLToPath(`file://${new URL(import.meta.url).pathname}`));

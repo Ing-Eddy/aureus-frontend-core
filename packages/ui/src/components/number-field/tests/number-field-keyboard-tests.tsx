@@ -127,4 +127,59 @@ describe("NumberField keyboard and wheel", () => {
     fireEvent.wheel(input(), { deltaY: -100 });
     expect(onValueChange).not.toHaveBeenCalled();
   });
+
+  it("changes nothing when read-only: keys, wheel, buttons, paste and blur", async () => {
+    const onValueChange = vi.fn();
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        readOnly
+        wheel
+        decimals={0}
+        min={1}
+        max={10}
+        defaultValue={50.5}
+        onValueChange={onValueChange}
+      />,
+    );
+    await userEvent.click(input());
+    await userEvent.keyboard("{ArrowUp}{ArrowDown}{PageUp}{PageDown}{Home}{End}{Enter}");
+    fireEvent.wheel(input(), { deltaY: -100 });
+    await userEvent.paste("$7.00");
+    for (const name of ["Increase", "Decrease"]) {
+      const button = screen.getByRole("button", { name });
+      expect(button).toHaveProperty("disabled", true);
+      await userEvent.click(button);
+    }
+    await userEvent.click(input());
+    await userEvent.tab();
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(input().getAttribute("aria-valuenow")).toBe("50.5");
+    expect(input().readOnly).toBe(true);
+  });
+
+  it("keeps the sign of accounting parentheses with expressions on", async () => {
+    const onValueChange = vi.fn();
+    render(
+      <NumberField
+        incrementLabel="Increase"
+        decrementLabel="Decrease"
+        label="Qty"
+        expressions
+        invalidExpressionLabel="Invalid"
+        calculatedFromLabel={(text) => `From ${text}`}
+        onValueChange={onValueChange}
+      />,
+    );
+    await userEvent.type(input(), "(1234.50){Enter}");
+    expect(onValueChange).toHaveBeenLastCalledWith(-1234.5);
+    await userEvent.clear(input());
+    await userEvent.paste("(1,234.50)");
+    expect(onValueChange).toHaveBeenLastCalledWith(-1234.5);
+    await userEvent.clear(input());
+    await userEvent.type(input(), "(2+3)*4{Enter}");
+    expect(onValueChange).toHaveBeenLastCalledWith(20);
+  });
 });

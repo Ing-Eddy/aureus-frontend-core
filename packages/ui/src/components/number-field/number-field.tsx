@@ -68,6 +68,7 @@ export function NumberField(allProps: NumberFieldProps) {
     ref,
     disabled,
     loading,
+    readOnly,
     error,
     errorMessage,
     classNames,
@@ -92,7 +93,7 @@ export function NumberField(allProps: NumberFieldProps) {
   const calculatedId = `${inputId}-calculated`;
   const inputRef = useRef<HTMLInputElement>(null);
   const mergedRef = useMemo(() => mergeRefs(inputRef, ref), [ref]);
-  const locked = Boolean(disabled || loading);
+  const locked = Boolean(disabled || loading || readOnly);
 
   const number = useNumberInput({
     inputRef,
@@ -115,6 +116,7 @@ export function NumberField(allProps: NumberFieldProps) {
     shorthand,
     expressions,
     locked,
+    readOnly: Boolean(readOnly),
     onChange,
     onFocus,
     onBlur,
@@ -212,6 +214,7 @@ export function NumberField(allProps: NumberFieldProps) {
         }
         disabled={disabled}
         loading={loading}
+        readOnly={readOnly}
         error={error || number.expressionError}
         errorMessage={number.expressionError ? invalidExpressionLabel : errorMessage}
         classNames={{

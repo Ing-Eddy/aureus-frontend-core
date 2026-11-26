@@ -115,6 +115,47 @@ describe("createI18n", () => {
     expect(fake.load).not.toHaveBeenCalledWith("es-ES", expect.anything());
   });
 
+  it.each([
+    ["the discovered code", "pt-BR", "pt-BR"],
+    ["its base language", "pt-BR", "pt"],
+    ["another region", "pt-BR", "pt-PT"],
+    ["a file named in lower case", "pt-br", "pt-BR"],
+  ])("loads a region-only language requested as %s", async (_, file, requested) => {
+    const fake = createFakeResources(
+      { en: { common: { save: "Save" } }, [file]: { common: { save: "Salvar" } } },
+      { defaultNamespace: "common" },
+    );
+    createI18n({ resources: fake.resources, fallbackLng: "en", lng: requested });
+    render(<App />);
+    expect(await screen.findByText("Salvar")).toBeTruthy();
+    expect(fake.load).toHaveBeenCalledWith(file, "common");
+  });
+
+  it("detects a region-only language from the browser", async () => {
+    setBrowser(["pt-BR"]);
+    const fake = createFakeResources(
+      { en: { common: { save: "Save" } }, "pt-BR": { common: { save: "Salvar" } } },
+      { defaultNamespace: "common" },
+    );
+    createI18n({ resources: fake.resources, fallbackLng: "en" });
+    render(<App />);
+    expect(await screen.findByText("Salvar")).toBeTruthy();
+  });
+
+  it("prefers the region's file and takes missing keys from the base language", async () => {
+    const fake = createFakeResources(
+      {
+        es: { common: { save: "Guardar" }, auth: { title: "Entrar" } },
+        "es-MX": { common: { save: "Guardar (MX)" }, auth: {} },
+      },
+      { defaultNamespace: "common" },
+    );
+    createI18n({ resources: fake.resources, fallbackLng: "es", lng: "es-MX" });
+    render(<App showAuth />);
+    expect(await screen.findByText("Guardar (MX)")).toBeTruthy();
+    expect(screen.getByText("Entrar")).toBeTruthy();
+  });
+
   it("remembers the language and uses it on the next visit", async () => {
     const first = createI18n({
       resources: createFakeResources(locales).resources,
@@ -221,6 +262,18 @@ describe("createI18n", () => {
     expect(await screen.findByText("Iniciar sesión")).toBeTruthy();
     expect(changeLanguage).not.toHaveBeenCalled();
     expect(i18n.language).toBe("es");
+  });
+
+  it("applies a development update of a file named in lower case", async () => {
+    const fake = createFakeResources(
+      { "pt-br": { common: { save: "Salvar" } } },
+      { defaultNamespace: "common" },
+    );
+    createI18n({ resources: fake.resources, fallbackLng: "pt-BR", lng: "pt-BR" });
+    render(<App />);
+    await screen.findByText("Salvar");
+    act(() => fake.emit({ language: "pt-br", namespace: "common", content: { save: "Gravar" } }));
+    expect(await screen.findByText("Gravar")).toBeTruthy();
   });
 
   it("does not subscribe to updates in production builds", async () => {

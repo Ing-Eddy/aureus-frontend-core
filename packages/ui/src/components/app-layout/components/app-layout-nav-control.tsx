@@ -52,7 +52,10 @@ export interface AppLayoutNavControlProps
   onSelect?: () => void;
   /** Whether the row is the current page, already resolved. */
   active: boolean;
-  /** Renders a disabled button, also when there is an `href`. Not applied with `asChild`. */
+  /**
+   * Renders a disabled button, also when there is an `href`. With `asChild`, the consumer's element
+   * is marked `aria-disabled`, taken out of the tab order and its clicks are cancelled.
+   */
   disabled?: boolean;
   /** With `asChild`, the consumer's element that becomes the control. */
   asChild?: boolean;
@@ -82,6 +85,8 @@ export function AppLayoutNavControl({
   collapsed,
   className,
   onClick,
+  onClickCapture,
+  onAuxClickCapture,
   ...rest
 }: AppLayoutNavControlProps) {
   const closeSheet = useCloseSheetOnNavigate();
@@ -108,9 +113,32 @@ export function AppLayoutNavControl({
   );
   const iconNode = <AppLayoutNavIcon icon={icon} label={label} collapsed={collapsed} />;
 
+  // The consumer's element cannot take `disabled` (a link has none), so clicks are cancelled on
+  // the way down: neither its own handler, a router's navigation, nor `onSelect` runs.
+  const cancel = (event: MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  const captures = { onClickCapture, onAuxClickCapture } as Pick<
+    ComponentPropsWithRef<"button">,
+    "onClickCapture" | "onAuxClickCapture"
+  >;
+
   if (asChild) {
     return (
-      <Slot.Root {...rest} {...shared} aria-current={active ? "page" : undefined}>
+      <Slot.Root
+        {...rest}
+        {...shared}
+        {...(disabled
+          ? {
+              "aria-disabled": true,
+              tabIndex: -1,
+              onClickCapture: cancel,
+              onAuxClickCapture: cancel,
+            }
+          : captures)}
+        aria-current={active ? "page" : undefined}
+      >
         {iconNode}
         <Slot.Slottable>{children}</Slot.Slottable>
         {labelNode}
@@ -122,6 +150,7 @@ export function AppLayoutNavControl({
     return (
       <AppLayoutLink
         {...(linkRest as Omit<ComponentPropsWithRef<"a">, "href">)}
+        {...(captures as Pick<ComponentPropsWithRef<"a">, "onClickCapture" | "onAuxClickCapture">)}
         {...shared}
         href={href}
         aria-current={active ? "page" : undefined}
@@ -132,7 +161,7 @@ export function AppLayoutNavControl({
     );
   }
   return (
-    <button type="button" disabled={disabled} {...rest} {...shared}>
+    <button type="button" disabled={disabled} {...rest} {...captures} {...shared}>
       {iconNode}
       {labelNode}
     </button>

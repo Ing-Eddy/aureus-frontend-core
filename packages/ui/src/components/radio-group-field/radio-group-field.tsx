@@ -130,6 +130,8 @@ export function RadioGroupField(props: RadioGroupFieldProps) {
     ) : null;
 
   const layout = { orientation, columns, appearance: rowAppearance } as const;
+  // The other radio's value is an internal id, so a native form submits the written text instead.
+  const submitsOther = Boolean(name) && group.isOther;
 
   return (
     <FieldShell
@@ -165,7 +167,7 @@ export function RadioGroupField(props: RadioGroupFieldProps) {
           onValueChange={group.choose}
           orientation={columns ? undefined : orientation}
           disabled={locked}
-          name={name}
+          name={submitsOther ? undefined : name}
           data-layout={orientation}
           data-columns={columns}
           data-appearance={appearance}
@@ -248,6 +250,9 @@ export function RadioGroupField(props: RadioGroupFieldProps) {
           ) : null}
         </RadioGroup>
         {segmented ? otherInput : null}
+        {submitsOther ? (
+          <input type="hidden" name={name} value={group.otherText} disabled={locked} />
+        ) : null}
       </div>
     </FieldShell>
   );

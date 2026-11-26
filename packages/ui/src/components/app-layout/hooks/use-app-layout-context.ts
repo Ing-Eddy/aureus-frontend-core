@@ -67,8 +67,11 @@ export const AppLayoutContext = createContext<AppLayoutContextValue | null>(null
 
 /** The breadcrumb state: the public functions plus the layers of `useAppLayoutBreadcrumbItems`. */
 export interface AppLayoutBreadcrumbContextValue extends UseAppLayoutBreadcrumbResult {
-  /** Puts a caller's trail on top, replacing a previous layer with the same token. */
-  pushLayer: (token: string, items: readonly AppLayoutBreadcrumbItem[]) => void;
+  /**
+   * Adds a caller's trail at its place in the stack (`order`, higher is on top), replacing a
+   * previous layer with the same token.
+   */
+  pushLayer: (token: string, order: number, items: readonly AppLayoutBreadcrumbItem[]) => void;
   /** Replaces the items of a caller's layer without moving it. */
   updateLayer: (token: string, items: readonly AppLayoutBreadcrumbItem[]) => void;
   /** Removes a caller's layer, so the one below is shown again. */

@@ -44,4 +44,14 @@ describe("list", () => {
     expect(display.list("a" as unknown as string[])).toBe("-");
     expect(warn).toHaveBeenCalledTimes(2);
   });
+
+  it("says that a non-string item is skipped, apart from a non-array value", () => {
+    const warn = spyWarn();
+    display.list(["a", 1 as unknown as string]);
+    display.list(1 as unknown as string[]);
+    expect(warn.mock.calls.map(([message]) => message)).toEqual([
+      "display: list() expected string items but received a number; the item is skipped.",
+      "display: list() expected an array but received a number; the empty text is shown.",
+    ]);
+  });
 });

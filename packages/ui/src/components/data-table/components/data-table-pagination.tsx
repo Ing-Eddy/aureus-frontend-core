@@ -76,7 +76,7 @@ function NavButton({
  * button is named by `pageLabel(page, count)`; the current one has `aria-current="page"`.
  */
 export function DataTablePagination<TData extends RowData>() {
-  const { props, table, state } = useDataTableContext<TData>();
+  const { props, table, state, direction } = useDataTableContext<TData>();
   const [rootRef, width] = useWidth();
   const pagination = props.pagination;
   if (!pagination) return null;
@@ -106,6 +106,7 @@ export function DataTablePagination<TData extends RowData>() {
       <div className="flex items-center gap-3 text-muted-foreground">
         {pagination.pageSizes && (
           <Select
+            dir={direction}
             value={String(pageSize)}
             onValueChange={(value) => table.setPageSize(Number(value))}
           >

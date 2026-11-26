@@ -12,7 +12,7 @@ import { useDataTableContext } from "../hooks/use-data-table-context";
 
 /** The bulk actions button, shown while at least one row is selected. */
 export function DataTableSelectionActions<TData extends RowData>() {
-  const { props, state, selectedRows, clearSelection } = useDataTableContext<TData>();
+  const { props, state, selectedRows, clearSelection, direction } = useDataTableContext<TData>();
   const selection = props.selection;
   if (!selection || (!selection.actions && !selection.renderActions)) return null;
   const rows = selectedRows(state.rowSelection);
@@ -22,7 +22,7 @@ export function DataTableSelectionActions<TData extends RowData>() {
   if (actions?.length === 0) return null;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu dir={direction}>
       <DropdownMenuTrigger asChild>
         <Button type="button" variant="outline">
           {selection.actionsLabel}

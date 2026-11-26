@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shadcn/ui/dropdown-menu";
+import { useDataTableContext } from "../hooks/use-data-table-context";
 import type { DataTableRowActionsOptions } from "../types";
 
 /** Props of `DataTableRowActions`. */
@@ -22,10 +23,11 @@ export function DataTableRowActions<TData extends RowData>({
   row,
   options,
 }: DataTableRowActionsProps<TData>) {
+  const { direction } = useDataTableContext<TData>();
   const items = options.items(row).filter((item) => !item.hidden);
   if (items.length === 0) return null;
   return (
-    <DropdownMenu>
+    <DropdownMenu dir={direction}>
       <DropdownMenuTrigger asChild>
         <Button type="button" variant="ghost" size="icon-sm" aria-label={options.label?.(row)}>
           <EllipsisIcon aria-hidden />

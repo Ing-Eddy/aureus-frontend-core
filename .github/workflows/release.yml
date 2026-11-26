@@ -1,35 +1,106 @@
 name: Release
 
+# Runs on every push to main, with Changesets:
+# - with pending changesets, it opens or updates the "version packages" pull request;
+# - without them (that pull request was merged), it publishes the versions that are not on npm.
+#
+# Publishing uses npm trusted publishing (OIDC): no npm token is stored, and the packages carry
+# provenance. Each package needs this file, release.yml, set as its trusted publisher on npmjs.com.
+# Each job gets only the permissions it needs, and only `publish` can request the OIDC token.
+
 on:
   push:
     branches: [main]
 
 concurrency: release-${{ github.ref }}
 
-permissions:
-  contents: write
-  pull-requests: write
-  id-token: write # npm trusted publishing (OIDC) + provenance, no NPM_TOKEN
+permissions: {}
 
 jobs:
-  release:
+  select-mode:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      mode: ${{ steps.select.outputs.mode }}
+      publish-plan-artifact-id: ${{ steps.select.outputs.publish-plan-artifact-id }}
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          persist-credentials: false
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: pnpm
-          registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
-      - uses: changesets/action@v1
+      - id: select
+        uses: changesets/action/select-mode@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+
+  version:
+    needs: select-mode
+    if: needs.select-mode.outputs.mode == 'version'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
         with:
-          version: pnpm exec changeset version
-          publish: pnpm release
-          title: "chore: version packages"
-          commit: "chore: version packages"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0 # the changelog names the commit of each changeset
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: changesets/action/version@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          script: pnpm exec changeset version
+          pr-title: "chore: version packages"
+          commit-message: "chore: version packages"
+
+  # Verifies and packs what will be published, without any permission to publish it.
+  pack:
+    needs: select-mode
+    if: needs.select-mode.outputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      pack-dir-artifact-id: ${{ steps.pack.outputs.pack-dir-artifact-id }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      # The packages only; the Storybook browser tests run in the CI workflow.
+      - run: pnpm turbo run build typecheck test check:package --filter='./packages/*'
+      - id: pack
+        uses: changesets/action/pack@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          publish-plan-artifact-id: ${{ needs.select-mode.outputs.publish-plan-artifact-id }}
+
+  publish:
+    needs: pack
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # git tags and GitHub releases
+      id-token: write # npm trusted publishing (OIDC) and provenance
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      # Only the release tool is needed here, and no dependency script may run next to the token.
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - uses: changesets/action/publish@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}

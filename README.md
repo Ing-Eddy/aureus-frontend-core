@@ -524,3 +524,7 @@ pnpm check:package   # verifies the built ui, utils, hooks and i18n packages (ar
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for conventions, including the story and docs contract.
+
+## License
+
+[MIT](LICENSE)

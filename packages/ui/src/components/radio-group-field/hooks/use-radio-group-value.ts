@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useControllableState } from "@/internal/hooks";
 import { isDev } from "@/internal/utils/constants";
 import type { RadioGroupOption } from "../types";
@@ -24,7 +24,8 @@ export interface UseRadioGroupValueOptions {
 
 /**
  * The radio group value (`string | null`, or the other option's text) and its mapping to the
- * value Radix shows: an option id, the other id, or `""` for nothing checked.
+ * value Radix shows: an option id, the other id, or `""` for nothing checked. A text written for
+ * the other option keeps that option chosen even when it equals an option's value.
  */
 export function useRadioGroupValue({
   options,
@@ -42,7 +43,18 @@ export function useRadioGroupValue({
   });
   const selected = current ?? null;
 
-  const known = options.some((option) => option.value === selected);
+  // The text last set through the other option. While the value is that text, the other option
+  // stays chosen: otherwise typing "red", with an option `red`, would select it and remove the input.
+  const [written, setWritten] = useState<string | null>(null);
+  const [seen, setSeen] = useState(selected);
+  if (seen !== selected) {
+    setSeen(selected);
+    // A value that was not written here (a chosen option, a reset) ends it.
+    if (written !== null && written !== selected) setWritten(null);
+  }
+
+  const writing = hasOther && selected !== null && selected === written;
+  const known = !writing && options.some((option) => option.value === selected);
   const isOther = hasOther && selected !== null && !known;
   const otherText = isOther ? (selected as string) : "";
   const radixValue = known ? (selected as string) : isOther ? OTHER_ID : "";
@@ -52,9 +64,19 @@ export function useRadioGroupValue({
   if (isOther) lastOther.current = otherText;
 
   /** Maps a Radix value back: an option id, or the other text. */
-  const choose = (id: string) => setCurrent(id === OTHER_ID ? lastOther.current : id);
-  const setOtherText = (text: string) => setCurrent(text);
-  const clear = () => setCurrent(null);
+  const choose = (id: string) => {
+    const text = id === OTHER_ID ? lastOther.current : null;
+    setWritten(text);
+    setCurrent(text ?? id);
+  };
+  const setOtherText = (text: string) => {
+    setWritten(text);
+    setCurrent(text);
+  };
+  const clear = () => {
+    setWritten(null);
+    setCurrent(null);
+  };
 
   // A value that matches no option (without an other option) checks nothing; named once.
   const warned = useRef(new Set<string>());

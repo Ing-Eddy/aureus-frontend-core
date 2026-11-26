@@ -76,8 +76,10 @@ export interface UseNumberInputOptions {
   shorthand: boolean;
   /** Whether arithmetic is evaluated. */
   expressions: boolean;
-  /** The field cannot change (disabled or loading). */
+  /** The field cannot change (disabled, loading or read-only). */
   locked: boolean;
+  /** Read-only: keys, paste and blur leave the value alone, and the keys keep moving the caret. */
+  readOnly: boolean;
   /** The consumer's handler, run after the text is applied. */
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   /** The consumer's handler, run after editing starts. */
@@ -117,6 +119,7 @@ export function useNumberInput(options: UseNumberInputOptions) {
     shorthand,
     expressions,
     locked,
+    readOnly,
   } = options;
 
   const symbols = useMemo(() => getNumberSymbols(locale), [locale]);
@@ -167,7 +170,8 @@ export function useNumberInput(options: UseNumberInputOptions) {
   const applyText = useCallback(
     (raw: string, caret: number) => {
       setExpressionError(false);
-      if (expressions && isExpression(raw)) {
+      // A leading "(" starts an expression or an accounting amount: keep it while it is typed.
+      if (expressions && (isExpression(raw) || raw.trimStart().startsWith("("))) {
         setDraft(raw);
         return;
       }
@@ -252,6 +256,7 @@ export function useNumberInput(options: UseNumberInputOptions) {
 
   const setTo = useCallback(
     (next: number) => {
+      if (locked) return;
       const bounded = clamp(round(next, decimals), lowerBound, max);
       setExpressionError(false);
       forget();
@@ -262,7 +267,7 @@ export function useNumberInput(options: UseNumberInputOptions) {
         setDraft(text);
       }
     },
-    [decimals, lowerBound, max, forget, report, focused, format],
+    [locked, decimals, lowerBound, max, forget, report, focused, format],
   );
 
   const step_ = useCallback(
@@ -316,13 +321,14 @@ export function useNumberInput(options: UseNumberInputOptions) {
       options.onFocus?.(event);
     },
     onBlur: (event: FocusEvent<HTMLInputElement>) => {
-      commit();
+      // A commit rounds and clamps, which a read-only field must not do to its value.
+      if (!readOnly) commit();
       setFocused(false);
       options.onBlur?.(event);
     },
     onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => {
       options.onKeyDown?.(event);
-      if (event.defaultPrevented) return;
+      if (event.defaultPrevented || readOnly) return;
       handleNumberKeyDown(event, {
         step: step_,
         toMin: lowerBound !== undefined ? () => setTo(lowerBound) : undefined,
@@ -341,7 +347,7 @@ export function useNumberInput(options: UseNumberInputOptions) {
     },
     onPaste: (event: ClipboardEvent<HTMLInputElement>) => {
       options.onPaste?.(event);
-      if (event.defaultPrevented) return;
+      if (event.defaultPrevented || locked) return;
       const text = event.clipboardData.getData("text");
       // Plain digits, shorthand and expressions are inserted as typed; formatted amounts replace
       // the whole value.

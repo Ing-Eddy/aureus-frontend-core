@@ -1,6 +1,7 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import type React from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import type { ComponentProps } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   AppLayout,
   AppLayoutNav,
@@ -246,6 +247,113 @@ describe("Navigation items", () => {
     const first = markup();
     expect(markup()).toBe(first);
     expect(first).toContain("--app-layout-skeleton-width: 40%");
+  });
+});
+
+const navigate = vi.fn();
+
+/** Like a router's link: runs the received handler, then navigates unless it was prevented. */
+function RouterLink({ to, onClick, children, ...rest }: ComponentProps<"a"> & { to: string }) {
+  return (
+    <a
+      {...rest}
+      href={to}
+      onClick={(event) => {
+        onClick?.(event);
+        if (event.defaultPrevented) return;
+        event.preventDefault();
+        navigate(to);
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
+describe("asChild with a router link", () => {
+  beforeEach(() => navigate.mockClear());
+
+  it("marks a disabled item and sub-item, and never activates them", async () => {
+    mockViewport(WIDE);
+    const onSelect = vi.fn();
+    const onClick = vi.fn();
+    const view = renderAppLayout({
+      nav: (
+        <AppLayoutNavGroup>
+          <AppLayoutNavItem label="Billing" disabled asChild onSelect={onSelect}>
+            <RouterLink to="/billing" onClick={onClick} />
+          </AppLayoutNavItem>
+          <AppLayoutNavSubmenu label="Sales" defaultOpen>
+            <AppLayoutNavSubItem label="Reports" disabled asChild onSelect={onSelect}>
+              <RouterLink to="/reports" onClick={onClick} />
+            </AppLayoutNavSubItem>
+          </AppLayoutNavSubmenu>
+        </AppLayoutNavGroup>
+      ),
+    });
+    for (const name of ["Billing", "Reports"]) {
+      const link = screen.getByRole("link", { name });
+      expect(link.getAttribute("aria-disabled")).toBe("true");
+      expect(link.tabIndex).toBe(-1);
+      // `fireEvent` returns false when the default, the browser's navigation, was prevented.
+      expect(fireEvent.click(link)).toBe(false);
+      await view.user.click(link);
+    }
+    expect(navigate).not.toHaveBeenCalled();
+    expect(onClick).not.toHaveBeenCalled();
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["pointer", false],
+    ["keyboard", true],
+  ])("navigates from the collapsed flyout with the %s", async (_, keyboard) => {
+    mockViewport(WIDE);
+    const onSelect = vi.fn();
+    const view = renderAppLayout({
+      layout: { defaultOpen: false },
+      nav: (
+        <AppLayoutNavGroup>
+          <AppLayoutNavSubmenu label="Sales">
+            <AppLayoutNavSubItem label="Reports" active asChild onSelect={onSelect}>
+              <RouterLink to="/reports" />
+            </AppLayoutNavSubItem>
+          </AppLayoutNavSubmenu>
+        </AppLayoutNavGroup>
+      ),
+    });
+    await view.user.click(screen.getByRole("button", { name: "Sales" }));
+    const entry = screen.getByRole("menuitem", { name: "Reports" });
+    expect(entry.getAttribute("href")).toBe("/reports");
+    expect(entry.getAttribute("aria-current")).toBe("page");
+    if (keyboard) {
+      act(() => entry.focus());
+      await view.user.keyboard("{Enter}");
+    } else await view.user.click(entry);
+    expect(navigate).toHaveBeenCalledExactlyOnceWith("/reports");
+    expect(onSelect).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("menu")).toBeNull();
+  });
+
+  it("does not navigate from a disabled flyout entry", async () => {
+    mockViewport(WIDE);
+    const view = renderAppLayout({
+      layout: { defaultOpen: false },
+      nav: (
+        <AppLayoutNavGroup>
+          <AppLayoutNavSubmenu label="Sales">
+            <AppLayoutNavSubItem label="Reports" disabled asChild>
+              <RouterLink to="/reports" />
+            </AppLayoutNavSubItem>
+          </AppLayoutNavSubmenu>
+        </AppLayoutNavGroup>
+      ),
+    });
+    await view.user.click(screen.getByRole("button", { name: "Sales" }));
+    const entry = screen.getByRole("menuitem", { name: "Reports" });
+    expect(entry.getAttribute("aria-disabled")).toBe("true");
+    expect(fireEvent.click(entry)).toBe(false);
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
 

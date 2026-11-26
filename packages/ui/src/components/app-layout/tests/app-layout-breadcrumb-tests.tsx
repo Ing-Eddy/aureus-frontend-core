@@ -1,7 +1,7 @@
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type React from "react";
-import { useState } from "react";
+import { StrictMode, useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   AppLayout,
@@ -42,6 +42,27 @@ function Shell() {
   );
 }
 
+function Section({ children }: { children?: React.ReactNode }) {
+  useAppLayoutBreadcrumbItems([{ label: "Section" }]);
+  return <>{children}</>;
+}
+
+function Nested({ strict = false }: { strict?: boolean }) {
+  const [page, setPage] = useState<string | null>("Invoice 1");
+  const tree = (
+    <Section>
+      <button type="button" onClick={() => setPage("Invoice 2")}>
+        next page
+      </button>
+      <button type="button" onClick={() => setPage(null)}>
+        close page
+      </button>
+      {page ? <Page key={page} items={[{ label: page }]} /> : null}
+    </Section>
+  );
+  return strict ? <StrictMode>{tree}</StrictMode> : tree;
+}
+
 const counter = { renders: 0 };
 
 function Counter() {
@@ -69,6 +90,21 @@ function renderBreadcrumb(
     </AppLayout>,
   );
 }
+
+describe("nested breadcrumb callers", () => {
+  it.each([false, true])(
+    "shows the page's trail over its section when both mount together (strict mode: %s)",
+    async (strict) => {
+      const user = userEvent.setup();
+      renderBreadcrumb(<Nested strict={strict} />);
+      expect(trail()).toEqual(["Invoice 1"]);
+      await user.click(screen.getByRole("button", { name: "next page" }));
+      expect(trail()).toEqual(["Invoice 2"]);
+      await user.click(screen.getByRole("button", { name: "close page" }));
+      expect(trail()).toEqual(["Section"]);
+    },
+  );
+});
 
 describe("Breadcrumb state", () => {
   it("renders nothing for an empty trail", () => {
