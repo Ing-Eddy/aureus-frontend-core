@@ -14,7 +14,8 @@
       "!.changeset",
       "!.claude",
       "!.opencode",
-      "!openspec"
+      "!openspec",
+      "!**/CHANGELOG.md"
     ]
   },
   "formatter": {
