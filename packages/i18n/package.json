@@ -1,0 +1,86 @@
+{
+  "name": "@aureus-core/i18n",
+  "version": "0.0.0",
+  "description": "i18next for Aureus projects: a Vite plugin that discovers locale namespaces and types t(), and a lazy-loading runtime",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ing-Eddy/aureus-frontend-core.git",
+    "directory": "packages/i18n"
+  },
+  "files": [
+    "dist",
+    "client.d.ts"
+  ],
+  "sideEffects": false,
+  "exports": {
+    "./vite": {
+      "types": "./dist/vite/index.d.ts",
+      "default": "./dist/vite/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime/index.d.ts",
+      "default": "./dist/runtime/index.js"
+    },
+    "./client": {
+      "types": "./client.d.ts"
+    },
+    "./internal/*": null,
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check:package": "node scripts/check-package.mjs"
+  },
+  "peerDependencies": {
+    "i18next": "^27.2.0",
+    "react": "^19",
+    "react-i18next": "^18",
+    "vite": "^8"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@aureus-core/tsconfig": "workspace:*",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "i18next": "^27.2.0",
+    "jsdom": "^31.0.0",
+    "publint": "^0.3.25",
+    "react": "^19",
+    "react-dom": "^19",
+    "react-i18next": "^18.0.3",
+    "tsdown": "^0.23.7",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
+  },
+  "homepage": "https://ing-eddy.github.io/aureus-frontend-core/",
+  "bugs": {
+    "url": "https://github.com/Ing-Eddy/aureus-frontend-core/issues"
+  },
+  "keywords": [
+    "react",
+    "i18n",
+    "i18next",
+    "react-i18next",
+    "vite",
+    "vite-plugin",
+    "typescript"
+  ]
+}

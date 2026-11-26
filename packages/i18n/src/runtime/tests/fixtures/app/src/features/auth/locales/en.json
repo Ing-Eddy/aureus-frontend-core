@@ -1,0 +1,7 @@
+{
+  "title": "Sign in",
+  "login": { "title": "Sign in", "submit": "Continue" },
+  "welcome": "Hi, {{name}}",
+  "attempts_one": "{{count}} attempt",
+  "attempts_other": "{{count}} attempts"
+}

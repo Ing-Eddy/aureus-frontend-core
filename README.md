@@ -7,6 +7,7 @@ Monorepo of shared frontend resources (React + TypeScript), published to npm und
 | [`@aureus-core/ui`](packages/ui)       | shadcn/ui base layer + custom components, Tailwind v4               |
 | [`@aureus-core/utils`](packages/utils) | Framework-free utilities: shared date-format catalog, value display |
 | [`@aureus-core/hooks`](packages/hooks) | React hooks: react-hook-form form hooks from zod schemas            |
+| [`@aureus-core/i18n`](packages/i18n)   | i18next setup: namespaces found from `locales` folders, typed `t()` |
 | `apps/storybook` (private)             | Component playground and docs                                       |
 | `tooling/typescript` (private)         | Shared tsconfig bases                                               |
 
@@ -477,17 +478,49 @@ const form = useLoginForm({ serverErrors: loginMutation.error?.body });
 
 See [`packages/hooks/README.md`](packages/hooks/README.md) and the **hooks** section of the documentation.
 
+## Using `@aureus-core/i18n` in a project
+
+```sh
+pnpm add @aureus-core/i18n i18next react-i18next
+```
+
+i18next for Vite + React apps, configured from the folder layout:
+
+- every `src/**/locales` folder is a namespace named after its parent folder (`src/features/auth/locales` → `auth`);
+- every `<language>.json` inside it is a language;
+- a new module needs no registration;
+- each language and namespace is loaded lazily;
+- `t()` is typed from the `typesFrom` language;
+- a key missing in a language warns in development and fails `vite build`.
+
+| Entry point                 | Import                                                   |
+| --------------------------- | -------------------------------------------------------- |
+| `@aureus-core/i18n/vite`    | `import { aureusI18n } from "@aureus-core/i18n/vite"`    |
+| `@aureus-core/i18n/runtime` | `import { createI18n } from "@aureus-core/i18n/runtime"` |
+| `@aureus-core/i18n/client`  | `"types": ["vite/client", "@aureus-core/i18n/client"]`   |
+
+```ts
+// vite.config.ts
+plugins: [react(), aureusI18n({ typesFrom: "es", defaultNamespace: "common" })];
+
+// src/i18n.ts
+import resources from "virtual:aureus-i18n";
+export const i18n = createI18n({ resources, fallbackLng: "es" });
+```
+
+See [`packages/i18n/README.md`](packages/i18n/README.md) and the **i18n** section of the documentation.
+
 ## Development
 
 ```sh
 pnpm install
 pnpm --filter @aureus-core/storybook exec playwright install chromium   # once: browser for story tests
-pnpm dev             # ui, utils and hooks in watch mode + Storybook on http://localhost:6006
+pnpm dev             # ui, utils, hooks and i18n in watch mode + Storybook on http://localhost:6006
 pnpm build           # build everything
 pnpm lint            # biome
 pnpm typecheck
 pnpm test            # unit tests + every Storybook story in Chromium (interactions + axe)
-pnpm check:package   # verifies the built ui, utils and hooks packages (artifacts, aliases, publint, attw, tarball)
+pnpm check:package   # verifies the built ui, utils, hooks and i18n packages (artifacts, aliases, publint, attw, tarball)
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for conventions, including the story and docs contract.

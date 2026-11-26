@@ -1,0 +1,7 @@
+{
+  "title": "Entrar",
+  "login": { "title": "Iniciar sesión", "submit": "Entrar" },
+  "welcome": "Hola, {{name}}",
+  "attempts_one": "{{count}} intento",
+  "attempts_other": "{{count}} intentos"
+}

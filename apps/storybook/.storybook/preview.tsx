@@ -98,6 +98,8 @@ const preview: Preview = {
           ["Date formats", ["Guide", "Catalog"], "Display", ["Guide", "Playground"]],
           "hooks",
           ["Schema form", ["Guide", "*"]],
+          "i18n",
+          ["Translations", ["Guide", "*"]],
           "Tools",
         ],
       },

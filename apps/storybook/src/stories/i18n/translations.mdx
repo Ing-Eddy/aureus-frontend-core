@@ -1,0 +1,834 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+import * as TranslationsStories from "./translations/translations-stories";
+
+<Meta of={TranslationsStories} name="Guide" />
+
+<En>
+
+# Translations
+
+`@aureus-core/i18n` sets up i18next in a Vite + React app from its folder layout. You keep your texts in `locales` folders, as you already do, and you declare the rules once: the package finds every namespace and every language by itself, loads each one only when it is needed, and types `t()` from your JSON files.
+
+It has two parts:
+
+- **`@aureus-core/i18n/vite`**: a Vite plugin (`aureusI18n`) that discovers the locale folders, serves them to the app, writes the types and checks that every language has the same keys.
+- **`@aureus-core/i18n/runtime`**: `createI18n`, which creates the app's i18next instance from what the plugin found.
+
+## Why use it
+
+| Benefit | What it saves you |
+| --- | --- |
+| **No registration** | Create `src/features/payments/locales/es.json` and the `payments` namespace exists. You never import or register a JSON file by hand again. |
+| **Autocompletion** | `useTranslation("…")` suggests the namespaces and `t("…")` suggests the keys, nested ones included. |
+| **Type errors for wrong keys** | `t("login.titel")` or `useTranslation("paymnets")` fail in TypeScript, not on screen in production. |
+| **Typed interpolation** | `"Hola, {{name}}"` makes `t("welcome")` without `{ name }` a type error. |
+| **Lazy loading** | Each language and namespace is a separate chunk, downloaded the first time a screen needs it. The first load only carries what the first screen uses. |
+| **Keys kept in sync** | A key missing in one language is a warning while you develop and an error in `vite build`, with the exact namespace, language and key. |
+| **Instant text edits** | Editing a JSON file updates the texts on the page without a reload. A new or deleted module reloads the page by itself. |
+| **Remembered language** | The first visit uses the browser's language (`es-MX` → `es`). The user's choice is stored and used on the next visit. |
+| **One setup for every app** | Every Aureus app configures translations the same way, in three small files. |
+
+## How it works
+
+```text
+vite.config.ts ── aureusI18n({ typesFrom: "es" })           (Vite plugin, runs in Node)
+        │  searches src/**/locales → { namespace → { language → JSON file } }
+        ├─► virtual:aureus-i18n        languages, namespaces and one lazy import() per file
+        ├─► src/types/i18next.d.ts     the texts of "es" as types → t() is typed
+        └─► key check                  every language against "es" → warning (dev) / error (build)
+
+src/i18n.ts ── createI18n({ resources, fallbackLng })        (runtime, runs in the browser)
+        └─► i18next instance + React bindings + a backend that calls those imports
+```
+
+- **In development**, the plugin watches the locale folders. A new or deleted namespace or language regenerates the types and reloads the page. An edited text regenerates the types and is sent to the page without a reload. The key check logs a warning in the terminal.
+- **In `vite build`**, the plugin regenerates the types, and any key or file missing in a language stops the build. Each JSON file becomes its own chunk.
+
+## Installation
+
+```sh
+pnpm add @aureus-core/i18n i18next react-i18next
+```
+
+`i18next` 27, `react-i18next` 18 and `react` 19 are required peers. `vite` 8 is needed by the plugin, and your app already has it. There is no root import: always import `/vite`, `/runtime` or `/client`.
+
+## Setup, step by step
+
+The usual layout of an Aureus app:
+
+```text
+src/
+├── common/
+│   └── locales/
+│       ├── en.json
+│       └── es.json
+├── features/
+│   ├── auth/
+│   │   └── locales/   (en.json, es.json)
+│   ├── companies/
+│   │   └── locales/   (en.json, es.json)
+│   └── accounts/
+│       └── locales/   (en.json, es.json)
+└── main.tsx
+```
+
+**1. The plugin**, in `vite.config.ts`. `typesFrom` is the only required option: the language your types come from.
+
+```ts
+// vite.config.ts
+import { aureusI18n } from "@aureus-core/i18n/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [react(), aureusI18n({ typesFrom: "es", defaultNamespace: "common" })],
+});
+```
+
+**2. The types of the virtual module**, in the `tsconfig` that includes `src`:
+
+```jsonc
+// tsconfig.app.json
+{
+  "compilerOptions": {
+    "types": ["vite/client", "@aureus-core/i18n/client"]
+  }
+}
+```
+
+**3. The i18next instance**, in `src/i18n.ts`:
+
+```ts
+// src/i18n.ts
+import { createI18n } from "@aureus-core/i18n/runtime";
+import resources from "virtual:aureus-i18n";
+
+export const i18n = createI18n({ resources, fallbackLng: "es" });
+```
+
+**4. Load it once and wrap the app in `Suspense`**, because each namespace is loaded on demand:
+
+```tsx
+// src/main.tsx
+import { StrictMode, Suspense } from "react";
+import { createRoot } from "react-dom/client";
+import "./i18n";
+import { App } from "./app";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <Suspense fallback={null}>
+      <App />
+    </Suspense>
+  </StrictMode>,
+);
+```
+
+**5. Use it** with react-i18next as usual:
+
+```tsx
+// src/features/auth/components/login-page.tsx
+import { useTranslation } from "react-i18next";
+
+export function LoginPage() {
+  const { t } = useTranslation("auth");
+  return <h1>{t("login.title")}</h1>;
+}
+```
+
+Start the dev server once: the plugin writes `src/types/i18next.d.ts`, and from then on `t("")` autocompletes. Commit that file (see "Best practices").
+
+## Live demo
+
+The demo runs `createI18n` with in-memory resources, shaped like the ones the plugin serves, and a small delay for each file. Change the example app's language, open the payments screen, and watch which files are loaded and when.
+
+<Canvas of={TranslationsStories.LiveDemo} />
+
+## Options
+
+### `aureusI18n(options)`
+
+| Option | Type | Default | When to use it |
+| --- | --- | --- | --- |
+| `typesFrom` | `string` | (required) | The language your types come from, and the one every other language is compared with. It must exist as a `<language>.json` file. |
+| `defaultNamespace` | `string` | none | The namespace `t()` uses when you give none, usually `"common"`. It must be one of the discovered namespaces. Without it, every `useTranslation` must name its namespace. |
+| `include` | `string[]` | `["src/**/locales"]` | Narrow where namespaces are searched. Paths are relative to the Vite root. `*` matches one folder level and `**` any number. |
+| `exclude` | `string[]` | `[]` | Leave out folders that would otherwise match. `node_modules`, `dist` and hidden folders (`.something`) are always left out. |
+| `namespaces` | `Record<string, string>` | `{}` | Give a folder an explicit namespace name (`{ "src/shared/i18n": "shared" }`). Also adds folders that are not called `locales` or that `include` does not match. |
+| `typesFile` | `string` | `"src/types/i18next.d.ts"` | Where the generated declaration file is written, relative to the Vite root. |
+
+The **namespace name** is the name of the folder that contains `locales`: `src/features/auth/locales` → `auth`. The **languages** are the JSON file names: `es.json` → `es`.
+
+### `createI18n(config)`
+
+| Option | Type | Default | When to use it |
+| --- | --- | --- | --- |
+| `resources` | `I18nResources` | (required) | Always `import resources from "virtual:aureus-i18n"`. |
+| `fallbackLng` | `string`, array or i18next's fallback object | (required) | The language shown when the active one lacks a key or is not supported. The library never chooses it for you. |
+| `lng` | `string` | none | Forces the initial language and turns detection off. |
+| `detection` | `{ storageKey?: string }` or `false` | on, key `"aureus-i18n-language"` | `false` to start always on `fallbackLng` without storing anything. `storageKey` to use your own `localStorage` key. |
+| `syncDocument` | `boolean` | `false` | Keeps the `lang` and `dir` attributes of the document's `html` element in sync with the language. Use it for right-to-left languages. |
+| `options` | i18next `InitOptions` | `{}` | Any other i18next option, passed as is (`interpolation`, `returnNull`, `saveMissing`…). |
+
+`createI18n` returns i18next's own instance (`i18n.changeLanguage`, `i18n.t`, `i18n.language`…). It sets these i18next options itself: `supportedLngs` (the discovered languages), `nonExplicitSupportedLngs`, `load`, `ns`, `defaultNS`, `backend`, `resources`, `partialBundledLanguages`, `lng` and `fallbackLng`. If you pass one of them in `options`, it is ignored and a development warning names it.
+
+## Examples
+
+### A. A typical project, with no configuration
+
+```text
+src/common/locales/{en,es}.json
+src/features/auth/locales/{en,es}.json
+src/features/companies/locales/{en,es}.json
+src/features/accounts/locales/{en,es}.json
+```
+
+```ts
+aureusI18n({ typesFrom: "es", defaultNamespace: "common" });
+```
+
+Result: the namespaces are `accounts`, `auth`, `common` and `companies`, and the languages are `en` and `es`. `vite build` emits eight small chunks, one per file. A screen that uses only `auth` downloads `common` and `auth`, in the active language only.
+
+### B. Adding a module while you develop
+
+With `pnpm dev` running, create the folder and its files:
+
+```text
+src/features/payments/locales/es.json   { "title": "Pagos" }
+src/features/payments/locales/en.json   { "title": "Payments" }
+```
+
+The terminal shows:
+
+```text
+[aureusI18n] Locales changed (added namespace "payments"): types regenerated, reloading the page.
+```
+
+The page reloads, `src/types/i18next.d.ts` now has `payments`, and `useTranslation("payments")` autocompletes `t("title")`. You touched no configuration. Deleting a module works the same way (`removed namespace "…"`), and so does adding a language: create `fr.json` in every namespace.
+
+### C. Autocompletion and type errors
+
+Given `src/features/auth/locales/es.json`:
+
+```json
+{
+  "login": { "title": "Iniciar sesión", "submit": "Entrar" },
+  "welcome": "Hola, {{name}}",
+  "attempts_one": "{{count}} intento",
+  "attempts_other": "{{count}} intentos"
+}
+```
+
+```tsx
+const { t } = useTranslation("auth");
+
+t("login.title");                  // ✅ autocompleted, nested keys use dots
+t("login.titel");                  // ❌ type error: the key does not exist
+t("welcome", { name: "Ana" });     // ✅
+t("welcome");                      // ❌ type error: "{{name}}" needs { name }
+t("attempts", { count: 3 });       // ✅ plurals by their base key: "3 intentos"
+useTranslation("paymnets");        // ❌ type error: no such namespace
+```
+
+To use **several namespaces** in one component, list them. The first is the default for that hook, and the others are used with their prefix:
+
+```tsx
+const { t } = useTranslation(["auth", "common"]);
+t("login.submit");                 // auth
+t("common:actions.save");          // ✅ common, with its prefix
+```
+
+A prefixed key only type-checks when its namespace is in the list: `useTranslation("auth")` followed by `t("common:actions.save")` is a type error. With `defaultNamespace: "common"`, `useTranslation()` with no argument uses `common`.
+
+### D. Keys out of sync between languages
+
+You remove `login.title` from `src/features/auth/locales/en.json`. While developing, the terminal warns and the server keeps running:
+
+```text
+[aureusI18n] The translations are out of sync with "es" (the typesFrom language):
+  auth
+    en: missing "login.title"
+```
+
+`vite build` stops with the same report:
+
+```text
+error during build:
+Build failed with 1 error:
+
+[plugin aureus-i18n]
+RolldownError: [aureusI18n] The translations are out of sync with "es" (the typesFrom language):
+  auth
+    en: missing "login.title"
+```
+
+The report also lists keys a language has that `typesFrom` lacks (`en: not in "es" "oldKey"`) and missing files (`en: no file (expected src/features/payments/locales/en.json)`). **To fix it**, add the key to `en.json` or remove it from every language. Plural forms are compared by their base key, so a language with more plural categories (Arabic has six) is not reported.
+
+A JSON file that is not valid stops the build and names the file. While developing it is logged as an error and the rest of the texts keep working.
+
+### E. Narrowing the search
+
+```ts
+// Leave out an old folder that still has locales
+aureusI18n({ typesFrom: "es", exclude: ["src/legacy/**"] });
+
+// Only modules under features (src/common/locales is not searched any more)
+aureusI18n({ typesFrom: "es", include: ["src/features/*/locales"] });
+
+// Modules nested at any depth under features
+aureusI18n({ typesFrom: "es", include: ["src/features/**/locales", "src/common/locales"] });
+```
+
+### F. Naming folders and resolving a collision
+
+If a folder is not called `locales`, or you want another name, use `namespaces`:
+
+```ts
+aureusI18n({
+  typesFrom: "es",
+  namespaces: { "src/shared/i18n": "shared" },
+});
+```
+
+Two folders that give the same name are an error, which names both of them:
+
+```text
+[aureusI18n] Two folders give the namespace "common": src/common/locales and src/features/common/locales. Rename one of them, or give one another name with the "namespaces" option.
+```
+
+Solve it by renaming one folder, or by giving one an explicit name:
+
+```ts
+aureusI18n({
+  typesFrom: "es",
+  namespaces: { "src/features/common/locales": "featureCommon" },
+});
+```
+
+### G. Choosing and changing the language
+
+By default the initial language is chosen in this order:
+
+1. the one the user chose in a previous visit, if it is still supported;
+2. the first of the browser's preferred languages that matches yours (`es-MX` → `es`, `pt` → `pt-BR`);
+3. `fallbackLng`.
+
+Every change is stored in `localStorage`. A language selector only calls `changeLanguage`:
+
+```tsx
+import { useTranslation } from "react-i18next";
+
+export function LanguageSelect() {
+  const { i18n } = useTranslation();
+  return (
+    <select value={i18n.resolvedLanguage} onChange={(event) => i18n.changeLanguage(event.target.value)}>
+      <option value="es">Español</option>
+      <option value="en">English</option>
+    </select>
+  );
+}
+```
+
+Other cases:
+
+```ts
+// Your own storage key
+createI18n({ resources, fallbackLng: "es", detection: { storageKey: "acme-language" } });
+
+// No detection: always start on fallbackLng and store nothing
+createI18n({ resources, fallbackLng: "es", detection: false });
+
+// A language decided by the app (for example from the user's profile)
+createI18n({ resources, fallbackLng: "es", lng: user.language });
+
+// Right-to-left languages: keep the document's lang and dir in sync
+createI18n({ resources, fallbackLng: "en", syncDocument: true });
+```
+
+**Outside React** (a zod schema created at module level, a fetch helper…), import the instance from `src/i18n.ts`, not from `"i18next"`. `createI18n` creates its own instance and does not configure i18next's global one:
+
+```ts
+import { i18n } from "@/i18n";
+
+const message = i18n.t("common:errors.network");
+```
+
+### H. With schema hooks and `@aureus-core/ui`
+
+Schema hooks (see the schema-form guide) get typed messages too, and the components of `@aureus-core/ui` take every text from you:
+
+```tsx
+// src/features/auth/hooks/use-login-schema.ts
+export const useLoginSchema = () => {
+  const { t } = useTranslation("auth");
+  return useMemo(
+    () =>
+      z.object({
+        email: z.email(t("errors.invalidEmail")),
+        password: z.string().min(1, t("errors.required")),
+      }),
+    [t],
+  );
+};
+
+// src/features/auth/components/login-form.tsx
+const { t } = useTranslation(["auth", "common"]);
+<TextControl name="email" label={t("fields.email")} />
+<Button type="submit">{t("common:actions.save")}</Button>
+```
+
+A typo in any of those keys is a type error.
+
+### I. Other i18next options
+
+`options` is passed to i18next as is:
+
+```ts
+createI18n({
+  resources,
+  fallbackLng: "es",
+  options: { interpolation: { escapeValue: false }, returnEmptyString: false },
+});
+```
+
+The generated file declares only the namespaces and `defaultNS`. Other type options go in your own declaration file, and they merge with the generated one. For example, with very large locale sets, i18next's selector API keeps the editor fast:
+
+```ts
+// src/types/i18next-options.d.ts
+import "i18next";
+
+declare module "i18next" {
+  interface CustomTypeOptions {
+    enableSelector: "optimize";
+  }
+}
+```
+
+Do not declare `resources` or `defaultNS` there: the generated file owns them.
+
+## Best practices and FAQ
+
+- **Commit `src/types/i18next.d.ts`.** `tsc` in CI then works without starting Vite, and `vite build` regenerates it anyway, so a stale file shows up as a diff. Never edit it by hand: it is rewritten on every change.
+- **Leave the generated file out of your formatter and linter** if they would change it. It is already written the way Biome and Prettier format by default, but a project with other settings would see the file change back on every run.
+- **One JSON file per language and module.** Keep each module's texts next to its code: the module and its translations move or disappear together.
+- **Nest keys by screen or component** (`login.title`, `login.submit`). The autocompletion then groups them, and the key check reports them clearly.
+- **Write every text in `typesFrom` first.** It is the source of the types: a key that exists only in another language has no types and is reported as `not in "es"`.
+- **Autocompletion does not show up?** Check that the dev server or a build has run once, so the file exists, and that `@aureus-core/i18n/client` is in the `types` of the tsconfig that includes `src`. Then restart the editor's TypeScript server.
+- **CI.** `vite build` fails on missing keys or files, so the usual `pnpm build` step already protects production. Add no other step.
+
+</En>
+<Es>
+
+# Traducciones
+
+`@aureus-core/i18n` configura i18next en una app Vite + React a partir de su estructura de carpetas. Tus textos siguen en carpetas `locales`, como ya los tienes, y declaras las reglas una sola vez. El paquete encuentra solo cada namespace y cada idioma, carga cada uno únicamente cuando hace falta y tipa `t()` a partir de tus JSON.
+
+Tiene dos partes:
+
+- **`@aureus-core/i18n/vite`**: un plugin de Vite (`aureusI18n`) que descubre las carpetas de locales, se las sirve a la app, escribe los tipos y comprueba que todos los idiomas tengan las mismas claves.
+- **`@aureus-core/i18n/runtime`**: `createI18n`, que crea la instancia de i18next de la app con lo que encontró el plugin.
+
+## Por qué usarlo
+
+| Virtud | Qué te ahorra |
+| --- | --- |
+| **Cero registro** | Creas `src/features/payments/locales/es.json` y el namespace `payments` ya existe. Nunca más importas ni registras un JSON a mano. |
+| **Autocompletado** | `useTranslation("…")` sugiere los namespaces y `t("…")` sugiere las claves, también las anidadas. |
+| **Errores de tipos con claves mal escritas** | `t("login.titel")` o `useTranslation("paymnets")` fallan en TypeScript, no en pantalla en producción. |
+| **Interpolación tipada** | `"Hola, {{name}}"` hace que `t("welcome")` sin `{ name }` sea un error de tipos. |
+| **Carga lazy** | Cada idioma y namespace es un chunk aparte, que se descarga la primera vez que una pantalla lo necesita. La primera carga solo lleva lo que usa la primera pantalla. |
+| **Claves sincronizadas** | Una clave que falta en un idioma es un aviso mientras desarrollas y un error en `vite build`, con el namespace, el idioma y la clave exactos. |
+| **Textos al instante** | Editar un JSON actualiza los textos de la página sin recargarla. Un módulo nuevo o borrado recarga la página solo. |
+| **Idioma recordado** | La primera visita usa el idioma del navegador (`es-MX` → `es`). La elección del usuario se guarda y se usa en la siguiente visita. |
+| **Una configuración para todas las apps** | Todas las apps Aureus configuran las traducciones igual, en tres archivos pequeños. |
+
+## Cómo funciona
+
+```text
+vite.config.ts ── aureusI18n({ typesFrom: "es" })           (plugin de Vite, corre en Node)
+        │  busca src/**/locales → { namespace → { idioma → archivo JSON } }
+        ├─► virtual:aureus-i18n        idiomas, namespaces y un import() lazy por archivo
+        ├─► src/types/i18next.d.ts     los textos de "es" como tipos → t() tipado
+        └─► comprobación de claves      cada idioma contra "es" → aviso (dev) / error (build)
+
+src/i18n.ts ── createI18n({ resources, fallbackLng })        (runtime, corre en el navegador)
+        └─► instancia de i18next + enlace con React + un backend que llama a esos imports
+```
+
+- **En desarrollo**, el plugin vigila las carpetas de locales. Un namespace o idioma nuevo o borrado regenera los tipos y recarga la página. Un texto editado regenera los tipos y se envía a la página sin recargarla. La comprobación de claves muestra un aviso en la terminal.
+- **En `vite build`**, el plugin regenera los tipos, y cualquier clave o archivo que falte en un idioma detiene el build. Cada JSON se convierte en su propio chunk.
+
+## Instalación
+
+```sh
+pnpm add @aureus-core/i18n i18next react-i18next
+```
+
+`i18next` 27, `react-i18next` 18 y `react` 19 son peers obligatorios. El plugin necesita `vite` 8, que tu app ya tiene. No hay import raíz: importa siempre `/vite`, `/runtime` o `/client`.
+
+## Configuración paso a paso
+
+La estructura habitual de una app Aureus:
+
+```text
+src/
+├── common/
+│   └── locales/
+│       ├── en.json
+│       └── es.json
+├── features/
+│   ├── auth/
+│   │   └── locales/   (en.json, es.json)
+│   ├── companies/
+│   │   └── locales/   (en.json, es.json)
+│   └── accounts/
+│       └── locales/   (en.json, es.json)
+└── main.tsx
+```
+
+**1. El plugin**, en `vite.config.ts`. `typesFrom` es la única opción obligatoria: el idioma del que salen tus tipos.
+
+```ts
+// vite.config.ts
+import { aureusI18n } from "@aureus-core/i18n/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [react(), aureusI18n({ typesFrom: "es", defaultNamespace: "common" })],
+});
+```
+
+**2. Los tipos del módulo virtual**, en el `tsconfig` que incluye `src`:
+
+```jsonc
+// tsconfig.app.json
+{
+  "compilerOptions": {
+    "types": ["vite/client", "@aureus-core/i18n/client"]
+  }
+}
+```
+
+**3. La instancia de i18next**, en `src/i18n.ts`:
+
+```ts
+// src/i18n.ts
+import { createI18n } from "@aureus-core/i18n/runtime";
+import resources from "virtual:aureus-i18n";
+
+export const i18n = createI18n({ resources, fallbackLng: "es" });
+```
+
+**4. Cárgala una vez y envuelve la app en `Suspense`**, porque cada namespace se carga bajo demanda:
+
+```tsx
+// src/main.tsx
+import { StrictMode, Suspense } from "react";
+import { createRoot } from "react-dom/client";
+import "./i18n";
+import { App } from "./app";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <Suspense fallback={null}>
+      <App />
+    </Suspense>
+  </StrictMode>,
+);
+```
+
+**5. Úsala** con react-i18next como siempre:
+
+```tsx
+// src/features/auth/components/login-page.tsx
+import { useTranslation } from "react-i18next";
+
+export function LoginPage() {
+  const { t } = useTranslation("auth");
+  return <h1>{t("login.title")}</h1>;
+}
+```
+
+Arranca el servidor de desarrollo una vez: el plugin escribe `src/types/i18next.d.ts`, y desde entonces `t("")` autocompleta. Commitea ese archivo (ver "Buenas prácticas").
+
+## Demo en vivo
+
+La demo ejecuta `createI18n` con recursos en memoria, con la misma forma que los que sirve el plugin, y un pequeño retardo por archivo. Cambia el idioma de la app de ejemplo, abre la pantalla de pagos y mira qué archivos se cargan y cuándo.
+
+<Canvas of={TranslationsStories.LiveDemo} />
+
+## Opciones
+
+### `aureusI18n(options)`
+
+| Opción | Tipo | Por defecto | Cuándo usarla |
+| --- | --- | --- | --- |
+| `typesFrom` | `string` | (obligatoria) | El idioma del que salen tus tipos, y con el que se compara cada uno de los demás. Debe existir como archivo `<idioma>.json`. |
+| `defaultNamespace` | `string` | ninguno | El namespace que usa `t()` cuando no indicas ninguno, normalmente `"common"`. Debe ser uno de los namespaces descubiertos. Sin él, cada `useTranslation` debe nombrar su namespace. |
+| `include` | `string[]` | `["src/**/locales"]` | Acota dónde se buscan namespaces. Las rutas son relativas a la raíz de Vite. `*` vale por un nivel de carpeta y `**` por cualquier número. |
+| `exclude` | `string[]` | `[]` | Deja fuera carpetas que si no coincidirían. `node_modules`, `dist` y las carpetas ocultas (`.algo`) se excluyen siempre. |
+| `namespaces` | `Record<string, string>` | `{}` | Da a una carpeta un nombre de namespace explícito (`{ "src/shared/i18n": "shared" }`). También añade carpetas que no se llaman `locales` o que `include` no cubre. |
+| `typesFile` | `string` | `"src/types/i18next.d.ts"` | Dónde se escribe el archivo de declaraciones generado, relativo a la raíz de Vite. |
+
+El **nombre del namespace** es el nombre de la carpeta que contiene `locales`: `src/features/auth/locales` → `auth`. Los **idiomas** son los nombres de los JSON: `es.json` → `es`.
+
+### `createI18n(config)`
+
+| Opción | Tipo | Por defecto | Cuándo usarla |
+| --- | --- | --- | --- |
+| `resources` | `I18nResources` | (obligatoria) | Siempre `import resources from "virtual:aureus-i18n"`. |
+| `fallbackLng` | `string`, array u objeto de fallback de i18next | (obligatoria) | El idioma que se muestra cuando al activo le falta una clave o no está soportado. La librería nunca lo elige por ti. |
+| `lng` | `string` | ninguno | Fuerza el idioma inicial y desactiva la detección. |
+| `detection` | `{ storageKey?: string }` o `false` | activa, clave `"aureus-i18n-language"` | `false` para empezar siempre en `fallbackLng` sin guardar nada. `storageKey` para usar tu propia clave de `localStorage`. |
+| `syncDocument` | `boolean` | `false` | Mantiene sincronizados con el idioma los atributos `lang` y `dir` del elemento `html` del documento. Úsala con idiomas de derecha a izquierda. |
+| `options` | `InitOptions` de i18next | `{}` | Cualquier otra opción de i18next, pasada tal cual (`interpolation`, `returnNull`, `saveMissing`…). |
+
+`createI18n` devuelve la instancia propia de i18next (`i18n.changeLanguage`, `i18n.t`, `i18n.language`…). Estas opciones de i18next las fija él mismo: `supportedLngs` (los idiomas descubiertos), `nonExplicitSupportedLngs`, `load`, `ns`, `defaultNS`, `backend`, `resources`, `partialBundledLanguages`, `lng` y `fallbackLng`. Si pasas alguna en `options`, se ignora y un aviso de desarrollo la nombra.
+
+## Ejemplos
+
+### A. Un proyecto típico, sin configuración
+
+```text
+src/common/locales/{en,es}.json
+src/features/auth/locales/{en,es}.json
+src/features/companies/locales/{en,es}.json
+src/features/accounts/locales/{en,es}.json
+```
+
+```ts
+aureusI18n({ typesFrom: "es", defaultNamespace: "common" });
+```
+
+Resultado: los namespaces son `accounts`, `auth`, `common` y `companies`, y los idiomas `en` y `es`. `vite build` emite ocho chunks pequeños, uno por archivo. Una pantalla que solo usa `auth` descarga `common` y `auth`, y solo en el idioma activo.
+
+### B. Añadir un módulo mientras desarrollas
+
+Con `pnpm dev` en marcha, crea la carpeta y sus archivos:
+
+```text
+src/features/payments/locales/es.json   { "title": "Pagos" }
+src/features/payments/locales/en.json   { "title": "Payments" }
+```
+
+La terminal muestra:
+
+```text
+[aureusI18n] Locales changed (added namespace "payments"): types regenerated, reloading the page.
+```
+
+La página se recarga, `src/types/i18next.d.ts` ya incluye `payments` y `useTranslation("payments")` autocompleta `t("title")`. No tocaste ninguna configuración. Borrar un módulo funciona igual (`removed namespace "…"`), y añadir un idioma también: crea `fr.json` en cada namespace.
+
+### C. Autocompletado y errores de tipos
+
+Dado `src/features/auth/locales/es.json`:
+
+```json
+{
+  "login": { "title": "Iniciar sesión", "submit": "Entrar" },
+  "welcome": "Hola, {{name}}",
+  "attempts_one": "{{count}} intento",
+  "attempts_other": "{{count}} intentos"
+}
+```
+
+```tsx
+const { t } = useTranslation("auth");
+
+t("login.title");                  // ✅ autocompletado; las claves anidadas usan puntos
+t("login.titel");                  // ❌ error de tipos: la clave no existe
+t("welcome", { name: "Ana" });     // ✅
+t("welcome");                      // ❌ error de tipos: "{{name}}" necesita { name }
+t("attempts", { count: 3 });       // ✅ plurales por su clave base: "3 intentos"
+useTranslation("paymnets");        // ❌ error de tipos: ese namespace no existe
+```
+
+Para usar **varios namespaces** en un componente, lístalos. El primero es el predeterminado de ese hook, y los demás se usan con su prefijo:
+
+```tsx
+const { t } = useTranslation(["auth", "common"]);
+t("login.submit");                 // auth
+t("common:actions.save");          // ✅ common, con su prefijo
+```
+
+Una clave con prefijo solo pasa los tipos si su namespace está en la lista: `useTranslation("auth")` seguido de `t("common:actions.save")` es un error de tipos. Con `defaultNamespace: "common"`, `useTranslation()` sin argumentos usa `common`.
+
+### D. Claves desincronizadas entre idiomas
+
+Borras `login.title` de `src/features/auth/locales/en.json`. Mientras desarrollas, la terminal avisa y el servidor sigue funcionando:
+
+```text
+[aureusI18n] The translations are out of sync with "es" (the typesFrom language):
+  auth
+    en: missing "login.title"
+```
+
+`vite build` se detiene con el mismo informe:
+
+```text
+error during build:
+Build failed with 1 error:
+
+[plugin aureus-i18n]
+RolldownError: [aureusI18n] The translations are out of sync with "es" (the typesFrom language):
+  auth
+    en: missing "login.title"
+```
+
+El informe también lista las claves que tiene un idioma y no tiene `typesFrom` (`en: not in "es" "oldKey"`) y los archivos que faltan (`en: no file (expected src/features/payments/locales/en.json)`). **Para corregirlo**, añade la clave a `en.json` o bórrala de todos los idiomas. Los plurales se comparan por su clave base, así que un idioma con más categorías de plural (el árabe tiene seis) no se reporta.
+
+Un JSON inválido detiene el build y nombra el archivo. Mientras desarrollas se muestra como error, y el resto de los textos sigue funcionando.
+
+### E. Acotar la búsqueda
+
+```ts
+// Dejar fuera una carpeta antigua que aún tiene locales
+aureusI18n({ typesFrom: "es", exclude: ["src/legacy/**"] });
+
+// Solo los módulos de features (src/common/locales ya no se busca)
+aureusI18n({ typesFrom: "es", include: ["src/features/*/locales"] });
+
+// Módulos anidados a cualquier profundidad dentro de features
+aureusI18n({ typesFrom: "es", include: ["src/features/**/locales", "src/common/locales"] });
+```
+
+### F. Dar nombre a carpetas y resolver una colisión
+
+Si una carpeta no se llama `locales`, o quieres otro nombre, usa `namespaces`:
+
+```ts
+aureusI18n({
+  typesFrom: "es",
+  namespaces: { "src/shared/i18n": "shared" },
+});
+```
+
+Dos carpetas que dan el mismo nombre son un error, que nombra las dos:
+
+```text
+[aureusI18n] Two folders give the namespace "common": src/common/locales and src/features/common/locales. Rename one of them, or give one another name with the "namespaces" option.
+```
+
+Se resuelve renombrando una carpeta o dándole a una un nombre explícito:
+
+```ts
+aureusI18n({
+  typesFrom: "es",
+  namespaces: { "src/features/common/locales": "featureCommon" },
+});
+```
+
+### G. Elegir y cambiar el idioma
+
+Por defecto, el idioma inicial se elige en este orden:
+
+1. el que el usuario eligió en una visita anterior, si sigue soportado;
+2. el primero de los idiomas preferidos del navegador que coincida con los tuyos (`es-MX` → `es`, `pt` → `pt-BR`);
+3. `fallbackLng`.
+
+Cada cambio se guarda en `localStorage`. Un selector de idioma solo llama a `changeLanguage`:
+
+```tsx
+import { useTranslation } from "react-i18next";
+
+export function LanguageSelect() {
+  const { i18n } = useTranslation();
+  return (
+    <select value={i18n.resolvedLanguage} onChange={(event) => i18n.changeLanguage(event.target.value)}>
+      <option value="es">Español</option>
+      <option value="en">English</option>
+    </select>
+  );
+}
+```
+
+Otros casos:
+
+```ts
+// Tu propia clave de almacenamiento
+createI18n({ resources, fallbackLng: "es", detection: { storageKey: "acme-language" } });
+
+// Sin detección: empezar siempre en fallbackLng y no guardar nada
+createI18n({ resources, fallbackLng: "es", detection: false });
+
+// Un idioma que decide la app (por ejemplo, desde el perfil del usuario)
+createI18n({ resources, fallbackLng: "es", lng: user.language });
+
+// Idiomas de derecha a izquierda: mantener sincronizados lang y dir del documento
+createI18n({ resources, fallbackLng: "en", syncDocument: true });
+```
+
+**Fuera de React** (un schema de zod creado a nivel de módulo, un helper de fetch…), importa la instancia desde `src/i18n.ts`, no desde `"i18next"`. `createI18n` crea su propia instancia y no configura la global de i18next:
+
+```ts
+import { i18n } from "@/i18n";
+
+const message = i18n.t("common:errors.network");
+```
+
+### H. Con schema hooks y `@aureus-core/ui`
+
+Los schema hooks (ver la guía de schema-form) también reciben mensajes tipados, y los componentes de `@aureus-core/ui` reciben todos sus textos de ti:
+
+```tsx
+// src/features/auth/hooks/use-login-schema.ts
+export const useLoginSchema = () => {
+  const { t } = useTranslation("auth");
+  return useMemo(
+    () =>
+      z.object({
+        email: z.email(t("errors.invalidEmail")),
+        password: z.string().min(1, t("errors.required")),
+      }),
+    [t],
+  );
+};
+
+// src/features/auth/components/login-form.tsx
+const { t } = useTranslation(["auth", "common"]);
+<TextControl name="email" label={t("fields.email")} />
+<Button type="submit">{t("common:actions.save")}</Button>
+```
+
+Una errata en cualquiera de esas claves es un error de tipos.
+
+### I. Otras opciones de i18next
+
+`options` se pasa a i18next tal cual:
+
+```ts
+createI18n({
+  resources,
+  fallbackLng: "es",
+  options: { interpolation: { escapeValue: false }, returnEmptyString: false },
+});
+```
+
+El archivo generado solo declara los namespaces y `defaultNS`. Las demás opciones de tipos van en tu propio archivo de declaraciones y se combinan con el generado. Por ejemplo, con conjuntos de textos muy grandes, la API de selectores de i18next mantiene rápido el editor:
+
+```ts
+// src/types/i18next-options.d.ts
+import "i18next";
+
+declare module "i18next" {
+  interface CustomTypeOptions {
+    enableSelector: "optimize";
+  }
+}
+```
+
+No declares ahí `resources` ni `defaultNS`: de eso se encarga el archivo generado.
+
+## Buenas prácticas y preguntas frecuentes
+
+- **Commitea `src/types/i18next.d.ts`.** Así `tsc` funciona en CI sin arrancar Vite, y `vite build` lo regenera igualmente, de modo que un archivo desactualizado aparece como diff. No lo edites nunca a mano: se reescribe con cada cambio.
+- **Excluye el archivo generado de tu formateador y tu linter** si lo cambiarían. Ya está escrito como formatean Biome y Prettier por defecto, pero en un proyecto con otra configuración el archivo volvería a cambiar en cada pasada.
+- **Un JSON por idioma y módulo.** Mantén los textos de cada módulo junto a su código: el módulo y sus traducciones se mueven o desaparecen juntos.
+- **Anida las claves por pantalla o componente** (`login.title`, `login.submit`). Así el autocompletado las agrupa y la comprobación de claves las reporta con claridad.
+- **Escribe cada texto primero en `typesFrom`.** Es la fuente de los tipos: una clave que solo existe en otro idioma no tiene tipos y se reporta como `not in "es"`.
+- **¿No aparece el autocompletado?** Comprueba que el servidor de desarrollo o un build se haya ejecutado una vez, para que el archivo exista, y que `@aureus-core/i18n/client` esté en los `types` del tsconfig que incluye `src`. Después reinicia el servidor de TypeScript del editor.
+- **CI.** `vite build` falla si faltan claves o archivos, así que el paso habitual `pnpm build` ya protege producción. No añadas ningún otro paso.
+
+</Es>

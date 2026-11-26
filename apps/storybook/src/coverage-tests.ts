@@ -101,7 +101,7 @@ for (const layer of layers) {
   });
 }
 
-const mdxDirs = ["guides", "foundations", "utils", "hooks"].map((dir) =>
+const mdxDirs = ["guides", "foundations", "utils", "hooks", "i18n"].map((dir) =>
   fileURLToPath(new URL(`./stories/${dir}`, import.meta.url)),
 );
 const mdxFiles = mdxDirs.flatMap((dir) =>
@@ -117,8 +117,8 @@ const count = (source: string, tag: string) =>
   (source.match(new RegExp(`<${tag}>`, "g")) ?? []).length;
 
 describe("every guide is bilingual", () => {
-  it("finds the guides, foundations, utils and hooks pages", () => {
-    expect(mdxFiles.length).toBeGreaterThanOrEqual(11);
+  it("finds the guides, foundations, utils, hooks and i18n pages", () => {
+    expect(mdxFiles.length).toBeGreaterThanOrEqual(12);
   });
 
   it.each(mdxFiles.map((file) => [file.split("/stories/")[1], file]))("%s", (_name, file) => {

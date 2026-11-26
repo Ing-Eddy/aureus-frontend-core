@@ -218,7 +218,7 @@ A server error disappears like any other error: when react-hook-form validates t
 
 ## Schema hooks
 
-Writing schemas as hooks is the recommended pattern: the messages come from i18next, and the schema is rebuilt only when the language changes.
+Writing schemas as hooks is the recommended pattern: the messages come from i18next, and the schema is rebuilt only when the language changes. With [`@aureus-core/i18n`](?path=/docs/i18n-translations--guide), `useTranslation("auth")` and every `t(...)` key in the schema are type-checked too.
 
 ```ts
 export const useLoginSchema = () => {
@@ -567,7 +567,7 @@ Un error del servidor desaparece como cualquier otro error: cuando react-hook-fo
 
 ## Hooks de schema
 
-Escribir los schemas como hooks es el patrón recomendado: los mensajes vienen de i18next, y el schema se reconstruye solo cuando cambia el idioma.
+Escribir los schemas como hooks es el patrón recomendado: los mensajes vienen de i18next, y el schema se reconstruye solo cuando cambia el idioma. Con [`@aureus-core/i18n`](?path=/docs/i18n-translations--guide), `useTranslation("auth")` y cada clave de `t(...)` del schema también quedan tipados.
 
 ```ts
 export const useLoginSchema = () => {

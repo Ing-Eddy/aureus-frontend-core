@@ -1,0 +1,10 @@
+{
+  "extends": "@aureus-core/tsconfig/react-library.json",
+  "compilerOptions": {
+    // The plugin (`src/vite`) runs in Node; the runtime uses `process.env.NODE_ENV` for development warnings.
+    "types": ["node"],
+    "paths": { "@/*": ["./src/*"] }
+  },
+  // `client.d.ts` resolves the package by its own name, so it is checked against the build by `check:package`.
+  "include": ["src", "*.config.ts", "vitest-setup.ts", "scripts"]
+}

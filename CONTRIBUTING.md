@@ -226,6 +226,40 @@ packages/hooks/src/
   4. The `storySort` entry.
   5. A changeset.
 
+## The i18n package
+
+`packages/i18n` (`@aureus-core/i18n`) sets up i18next in Aureus apps from their folder layout. Unlike utils and hooks, it has a fixed set of entry points, not one per module:
+
+```
+packages/i18n/
+├─ client.d.ts            # → @aureus-core/i18n/client (types of virtual:aureus-i18n; static file)
+└─ src/
+   ├─ vite/               # → @aureus-core/i18n/vite: the plugin, runs in Node
+   │  ├─ index.ts, vite.ts
+   │  ├─ types/           index.ts, vite-types.ts
+   │  ├─ utils/helpers/   match-glob, scan-namespaces, read-locale-file, load-locales, flatten-keys,
+   │  │                   check-key-parity, format-parity-report, render-types-file,
+   │  │                   render-virtual-module, write-if-changed
+   │  └─ tests/           helpers/ (fixture trees, buildFixture) + *-tests.ts
+   ├─ runtime/            # → @aureus-core/i18n/runtime: createI18n, runs in the browser
+   │  ├─ index.ts, runtime.ts
+   │  ├─ types/           index.ts, runtime-types.ts
+   │  ├─ utils/helpers/   resources-backend, language-detector, match-language, sync-document, managed-options
+   │  └─ tests/           helpers/, fixtures/ (app + i18next-fixture.d.ts) + *-tests.ts(x)
+   └─ internal/           # private: the resources contract, the virtual id, the HMR event, isDev, warnOnce
+```
+
+- **`vite` and `runtime` never import each other.** What they share lives in `internal/`. The runtime and `internal/` must not import Node built-ins or `vite`; `check:package` fails if their output does.
+- **Explicit exports.** `package.json` lists `./vite`, `./runtime` and `./client`. Adding an entry point means editing `exports` and `scripts/check-package.mjs`.
+- **Peers.** `i18next`, `react-i18next` and `react` are required. `vite` is optional, needed only by `/vite`, and imported as types only. No runtime dependencies: the glob matching is the small `match-glob.ts`.
+- **No default texts.** The package shows no user text. Plugin errors and warnings start with `[aureusI18n]`, and runtime development warnings with `[createI18n]` (through `warnOnce`, once and only outside production).
+- **The generated declaration file** is deterministic (sorted, literal types, names quoted only when needed, the way Biome formats). `tests/types-fixture-tests.ts` checks that `runtime/tests/fixtures/i18next-fixture.d.ts` is exactly what the plugin generates from `fixtures/app`, and the runtime type tests (`runtime-types-tests.ts`) use that file. If you change the generator, regenerate the fixture.
+- **Testing the plugin.**
+  - Helpers are tested on temporary folder trees (`createFixtureTree`).
+  - The plugin is tested through Vite's JavaScript API: `buildFixture` runs a real `vite build`, and the dev tests create a server (`middlewareMode`, no watcher) and emit watcher events by hand.
+  - For a change to the dev loop, also try a throwaway Vite + React app linked to the built package. The steps are in the change notes of `add-i18n-package`: edit a text, add a module, remove a key, `vite build`.
+- **Runtime tests** run in jsdom with Testing Library and in-memory resources (`createFakeResources`). React 19 shows Suspense fallbacks for at least about 300 ms, so tests that suspend take that long.
+
 ## Naming
 
 Pure kebab-case. Role suffixes use `-`, never `.`:
