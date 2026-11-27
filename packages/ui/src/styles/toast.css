@@ -192,6 +192,24 @@
     overflow-wrap: anywhere;
   }
 
+  /* A long description, clamped to its lines until it is expanded. */
+  :where([data-slot="toast-description"][data-clamped]) {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--toast-lines);
+  }
+  /* Expanded, a very long one scrolls, and its text can be selected. */
+  :where([data-slot="toast-description"][data-open]) {
+    max-height: 40vh;
+    overflow-y: auto;
+    cursor: auto;
+    user-select: text;
+  }
+  :where([data-slot="toast-description"]:focus-visible) {
+    outline: 3px solid color-mix(in oklab, var(--ring) 50%, transparent);
+  }
+
   /* Tinted appearance. Neutral and loading toasts report no outcome, so they stay as cards. */
   :where(
     [data-slot="toast"][data-appearance="tinted"]:is(

@@ -3,6 +3,7 @@ import type { ToastData, ToastStatus } from "../types";
 import { toastBodyClassName, toastTitleButtonClassName } from "../utils/constants";
 import { ToastActions } from "./toast-actions";
 import { ToastCloseButton } from "./toast-close-button";
+import { ToastDescription } from "./toast-description";
 import { ToastIcon } from "./toast-icon";
 
 /** What the standard layout renders. */
@@ -36,11 +37,7 @@ export function ToastStandardBody({ toast, onActivate }: ToastStandardBodyProps)
             toast.title
           )}
         </Toast.Title>
-        <Toast.Description
-          data-slot="toast-description"
-          className="typography-body-sm w-full"
-          render={<div />}
-        />
+        <ToastDescription toast={toast} />
         <ToastActions id={toast.id} actions={data.actions} />
       </div>
       <ToastCloseButton data={data} />
