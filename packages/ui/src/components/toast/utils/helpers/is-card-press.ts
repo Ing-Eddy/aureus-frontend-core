@@ -1,9 +1,12 @@
 /** How far the pointer may travel, in pixels, and still count as a press rather than a drag. */
 const dragTolerance = 5;
 
-/** Elements that handle their own presses, and the areas of a toast that hold custom content. */
+/**
+ * Elements that handle their own presses, the areas of a toast that hold custom content, and the row
+ * of actions: a disabled button takes no pointer events, so its press lands on the row.
+ */
 const ownPressSelector =
-  'a,button,input,select,textarea,label,summary,[role="button"],[data-base-ui-swipe-ignore]';
+  'a,button,input,select,textarea,label,summary,[role="button"],[data-base-ui-swipe-ignore],[data-slot="toast-actions"]';
 
 /** A point of the viewport. */
 export interface Point {

@@ -73,6 +73,13 @@ describe("a clickable toast", () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
+  it("ignores the row of actions, where a press on a disabled button lands", () => {
+    const { onClick } = clickable(vi.fn(), { actions: [{ label: "Wait", disabled: true }] });
+    // A disabled button takes no pointer events, so the browser sends the click to its row.
+    fireEvent.click(part("toast-actions") as HTMLElement);
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
   it("ignores a drag", () => {
     const { onClick } = clickable();
     const text = screen.getByText("Read it");

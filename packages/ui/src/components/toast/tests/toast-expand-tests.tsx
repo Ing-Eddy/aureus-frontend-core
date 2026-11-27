@@ -165,4 +165,15 @@ describe("an expanded toast", () => {
     advance(60_000);
     expect(toastElements()).toHaveLength(1);
   });
+
+  it.each([
+    ["its description is removed", { description: undefined }],
+    ["expansion is turned off", { expandable: false }],
+  ] as const)("closes again once %s", (_name, patch) => {
+    const id = show({ expandable: texts }, { duration: 1000 });
+    press("More");
+    run(() => toast.update(id, patch));
+    advance(1000);
+    expect(toastElements()).toEqual([]);
+  });
 });
