@@ -26,3 +26,6 @@ export const toastDescriptionClassName = "typography-body-sm w-full rounded-sm";
 /** The button that expands and collapses a long description. */
 export const toastExpandClassName =
   "typography-label cursor-pointer rounded-sm text-primary underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50";
+
+/** The slot of the consumer's content. */
+export const toastExtraClassName = "w-full pt-1";

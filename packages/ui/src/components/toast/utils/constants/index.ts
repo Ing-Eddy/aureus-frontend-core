@@ -5,6 +5,7 @@ export {
   toastContentClassName,
   toastDescriptionClassName,
   toastExpandClassName,
+  toastExtraClassName,
   toastIconClassName,
   toastTitleButtonClassName,
 } from "./toast-classes";

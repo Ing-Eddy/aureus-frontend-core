@@ -6,9 +6,10 @@ import { useToastClick, useToasterContext } from "../hooks";
 import type { ToastData } from "../types";
 import { toastContentClassName } from "../utils/constants";
 import { resolveSwipeDirections } from "../utils/helpers";
+import { ToastCustomBody } from "./toast-custom-body";
 import { ToastStandardBody } from "./toast-standard-body";
 
-/** One notification: the engine's root and content around its layout. */
+/** One notification: the engine's root and content around the standard or the custom layout. */
 export function ToastItem({ toast }: { toast: ToastObject<ToastData> }) {
   const toaster = useToasterContext();
   const ref = useRef<HTMLDivElement>(null);
@@ -23,13 +24,21 @@ export function ToastItem({ toast }: { toast: ToastObject<ToastData> }) {
       toast={toast}
       data-slot="toast"
       data-appearance={data.appearance ?? toaster.appearance}
+      aria-label={data.ariaLabel}
       className={cn(data.className)}
       swipeDirection={resolveSwipeDirections(toaster.position, direction)}
       data-clickable={click.activate ? "" : undefined}
       {...click.rootProps}
     >
-      <Toast.Content data-slot="toast-content" className={toastContentClassName}>
-        <ToastStandardBody toast={toast} onActivate={click.activate} />
+      <Toast.Content
+        data-slot="toast-content"
+        className={data.render ? undefined : toastContentClassName}
+      >
+        {data.render ? (
+          <ToastCustomBody id={toast.id} render={data.render} data={data} />
+        ) : (
+          <ToastStandardBody toast={toast} onActivate={click.activate} />
+        )}
       </Toast.Content>
     </Toast.Root>
   );

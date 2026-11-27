@@ -4,6 +4,7 @@ import { toastBodyClassName, toastTitleButtonClassName } from "../utils/constant
 import { ToastActions } from "./toast-actions";
 import { ToastCloseButton } from "./toast-close-button";
 import { ToastDescription } from "./toast-description";
+import { ToastExtra } from "./toast-extra";
 import { ToastIcon } from "./toast-icon";
 
 /** What the standard layout renders. */
@@ -14,7 +15,7 @@ interface ToastStandardBodyProps {
   onActivate: (() => void) | undefined;
 }
 
-/** The standard layout: icon, then title, description and actions, then the close button. */
+/** The standard layout: icon, then title, description, content and actions, then close. */
 export function ToastStandardBody({ toast, onActivate }: ToastStandardBodyProps) {
   const data = toast.data ?? {};
   return (
@@ -38,6 +39,7 @@ export function ToastStandardBody({ toast, onActivate }: ToastStandardBodyProps)
           )}
         </Toast.Title>
         <ToastDescription toast={toast} />
+        <ToastExtra id={toast.id} content={data.content} />
         <ToastActions id={toast.id} actions={data.actions} />
       </div>
       <ToastCloseButton data={data} />
