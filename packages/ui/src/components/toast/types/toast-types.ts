@@ -30,7 +30,10 @@ export interface ToastAction {
   variant?: ComponentProps<typeof Button>["variant"];
   /** Disables the button. Defaults to false. */
   disabled?: boolean;
-  /** Keeps the toast open after the press. Defaults to false: the toast closes. */
+  /**
+   * Keeps the toast open after the press. Defaults to false: the toast closes. A handler that
+   * updates or replaces its own toast needs it.
+   */
   keepOpen?: boolean;
 }
 

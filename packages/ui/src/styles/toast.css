@@ -95,6 +95,14 @@
     top: 0;
     transform-origin: top center;
   }
+  /* A clickable toast says so. */
+  :where([data-slot="toast"][data-clickable]) {
+    cursor: pointer;
+  }
+  :where([data-slot="toast"][data-clickable]:hover) {
+    border-color: color-mix(in oklab, var(--ring) 60%, var(--popover));
+  }
+
   /* Bridges the gap to the next toast, so the pointer can cross it without closing the stack. */
   :where([data-slot="toast"])::after {
     content: "";
