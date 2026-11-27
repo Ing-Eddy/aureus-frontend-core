@@ -30,6 +30,15 @@ const waitForPreviews = (canvasElement: HTMLElement) =>
     { timeout: 10_000 },
   );
 
+/**
+ * Replaces a field's value in one change, as a paste does. Typing it key by key would regenerate the
+ * theme and both previews on every key, which makes the story slow enough to time out on CI.
+ */
+async function enter(field: HTMLElement, value: string) {
+  await userEvent.clear(field);
+  await userEvent.paste(value);
+}
+
 const codeText = (canvasElement: HTMLElement) =>
   canvasElement.querySelector('[data-testid="export-code"]')?.textContent ?? "";
 
@@ -77,8 +86,7 @@ export const GenerateAndExport: Story = {
 
     await step("Change the primary color", async () => {
       const primary = canvas.getByLabelText("Primary color");
-      await userEvent.clear(primary);
-      await userEvent.type(primary, "#2563eb");
+      await enter(primary, "#2563eb");
       const expected = normalizeColor("#2563eb");
       await waitFor(() => expect(codeText(canvasElement)).toContain(`--primary: ${expected};`));
       await expect(canvas.getByTestId("base-note")).toHaveTextContent("generated from the inputs");
@@ -87,8 +95,7 @@ export const GenerateAndExport: Story = {
     await step("Reject an invalid color", async () => {
       const destructive = canvas.getByLabelText("Destructive color");
       const before = codeText(canvasElement);
-      await userEvent.clear(destructive);
-      await userEvent.type(destructive, "not-a-color");
+      await enter(destructive, "not-a-color");
       await expect(destructive).toHaveAttribute("aria-invalid", "true");
       await expect(canvas.getByText(/Not a valid color/)).toBeVisible();
       await expect(codeText(canvasElement)).toBe(before);
@@ -96,8 +103,7 @@ export const GenerateAndExport: Story = {
 
     await step("Override a token with a failing value", async () => {
       const muted = canvas.getByLabelText("--muted-foreground (Light)");
-      await userEvent.clear(muted);
-      await userEvent.type(muted, "oklch(0.75 0 0)");
+      await enter(muted, "oklch(0.75 0 0)");
       const summary = canvas.getByTestId("contrast-summary");
       await waitFor(() =>
         expect(within(summary).getByText(/--muted-foreground on --muted/)).toBeVisible(),
@@ -109,8 +115,7 @@ export const GenerateAndExport: Story = {
     await step("Download the file", async () => {
       await expect(canvas.getByText("The file is saved as theme.css.")).toBeVisible();
       const name = canvas.getByLabelText("Theme name");
-      await userEvent.clear(name);
-      await userEvent.type(name, "Ocean Breeze");
+      await enter(name, "Ocean Breeze");
       await expect(canvas.getByText("The file is saved as ocean-breeze.css.")).toBeVisible();
 
       const blobs: Blob[] = [];
