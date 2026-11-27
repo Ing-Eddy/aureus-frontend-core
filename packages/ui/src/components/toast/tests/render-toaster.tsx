@@ -1,11 +1,11 @@
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, type RenderResult, render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import { Toaster } from "../toast";
 import type { ToasterProps } from "../types";
 import { toast } from "../utils/helpers";
 
 /** A mounted `Toaster`, with the helpers every test of the rendered toasts needs. */
-export function renderToaster(props: Partial<ToasterProps> = {}) {
+export function renderToaster(props: Partial<ToasterProps> = {}): RenderResult {
   return render(<Toaster {...({ label: "Notifications", ...props } as ToasterProps)} />);
 }
 
@@ -35,7 +35,7 @@ export const part = (slot: string, root: ParentNode = document.body) =>
   root.querySelector<HTMLElement>(`[data-slot="${slot}"]`);
 
 /** The notifications region. */
-export const region = () => screen.getByRole("region", { name: "Notifications" });
+export const region = (): HTMLElement => screen.getByRole("region", { name: "Notifications" });
 
 /** Cleans the document and the library's global queue between tests. */
 export function resetToasts() {

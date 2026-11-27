@@ -1,5 +1,5 @@
 import { Toast, type ToastObject } from "@base-ui/react/toast";
-import { act, render } from "@testing-library/react";
+import { act, type RenderResult, render } from "@testing-library/react";
 import { useEffect } from "react";
 import type { ToastData } from "../types";
 import { connectToaster, toastManager } from "../utils/libs";
@@ -25,13 +25,22 @@ function Host({ state }: { state: ProbeState }) {
   );
 }
 
+/** The rendered probe. */
+export interface RenderedProbe {
+  /** Newest first, without the toasts that are closing. */
+  open: () => ToastObject<ToastData>[];
+  /** Runs an operation of the imperative API inside `act`. */
+  run: <T>(operation: () => T) => T;
+  /** Disconnects the probe. */
+  unmount: RenderResult["unmount"];
+}
+
 /** A real Base UI provider connected to the library's manager, exposing what its store holds. */
-export function renderToastProbe() {
+export function renderToastProbe(): RenderedProbe {
   const state: ProbeState = { toasts: [] };
   const view = render(<Host state={state} />);
   return {
-    ...view,
-    /** Newest first, without the toasts that are closing. */
+    unmount: view.unmount,
     open: () => state.toasts.filter((toast) => toast.transitionStatus !== "ending"),
     run: <T,>(operation: () => T): T => {
       let result!: T;
