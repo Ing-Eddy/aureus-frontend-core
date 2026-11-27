@@ -79,6 +79,7 @@ const preview: Preview = {
             "Right-to-left",
             "Hooks & utilities",
             "Fields & controls",
+            "Toasts",
           ],
           "Foundations",
           ["Colors", "Radius", "Typography"],

@@ -1,0 +1,550 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import { En, Es } from "@sb/i18n/localized";
+import * as ToastStories from "../components/feedback/toast/toast-stories";
+
+<Meta title="Guides/Toasts" />
+
+<En>
+
+# Toasts
+
+`@aureus-core/ui/components/toast` shows notifications. You mount `<Toaster>` once and call `toast` from anywhere.
+
+## What you get
+
+- **One call.** `toast.success(title, options)`, from a component, a mutation or an HTTP interceptor.
+- **Your theme.** Cards or tinted surfaces built from the theme tokens, in light and dark.
+- **From simple to free.** Title and description, a click, action buttons, your own content below, or the whole layout.
+- **Long texts.** Descriptions clamp to a few lines and expand.
+- **Accessible.** Announced to screen readers, reachable with F6, closable with Escape, no nested controls.
+- **No built-in texts.** Every word is yours; TypeScript asks for the ones a feature needs.
+
+## How it works
+
+- `toast` writes to one global manager. The `Toaster` reads it and draws the toasts. Calls made before it mounts wait and are delivered when it does.
+- Toasts stack at one corner. The stack opens on hover or keyboard focus.
+- Each toast lasts the Toaster's `duration` (5 seconds) unless it sets its own. Timers pause on hover, on keyboard focus, while the window is not focused and while a description is expanded. `loading` and `toast.custom` do not close by themselves.
+- A toast swiped toward its edge is dismissed. Dragging your own content never swipes it.
+
+## Installation
+
+The component ships with `@aureus-core/ui`; there is nothing else to install. Keep the package stylesheet in your CSS:
+
+```css
+@import "@aureus-core/ui/styles.css";
+```
+
+## Set it up
+
+**1. Mount the `Toaster` once**, inside your providers (i18n, router, query client). The content of a toast renders where the Toaster is, so it only sees that context.
+
+```tsx
+import { Toaster } from "@aureus-core/ui/components/toast";
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <I18nextProvider i18n={i18n}>
+      <RouterProvider>
+        {children}
+        <AppToaster />
+      </RouterProvider>
+    </I18nextProvider>
+  );
+}
+```
+
+**2. Give it its texts** from i18next. They follow the language.
+
+```tsx
+function AppToaster() {
+  const { t } = useTranslation("common");
+  return <Toaster label={t("toast.region")} />;
+}
+```
+
+**3. Choose where and how long.**
+
+```tsx
+<Toaster label={t("toast.region")} position="top-end" duration={6000} limit={4} />
+```
+
+**4. Choose an appearance.** `"card"` (default) keeps a neutral surface and colors the icon; `"tinted"` colors the surface too. A toast can override it.
+
+```tsx
+<Toaster label={t("toast.region")} appearance="tinted" />
+```
+
+**5. Turn on closing and expanding.** Both ask for their texts.
+
+```tsx
+<Toaster
+  label={t("toast.region")}
+  closeButton
+  closeLabel={t("toast.close")}
+  expandable={{ lines: 2, expandLabel: t("toast.more"), collapseLabel: t("toast.less") }}
+/>
+```
+
+**6. Adjust the status colors** in your stylesheet, if you want other ones (example J).
+
+## Reference
+
+| Method | What it does |
+| --- | --- |
+| `toast.neutral / success / info / warning / danger / loading(title, options?)` | Shows a toast and returns its id. |
+| `toast.custom(render, { "aria-label" })` | A layout of your own, persistent by default. |
+| `toast.promise(promise, { loading, success, danger })` | Follows a promise. |
+| `toast.update(id, patch)` | Merges changes into a toast. |
+| `toast.dismiss(id?)` | Closes one or all. |
+
+Every option of a toast and every prop of `Toaster` is listed in the **components › Feedback › Toast** page.
+
+## Examples
+
+### A. Statuses
+
+```ts
+toast.success(t("invoice.saved"), { description: t("invoice.savedDetail") });
+toast.warning(t("quota.almostFull"));
+toast.danger(t("invoice.failed"), { priority: "high", duration: Infinity, iconLabel: t("error") });
+```
+
+`danger` does not imply urgency or persistence: ask for them.
+
+<Canvas of={ToastStories.Statuses} />
+
+### B. Click to open
+
+```ts
+toast.info(t("message.new"), {
+  description: message.preview,
+  onClick: () => navigate(`/inbox/${message.id}`),
+});
+```
+
+The title becomes a button, so it also works with the keyboard. The toast closes after the click; `keepOpenOnClick` keeps it.
+
+<Canvas of={ToastStories.ClickToAct} />
+
+### C. Undo
+
+```ts
+toast.neutral(t("item.deleted"), {
+  actions: [
+    {
+      label: t("common.undo"),
+      keepOpen: true,
+      onClick: async ({ id }) => {
+        await restore(item.id);
+        toast.success(t("item.restored"), { id });
+      },
+    },
+  ],
+});
+```
+
+Without `keepOpen`, the press closes the toast, which is what a plain action wants. A handler that replaces its own toast needs it.
+
+<Canvas of={ToastStories.Actions} />
+
+### D. Follow a promise
+
+```ts
+const request = saveInvoice(data);
+toast.promise(request, {
+  loading: t("invoice.saving"),
+  success: (invoice) => ({ title: t("invoice.saved"), description: invoice.number }),
+  danger: (error) => ({ title: t("invoice.failed"), description: getMessage(error) }),
+});
+await request;
+```
+
+`toast.promise` returns the toast's id and handles the rejection for the toast. Await your own promise when you need the result. The outcome is shown even if the loading toast was closed.
+
+<Canvas of={ToastStories.PromiseFlow} />
+
+### E. Long text
+
+```ts
+toast.warning(t("export.finished"), { description: report.summary, duration: Infinity });
+```
+
+With `expandable` on the Toaster, the button appears only when the text does not fit. An expanded toast waits; collapsing it starts its duration again. Without both texts, the description is shown in full and the console warns: ``toast: `expandable` needs `expandLabel` and `collapseLabel`.``
+
+<Canvas of={ToastStories.LongText} />
+
+### F. A short questionnaire
+
+```tsx
+toast.info(t("survey.title"), {
+  duration: Infinity,
+  content: ({ id }) => <SurveyForm toastId={id} />,
+});
+
+function SurveyForm({ toastId }: { toastId: string }) {
+  const form = useSurveyForm();
+  const send = async (answers: Survey) => {
+    await sendSurvey(answers);
+    toast.success(t("survey.thanks"), { id: toastId });
+  };
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(send)}>
+        <RadioGroupControl name="rating" label={t("survey.rating")} options={options} />
+        <Button type="submit">{t("common.send")}</Button>
+      </form>
+    </FormProvider>
+  );
+}
+```
+
+Return a component from `content`; do not call hooks inside the function. Escape closes the focused toast, also from an input.
+
+<Canvas of={ToastStories.Questionnaire} />
+
+### G. Your own layout
+
+```tsx
+toast.custom(({ dismiss }) => <IncomingCall onReject={dismiss} />, {
+  "aria-label": t("call.incoming"),
+});
+```
+
+There is no icon, title or close button: your component renders everything, including its padding and a way to close it. It cannot be swiped.
+
+<Canvas of={ToastStories.Custom} />
+
+### H. Progress by id
+
+```ts
+const id = toast.loading(t("upload.running"), { description: "0%" });
+upload(file, (percent) => toast.update(id, { description: `${percent}%` }));
+toast.success(t("upload.done"), { id });
+```
+
+`update` merges into the toast; a status method with the same id replaces it.
+
+<Canvas of={ToastStories.Progress} />
+
+### I. Outside React
+
+```ts
+// lib/http.ts
+import { toast } from "@aureus-core/ui/components/toast";
+import i18n from "@/lib/i18n";
+
+client.interceptors.response.use(undefined, (error) => {
+  toast.danger(i18n.t("common:errors.request"), { id: "request-error" });
+  return Promise.reject(error);
+});
+```
+
+A fixed `id` keeps one toast even if many requests fail. A call made before the app mounts is delivered later.
+
+<Canvas of={ToastStories.Queue} />
+
+### J. Your colors
+
+```css
+@import "@aureus-core/ui/styles.css";
+
+:root {
+  --success: oklch(0.48 0.13 165);
+}
+.dark {
+  --success: oklch(0.82 0.15 165);
+}
+```
+
+Set both blocks, and keep at least 4.5:1 against `--popover` for tinted titles.
+
+## Good practices
+
+- **Toast, Modal or Alert?** A toast reports and can offer a shortcut. A decision that blocks the work is a `Modal` or `AlertDialog`; a message that belongs to a section is an `Alert`.
+- **Give time to act.** Use `duration: Infinity` for anything that needs an answer, and `closeButton` so it can be closed.
+- **Language changes.** The Toaster's texts follow the language; the texts of toasts already shown do not.
+- **Over a modal.** Actions work with the pointer and the modal stays open, but its focus trap keeps the keyboard inside the dialog: inputs in a toast cannot be typed in until it closes.
+- **A shadcn `Dialog` of your own** closes on a press on a toast. `Modal` already ignores it; with `Dialog`, do the same:
+
+```tsx
+<DialogContent
+  onInteractOutside={(event) => {
+    const target = event.target as Element;
+    if (target.closest('[data-slot="toast-viewport"]')) event.preventDefault();
+  }}
+/>
+```
+
+</En>
+<Es>
+
+# Toasts
+
+`@aureus-core/ui/components/toast` muestra notificaciones. Montas `<Toaster>` una vez y llamas a `toast` desde cualquier sitio.
+
+## Qué ofrece
+
+- **Una llamada.** `toast.success(title, options)`, desde un componente, una mutación o un interceptor HTTP.
+- **Tu tema.** Tarjetas o superficies teñidas con los tokens del tema, en claro y oscuro.
+- **De lo simple a lo libre.** Título y descripción, un click, botones de acción, contenido propio debajo o el diseño completo.
+- **Textos largos.** La descripción se recorta a unas líneas y se expande.
+- **Accesible.** Se anuncia a lectores de pantalla, se alcanza con F6, se cierra con Escape y no anida controles.
+- **Sin textos propios.** Todas las palabras son tuyas; TypeScript pide las que cada función necesita.
+
+## Cómo funciona
+
+- `toast` escribe en un manager global. El `Toaster` lo lee y dibuja las toasts. Las llamadas hechas antes de que monte esperan y se entregan al montarlo.
+- Las toasts se apilan en una esquina. La pila se abre con el puntero o el foco de teclado.
+- Cada toast dura la `duration` del Toaster (5 segundos) salvo que indique la suya. El tiempo se pausa con el puntero, el foco de teclado, sin foco en la ventana y con la descripción expandida. `loading` y `toast.custom` no se cierran solas.
+- Deslizar una toast hacia su borde la cierra. Arrastrar tu contenido nunca la desliza.
+
+## Instalación
+
+El componente viene en `@aureus-core/ui`; no hay nada más que instalar. Mantén la hoja de estilos del paquete en tu CSS:
+
+```css
+@import "@aureus-core/ui/styles.css";
+```
+
+## Configuración paso a paso
+
+**1. Monta el `Toaster` una vez**, dentro de tus providers (i18n, router, query client). El contenido de una toast se dibuja donde está el Toaster, así que solo ve ese contexto.
+
+```tsx
+import { Toaster } from "@aureus-core/ui/components/toast";
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <I18nextProvider i18n={i18n}>
+      <RouterProvider>
+        {children}
+        <AppToaster />
+      </RouterProvider>
+    </I18nextProvider>
+  );
+}
+```
+
+**2. Dale sus textos** desde i18next. Siguen el idioma.
+
+```tsx
+function AppToaster() {
+  const { t } = useTranslation("common");
+  return <Toaster label={t("toast.region")} />;
+}
+```
+
+**3. Elige dónde y cuánto tiempo.**
+
+```tsx
+<Toaster label={t("toast.region")} position="top-end" duration={6000} limit={4} />
+```
+
+**4. Elige la apariencia.** `"card"` (por defecto) mantiene la superficie neutra y colorea el icono; `"tinted"` colorea también la superficie. Cada toast puede cambiarla.
+
+```tsx
+<Toaster label={t("toast.region")} appearance="tinted" />
+```
+
+**5. Activa cerrar y expandir.** Ambos piden sus textos.
+
+```tsx
+<Toaster
+  label={t("toast.region")}
+  closeButton
+  closeLabel={t("toast.close")}
+  expandable={{ lines: 2, expandLabel: t("toast.more"), collapseLabel: t("toast.less") }}
+/>
+```
+
+**6. Ajusta los colores de estado** en tu hoja de estilos, si quieres otros (ejemplo J).
+
+## Referencia
+
+| Método | Qué hace |
+| --- | --- |
+| `toast.neutral / success / info / warning / danger / loading(title, options?)` | Muestra una toast y devuelve su id. |
+| `toast.custom(render, { "aria-label" })` | Un diseño propio, persistente por defecto. |
+| `toast.promise(promise, { loading, success, danger })` | Sigue una promesa. |
+| `toast.update(id, patch)` | Mezcla cambios en una toast. |
+| `toast.dismiss(id?)` | Cierra una o todas. |
+
+Todas las opciones y las props de `Toaster` están en la página **components › Feedback › Toast**.
+
+## Ejemplos
+
+### A. Estados
+
+```ts
+toast.success(t("invoice.saved"), { description: t("invoice.savedDetail") });
+toast.warning(t("quota.almostFull"));
+toast.danger(t("invoice.failed"), { priority: "high", duration: Infinity, iconLabel: t("error") });
+```
+
+`danger` no implica urgencia ni persistencia: pídelas.
+
+<Canvas of={ToastStories.Statuses} />
+
+### B. Click para abrir
+
+```ts
+toast.info(t("message.new"), {
+  description: message.preview,
+  onClick: () => navigate(`/inbox/${message.id}`),
+});
+```
+
+El título se convierte en botón, así que también funciona con teclado. La toast se cierra tras el click; `keepOpenOnClick` la mantiene.
+
+<Canvas of={ToastStories.ClickToAct} />
+
+### C. Deshacer
+
+```ts
+toast.neutral(t("item.deleted"), {
+  actions: [
+    {
+      label: t("common.undo"),
+      keepOpen: true,
+      onClick: async ({ id }) => {
+        await restore(item.id);
+        toast.success(t("item.restored"), { id });
+      },
+    },
+  ],
+});
+```
+
+Sin `keepOpen`, pulsar cierra la toast, que es lo que quiere una acción normal. Una función que reemplaza su propia toast lo necesita.
+
+<Canvas of={ToastStories.Actions} />
+
+### D. Seguir una promesa
+
+```ts
+const request = saveInvoice(data);
+toast.promise(request, {
+  loading: t("invoice.saving"),
+  success: (invoice) => ({ title: t("invoice.saved"), description: invoice.number }),
+  danger: (error) => ({ title: t("invoice.failed"), description: getMessage(error) }),
+});
+await request;
+```
+
+`toast.promise` devuelve el id y gestiona el rechazo para la toast. Espera tu propia promesa cuando necesites el resultado. El resultado se muestra aunque se haya cerrado la toast de carga.
+
+<Canvas of={ToastStories.PromiseFlow} />
+
+### E. Texto largo
+
+```ts
+toast.warning(t("export.finished"), { description: report.summary, duration: Infinity });
+```
+
+Con `expandable` en el Toaster, el botón aparece solo si el texto no cabe. Una toast expandida espera; al contraerla, su duración vuelve a empezar. Sin los dos textos, la descripción se muestra completa y la consola avisa: ``toast: `expandable` needs `expandLabel` and `collapseLabel`.``
+
+<Canvas of={ToastStories.LongText} />
+
+### F. Un cuestionario corto
+
+```tsx
+toast.info(t("survey.title"), {
+  duration: Infinity,
+  content: ({ id }) => <SurveyForm toastId={id} />,
+});
+
+function SurveyForm({ toastId }: { toastId: string }) {
+  const form = useSurveyForm();
+  const send = async (answers: Survey) => {
+    await sendSurvey(answers);
+    toast.success(t("survey.thanks"), { id: toastId });
+  };
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(send)}>
+        <RadioGroupControl name="rating" label={t("survey.rating")} options={options} />
+        <Button type="submit">{t("common.send")}</Button>
+      </form>
+    </FormProvider>
+  );
+}
+```
+
+Devuelve un componente desde `content`; no llames hooks dentro de la función. Escape cierra la toast enfocada, también desde un input.
+
+<Canvas of={ToastStories.Questionnaire} />
+
+### G. Tu propio diseño
+
+```tsx
+toast.custom(({ dismiss }) => <IncomingCall onReject={dismiss} />, {
+  "aria-label": t("call.incoming"),
+});
+```
+
+No hay icono, título ni botón de cerrar: tu componente dibuja todo, incluidos su relleno y una forma de cerrarla. No se puede deslizar.
+
+<Canvas of={ToastStories.Custom} />
+
+### H. Progreso por id
+
+```ts
+const id = toast.loading(t("upload.running"), { description: "0%" });
+upload(file, (percent) => toast.update(id, { description: `${percent}%` }));
+toast.success(t("upload.done"), { id });
+```
+
+`update` mezcla cambios en la toast; un método de estado con el mismo id la reemplaza.
+
+<Canvas of={ToastStories.Progress} />
+
+### I. Fuera de React
+
+```ts
+// lib/http.ts
+import { toast } from "@aureus-core/ui/components/toast";
+import i18n from "@/lib/i18n";
+
+client.interceptors.response.use(undefined, (error) => {
+  toast.danger(i18n.t("common:errors.request"), { id: "request-error" });
+  return Promise.reject(error);
+});
+```
+
+Un `id` fijo mantiene una sola toast aunque fallen muchas peticiones. Una llamada hecha antes de montar la app se entrega después.
+
+<Canvas of={ToastStories.Queue} />
+
+### J. Tus colores
+
+```css
+@import "@aureus-core/ui/styles.css";
+
+:root {
+  --success: oklch(0.48 0.13 165);
+}
+.dark {
+  --success: oklch(0.82 0.15 165);
+}
+```
+
+Define los dos bloques y mantén al menos 4.5:1 contra `--popover` para los títulos teñidos.
+
+## Buenas prácticas
+
+- **¿Toast, Modal o Alert?** Una toast informa y puede ofrecer un atajo. Una decisión que bloquea el trabajo es un `Modal` o `AlertDialog`; un mensaje de una sección es un `Alert`.
+- **Da tiempo para actuar.** Usa `duration: Infinity` en lo que necesite respuesta, y `closeButton` para poder cerrarlo.
+- **Cambios de idioma.** Los textos del Toaster siguen el idioma; los de las toasts ya mostradas no.
+- **Sobre un modal.** Las acciones funcionan con el puntero y el modal sigue abierto, pero su trampa de foco deja el teclado dentro del diálogo: no se puede escribir en un input de una toast hasta cerrarlo.
+- **Un `Dialog` de shadcn tuyo** se cierra al pulsar una toast. `Modal` ya lo ignora; con `Dialog`, haz lo mismo:
+
+```tsx
+<DialogContent
+  onInteractOutside={(event) => {
+    const target = event.target as Element;
+    if (target.closest('[data-slot="toast-viewport"]')) event.preventDefault();
+  }}
+/>
+```
+
+</Es>

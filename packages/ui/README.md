@@ -1,6 +1,6 @@
 # @aureus-core/ui
 
-React components for Aureus projects: the [shadcn/ui](https://ui.shadcn.com) base layer, custom components on top of it (form fields and react-hook-form controls, `DataTable`, `AppLayout`, `Modal`, `Typography`) and the Aureus brand theme for Tailwind CSS v4.
+React components for Aureus projects: the [shadcn/ui](https://ui.shadcn.com) base layer, custom components on top of it (form fields and react-hook-form controls, `DataTable`, `AppLayout`, `Modal`, toasts, `Typography`) and the Aureus brand theme for Tailwind CSS v4.
 
 **Documentation:** <https://ing-eddy.github.io/aureus-frontend-core/>. Every component has a bilingual (English/Spanish) page with its API, examples, keyboard and accessibility notes, and a Playground.
 
@@ -79,6 +79,23 @@ export function ProfileForm({ onSave }: { onSave: (values: { username: string })
 ```
 
 Available pairs: text, password, text area, number, select, checkbox, checkbox group, radio group, switch, OTP, slider, date and time, date selection, file and avatar.
+
+## Toasts
+
+Mount `Toaster` once, inside your providers, and call `toast` from anywhere (also outside React):
+
+```tsx
+import { Toaster, toast } from "@aureus-core/ui/components/toast";
+
+<Toaster label={t("toast.region")} closeButton closeLabel={t("toast.close")} />;
+
+toast.success(t("invoice.saved"), { description: t("invoice.savedDetail") });
+toast.neutral(t("item.deleted"), {
+  actions: [{ label: t("common.undo"), onClick: () => restore(item.id) }],
+});
+```
+
+Statuses, click to open, actions, your own content, fully custom toasts, promises and expandable texts are in the documentation's **Toasts** guide.
 
 ## No built-in texts
 

@@ -247,6 +247,25 @@ import {
 </Modal>;
 ```
 
+### Toasts
+
+`Toaster`, mounted once inside the app's providers, shows what `toast` creates from anywhere, also outside React. Statuses (`neutral`, `success`, `info`, `warning`, `danger`, `loading`) and `toast.promise`; a status icon, title and description; `onClick`, action buttons, your own `content` or a whole `toast.custom` layout; expandable long texts; `card` or `tinted` appearance with the `--success`, `--warning`, `--info` and `--destructive` tokens. It renders no text of its own.
+
+```tsx
+import { Toaster, toast } from "@aureus-core/ui/components/toast";
+
+<Toaster
+  label={t("toast.region")}
+  closeButton
+  closeLabel={t("toast.close")}
+  expandable={{ expandLabel: t("toast.more"), collapseLabel: t("toast.less") }}
+/>;
+
+toast.info(t("message.new"), { onClick: () => navigate("/inbox") });
+```
+
+See the **Toasts** guide in the documentation.
+
 ### App layout
 
 `AppLayout` (`@aureus-core/ui/components/app-layout`) is the application shell, based on the shadcn sidebar blocks.
