@@ -200,7 +200,10 @@ export const Playground: Story = {
     await userEvent.tab();
     await expect(shown).toHaveFocus();
     await userEvent.keyboard("{Escape}");
-    await waitFor(() => expect(toastCount()).toBe(0));
+    // Wait until the toast has left the DOM, not just started its exit: after F6 the viewport keeps
+    // focus guards (aria-hidden, tabindex 0) while any toast remains, and the axe check that runs
+    // after the play function flags them when the exit is still in progress (slow CI runners).
+    await waitFor(() => expect(shown).not.toBeInTheDocument());
   },
 };
 
