@@ -1,0 +1,227 @@
+/*
+ * Toasts (components/toast). The engine writes the position of each toast in the stack
+ * (`--toast-index`, `--toast-offset-y`, the heights and the swipe movement); these rules turn them
+ * into the stack. Every selector is wrapped in :where() (zero specificity), so the file order is the
+ * precedence and any utility passed by an app wins.
+ */
+@layer components {
+  /*
+   * The region has no height: toasts hang from it, so it never covers the page. It sits above
+   * overlays, and keeps pointer events on while a modal dialog turns them off for the body.
+   */
+  :where([data-slot="toast-viewport"]) {
+    position: fixed;
+    z-index: 100;
+    width: min(100% - 2rem, 22.5rem);
+    outline: none;
+    pointer-events: auto;
+  }
+  :where([data-slot="toast-viewport"][data-position^="top"]) {
+    top: 1rem;
+  }
+  :where([data-slot="toast-viewport"][data-position^="bottom"]) {
+    bottom: 1rem;
+  }
+  :where([data-slot="toast-viewport"][data-position$="start"]) {
+    inset-inline-start: 1rem;
+  }
+  :where([data-slot="toast-viewport"][data-position$="end"]) {
+    inset-inline-end: 1rem;
+  }
+  :where([data-slot="toast-viewport"][data-position$="center"]) {
+    inset-inline: 0;
+    margin-inline: auto;
+  }
+  /* On narrow screens every position spans the width. */
+  @media (width < 40rem) {
+    :where([data-slot="toast-viewport"][data-position]) {
+      inset-inline: 1rem;
+      width: auto;
+    }
+  }
+
+  /*
+   * A toast of the collapsed stack: it takes the height of the front one, and peeks out and shrinks
+   * with its depth. `--toast-direction` is the way the stack grows, away from its edge.
+   */
+  :where([data-slot="toast"]) {
+    --toast-gap: 0.75rem;
+    --toast-peek: 0.75rem;
+    --toast-status: var(--popover-foreground);
+    --toast-scale: calc(max(0, 1 - var(--toast-index) * 0.05));
+    --toast-current-height: var(--toast-frontmost-height, var(--toast-height));
+    position: absolute;
+    inset-inline: 0;
+    z-index: calc(1000 - var(--toast-index));
+    width: 100%;
+    height: var(--toast-current-height);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: 0 8px 24px -8px rgb(0 0 0 / 20%);
+    outline: none;
+    transform: translateX(var(--toast-swipe-movement-x))
+      translateY(
+        calc(
+          var(--toast-swipe-movement-y) +
+          var(--toast-direction) *
+          (
+            var(--toast-index) *
+            var(--toast-peek) +
+            (1 - var(--toast-scale)) *
+            var(--toast-current-height)
+          )
+        )
+      )
+      scale(var(--toast-scale));
+    transition:
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.4s,
+      height 0.15s;
+    user-select: none;
+  }
+  :where([data-slot="toast"]:focus-visible) {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+  }
+  :where([data-slot="toast-viewport"][data-position^="bottom"] > [data-slot="toast"]) {
+    --toast-direction: -1;
+    bottom: 0;
+    transform-origin: bottom center;
+  }
+  :where([data-slot="toast-viewport"][data-position^="top"] > [data-slot="toast"]) {
+    --toast-direction: 1;
+    top: 0;
+    transform-origin: top center;
+  }
+  /* Bridges the gap to the next toast, so the pointer can cross it without closing the stack. */
+  :where([data-slot="toast"])::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    height: calc(var(--toast-gap) + 1px);
+  }
+  :where([data-slot="toast-viewport"][data-position^="bottom"] > [data-slot="toast"])::after {
+    top: 100%;
+  }
+  :where([data-slot="toast-viewport"][data-position^="top"] > [data-slot="toast"])::after {
+    bottom: 100%;
+  }
+
+  /* Expanded stack: every toast takes its own height, one after another. */
+  :where([data-slot="toast"][data-expanded]) {
+    height: var(--toast-height);
+    transform: translateX(var(--toast-swipe-movement-x))
+      translateY(
+        calc(
+          var(--toast-swipe-movement-y) +
+          var(--toast-direction) *
+          (var(--toast-offset-y) + var(--toast-index) * var(--toast-gap))
+        )
+      );
+  }
+
+  /* Toasts over the limit wait hidden. */
+  :where([data-slot="toast"][data-limited]) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Toasts enter from their edge and leave toward it, or toward where they were swiped. */
+  :where([data-slot="toast"][data-starting-style]) {
+    transform: translateY(calc(var(--toast-direction) * -150%));
+  }
+  :where([data-slot="toast"][data-ending-style]) {
+    opacity: 0;
+    transform: translateY(calc(var(--toast-direction) * -150%));
+  }
+  :where([data-slot="toast"][data-ending-style][data-swipe-direction="left"]) {
+    transform: translateX(calc(var(--toast-swipe-movement-x) - 150%))
+      translateY(var(--toast-swipe-movement-y));
+  }
+  :where([data-slot="toast"][data-ending-style][data-swipe-direction="right"]) {
+    transform: translateX(calc(var(--toast-swipe-movement-x) + 150%))
+      translateY(var(--toast-swipe-movement-y));
+  }
+  :where([data-slot="toast"][data-ending-style][data-swipe-direction="up"]) {
+    transform: translateY(calc(var(--toast-swipe-movement-y) - 150%));
+  }
+  :where([data-slot="toast"][data-ending-style][data-swipe-direction="down"]) {
+    transform: translateY(calc(var(--toast-swipe-movement-y) + 150%));
+  }
+
+  /* The content of the toasts behind the front one is hidden until the stack expands. */
+  :where([data-slot="toast-content"]) {
+    transition: opacity 0.25s;
+  }
+  :where([data-slot="toast-content"][data-behind]:not([data-expanded])) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* The color of each status. It paints the icon, and the title and surface of tinted toasts. */
+  :where([data-slot="toast"][data-type="success"]) {
+    --toast-status: var(--success);
+  }
+  :where([data-slot="toast"][data-type="info"]) {
+    --toast-status: var(--info);
+  }
+  :where([data-slot="toast"][data-type="warning"]) {
+    --toast-status: var(--warning);
+  }
+  :where([data-slot="toast"][data-type="danger"]) {
+    --toast-status: var(--destructive);
+  }
+  :where([data-slot="toast"][data-type="loading"]) {
+    --toast-status: var(--muted-foreground);
+  }
+  :where([data-slot="toast-icon"]) {
+    color: var(--toast-status);
+  }
+  :where([data-slot="toast-description"]) {
+    color: var(--muted-foreground);
+    overflow-wrap: anywhere;
+  }
+
+  /* Tinted appearance. Neutral and loading toasts report no outcome, so they stay as cards. */
+  :where(
+    [data-slot="toast"][data-appearance="tinted"]:is(
+      [data-type="success"],
+      [data-type="info"],
+      [data-type="warning"],
+      [data-type="danger"]
+    )
+  ) {
+    border-color: color-mix(in oklab, var(--toast-status) 35%, var(--popover));
+    background: color-mix(in oklab, var(--toast-status) 10%, var(--popover));
+  }
+  :where(
+    [data-slot="toast"][data-appearance="tinted"]:is(
+        [data-type="success"],
+        [data-type="info"],
+        [data-type="warning"],
+        [data-type="danger"]
+      )
+      [data-slot="toast-title"]
+  ) {
+    color: var(--toast-status);
+  }
+  :where(
+    [data-slot="toast"][data-appearance="tinted"]:is(
+        [data-type="success"],
+        [data-type="info"],
+        [data-type="warning"],
+        [data-type="danger"]
+      )
+      [data-slot="toast-description"]
+  ) {
+    color: var(--popover-foreground);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :where([data-slot="toast"], [data-slot="toast-content"]) {
+      transition: none;
+    }
+  }
+}

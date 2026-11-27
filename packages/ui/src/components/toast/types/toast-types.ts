@@ -176,3 +176,60 @@ export interface ToastApi {
   /** Closes one toast, or all of them without an id. */
   dismiss: (id?: string) => void;
 }
+
+/** Where the toasts stack. `start` and `end` follow the text direction. */
+export type ToastPosition =
+  | "top-start"
+  | "top-center"
+  | "top-end"
+  | "bottom-start"
+  | "bottom-center"
+  | "bottom-end";
+
+/** Turns on expandable descriptions for every toast of a Toaster. */
+export interface ToasterExpandOptions {
+  /** Text of the button that expands a long description, in the developer's language. */
+  expandLabel: string;
+  /** Text of the button that collapses it. */
+  collapseLabel: string;
+  /** Lines shown while collapsed. Defaults to 2. */
+  lines?: number;
+}
+
+/** The close button of every toast. Turning it on requires its accessible name. */
+export type ToasterCloseTexts =
+  | {
+      /** Shows a close button on every toast. Defaults to false. */
+      closeButton: boolean;
+      /** Accessible name of the close buttons, in the developer's language. */
+      closeLabel: string;
+    }
+  | {
+      /** Shows a close button on every toast. Defaults to false. */
+      closeButton?: false;
+      /** Accessible name for the toasts that turn their own close button on. */
+      closeLabel?: string;
+    };
+
+/** Props of `Toaster`, besides the close button's. */
+export interface ToasterBaseProps {
+  /** Accessible name of the notifications region, in the developer's language. */
+  label: string;
+  /** Where the toasts stack. Defaults to "bottom-end". */
+  position?: ToastPosition;
+  /** Milliseconds a toast stays, or `Infinity`. Defaults to 5000. */
+  duration?: number;
+  /** Toasts shown at once; older ones wait hidden. Defaults to 3. */
+  limit?: number;
+  /** How toasts paint their status. Defaults to "card". */
+  appearance?: ToastAppearance;
+  /** Clamps long descriptions behind an expand button. Off by default. */
+  expandable?: ToasterExpandOptions;
+  /** Replaces the icon of some statuses. `neutral` has none unless given here. */
+  icons?: Partial<Record<ToastStatus, ReactNode>>;
+  /** Extra classes of the notifications region. No default. */
+  className?: string;
+}
+
+/** Props of `Toaster`. */
+export type ToasterProps = ToasterBaseProps & ToasterCloseTexts;
