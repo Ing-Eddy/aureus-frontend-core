@@ -1,4 +1,5 @@
 import type { Dialog as DialogPrimitive } from "radix-ui";
+import { isInsideToaster } from "@/internal/utils/helpers";
 import type { ModalContentProps } from "../types";
 import type { ModalContextValue } from "./use-modal";
 
@@ -54,6 +55,11 @@ export function useModalDismiss(
   const handleOutside = (event: InteractOutsideEvent) => {
     onInteractOutside?.(event);
     if (event.defaultPrevented) return;
+    // Toasts float above the modal: using one is not leaving it.
+    if (isInsideToaster(event.target)) {
+      event.preventDefault();
+      return;
+    }
     const target = event.target as Node | null;
     // The trigger toggles the modal itself; closing here would reopen it on click.
     if (target && context.triggerRef.current?.contains(target)) {

@@ -119,6 +119,18 @@ The shared props (`FieldBaseProps`, `FieldTexts`, `FieldActionProps`, `FieldClas
 - **Viewport queries** use `useMediaQuery` from `internal/hooks` (`useSyncExternalStore`, with a server value). Do not use shadcn's `useIsMobile`: it reports `false` on the first render and only updates in an effect.
 - **Testing in jsdom.** Vaul injects CSS animations that jsdom reports but never runs, so a closing drawer stays mounted until it receives `animationend`. The modal's test helper (`modal/tests/render-modal.tsx`) dispatches it and mocks `matchMedia` with a settable width. Gestures (swipe, snap points) are tested in Storybook.
 
+## Toasts
+
+`Toaster` and `toast` (`src/components/toast/`) are built on `@base-ui/react/toast`. shadcn only publishes a toast on Base UI for the `base-nova` style, so the component is ours; after updating `@base-ui/react`, compare `styles/toast.css` with that style's `toast.tsx` and run the stories.
+
+- **A module-level manager with a queue** (`utils/libs/toast-manager.ts`). Base UI's manager forgets calls made before a provider subscribes, so they wait until a `Toaster` connects. The connection is made in the parent of the provider, whose effect runs after the provider's. Tests clear the queue with `toast.dismiss()` after unmounting.
+- **Replacing writes every key** (`to-manager-options.ts`): a toast shown with an existing id must keep nothing from it. `update` merges through an updater function. `promise` is ours because Base UI fixes the failure type to `error`.
+- **Presses are handled by the root** (`use-toast-click.ts`). While swiping, Base UI captures the pointer on the root, so a click handler on the content would never run in a browser.
+- **Custom content ignores swipes** through `data-base-ui-swipe-ignore`.
+- **Styles** are in `styles/toast.css`, on `data-slot`, `data-type` and `data-appearance`, with `:where()` so the file order is the precedence. Status colors are in `styles/status.css`, checked by `status-tokens-contrast-tests.ts`.
+- **Overlays.** `isInsideToaster` (`internal/utils/helpers`) keeps a press on a toast from dismissing `Modal`.
+- **Testing.** jsdom treats every click as keyboard focus, so Base UI pauses the timers after one: blur the region in timer tests. Stories render each in their own frame on the docs page (`docs.story.inline: false`), because every mounted `Toaster` shows every toast.
+
 ## Layout
 
 `AppLayout` (`src/components/app-layout/`) is the application shell: a sidebar (a sheet below the breakpoint), a top bar and a main area. It is a fork of the shadcn sidebar blocks.

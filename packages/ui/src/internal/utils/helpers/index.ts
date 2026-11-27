@@ -1,5 +1,6 @@
 export { acceptMatches, parseAccept } from "./accept-matches";
 export { createFileId } from "./file-ids";
+export { isInsideToaster } from "./is-inside-toaster";
 export type {
   IsoDateParts,
   IsoDateTimeParts,
